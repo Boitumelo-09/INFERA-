@@ -18,7 +18,7 @@ The security of INFERA is taken seriously.
 If you discover a security vulnerability, please do not create a public GitHub issue.
 
 Instead, report the issue privately
-  ###to belmiredub4@gmail.com
+  to belmiredub4@gmail.com.
   
 ---
 
