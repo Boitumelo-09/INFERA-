@@ -1,0 +1,116 @@
+:root{
+    --bg:#0d1117;
+    --secondary:#161b22;
+    --card:#1c2128;
+    --accent:#ea580c;
+    --accent-hover:#c2410c;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,sans-serif;
+}
+
+.infera-navbar{
+    transition:.3s;
+    padding:20px 0;
+    border-bottom:1px solid #2d333b;
+}
+
+.infera-navbar.scrolled{
+    backdrop-filter:blur(15px);
+    background:rgba(13,17,23,.9);
+}
+
+.nav-link{
+    color:white;
+    margin-left:20px;
+}
+
+.nav-link:hover{
+    color:var(--accent);
+}
+
+.hero-title{
+    font-size:4rem;
+    font-weight:700;
+}
+
+.hero-subtitle{
+    color:var(--muted);
+    font-size:1.2rem;
+    max-width:650px;
+}
+
+.hero-logo{
+    max-width:300px;
+}
+
+.infera-btn{
+    background:var(--accent);
+    color:white;
+    border:none;
+}
+
+.infera-btn:hover{
+    background:var(--accent-hover);
+    color:white;
+}
+
+.vault-card{
+    background:var(--card);
+    padding:40px;
+    border-radius:20px;
+    border:1px solid #2d333b;
+}
+
+.status-dot{
+    width:10px;
+    height:10px;
+    background:#22c55e;
+    display:inline-block;
+    border-radius:50%;
+}
+
+.feature-card{
+    background:var(--card);
+    border:1px solid #2d333b;
+    border-radius:20px;
+    padding:40px;
+    transition:.3s;
+}
+
+.feature-card:hover{
+    transform:translateY(-10px);
+    border-color:var(--accent);
+}
+
+.feature-card i{
+    color:var(--accent);
+}
+
+.stats-section{
+    padding:100px 0;
+}
+
+.footer{
+    border-top:1px solid #2d333b;
+    padding:40px 0;
+}
+
+.reveal{
+    opacity:0;
+    transform:translateY(50px);
+    transition:.8s;
+}
+
+.reveal.active{
+    opacity:1;
+    transform:translateY(0);
+}
+.typing-container{
+    color: var(--accent);
+}
