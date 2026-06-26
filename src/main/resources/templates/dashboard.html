@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- th:text="${pageTitle} + ' — INFERA'" -->
+    <title>Dashboard — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/dashboard.css" />
+
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <a href="home.html" class="logo-link d-flex align-items-center gap-2">
+            <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
+            <span class="logo-text">INFERA</span>
+        </a>
+        <!-- Close button (mobile only) -->
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- Search shortcut -->
+    <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0" aria-label="Open search">
+        <i class="bi bi-search"></i>
+        <span>Search...</span>
+        <kbd>⌘K</kbd>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Main navigation">
+
+        <div class="nav-section-label">Main</div>
+        <ul class="nav-list">
+            <li>
+                <!-- th:classappend="${activePage == 'dashboard'} ? 'active'" -->
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="workspaces">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Workspaces</span>
+                    <!-- th:text="${workspaceCount}" -->
+                    <span class="nav-badge" id="navWorkspaceBadge">4</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="notes">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Notes</span>
+                    <!-- th:text="${noteCount}" -->
+                    <span class="nav-badge" id="navNotesBadge">24</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="resources">
+                    <i class="bi bi-link-45deg"></i>
+                    <span>Resources</span>
+                    <!-- th:text="${resourceCount}" -->
+                    <span class="nav-badge" id="navResourcesBadge">11</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-section-label mt-3">Workspaces</div>
+        <!-- th:each="ws : ${workspaces}" -->
+        <ul class="nav-list" id="workspaceList">
+            <li>
+                <a href="#" class="nav-item ws-item" data-workspace="1">
+                    <!-- th:style="'--ws-color:' + ${ws.color}" inline color per workspace -->
+                    <span class="ws-dot" style="--ws-color:#ea580c;"></span>
+                    <!-- th:text="${ws.name}" -->
+                    <span>Java Backend</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item ws-item" data-workspace="2">
+                    <span class="ws-dot" style="--ws-color:#6366f1;"></span>
+                    <span>Research</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item ws-item" data-workspace="3">
+                    <span class="ws-dot" style="--ws-color:#10b981;"></span>
+                    <span>Career</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item ws-item" data-workspace="4">
+                    <span class="ws-dot" style="--ws-color:#f59e0b;"></span>
+                    <span>Music</span>
+                </a>
+            </li>
+            <li>
+                <button class="nav-item nav-item-btn" id="newWorkspaceBtn">
+                    <i class="bi bi-plus"></i>
+                    <span>New workspace</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="nav-section-label mt-3">Account</div>
+        <ul class="nav-list">
+            <li>
+                <a href="#" class="nav-item" data-page="activity">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Activity</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="profile">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="settings">
+                    <i class="bi bi-sliders"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <!-- User chip at bottom -->
+    <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarAvatar">
+            <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
+            SN
+        </div>
+        <div class="user-info">
+            <!-- th:text="${user.firstName + ' ' + user.lastName}" -->
+            <div class="user-name">Sipho Ndlovu</div>
+            <!-- th:text="${user.email}" -->
+            <div class="user-email">sipho@example.com</div>
+        </div>
+        <!-- th:action="@{/logout}" method="post" -->
+        <a href="signin.html" class="logout-btn" title="Sign out">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+    </div>
+
+</aside>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════════════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+    <!-- ─── TOP BAR ──────────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <!-- Hamburger (mobile) -->
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="d-none d-sm-flex">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <!-- th:text="${user.firstName + '\'s'}" -->
+                        <span class="bc-root">Sipho's</span>
+                    </li>
+                    <!-- th:text="${currentPage}" -->
+                    <li class="breadcrumb-item active" id="breadcrumbPage">Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <!-- Search button -->
+            <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
+                <i class="bi bi-search"></i>
+            </button>
+
+            <!-- New note quick button -->
+            <button class="btn-topbar-accent" id="quickNoteBtn">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-sm-inline">New note</span>
+            </button>
+
+            <!-- Notifications -->
+            <button class="topbar-icon-btn position-relative" id="notifBtn" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+
+            <!-- Avatar -->
+            <div class="topbar-avatar" id="topbarAvatar" role="button" tabindex="0">
+                <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
+                SN
+            </div>
+        </div>
+    </header>
+
+    <!-- ─── PAGE CONTENT ─────────────────────────────────────────── -->
+    <main class="page-content" id="pageContent">
+
+        <!-- ── DASHBOARD HOME ─────────────────────────────────────── -->
+        <section class="dash-home" id="pageDashboard">
+
+            <!-- Greeting -->
+            <div class="dash-greeting">
+                <div>
+                    <!-- th:text="'Good ' + ${timeOfDay} + ', ' + ${user.firstName} + '.'" -->
+                    <h1 class="greeting-title" id="greetingText">Good morning, Sipho.</h1>
+                    <p class="greeting-sub">Here's what's happening in your knowledge vault.</p>
+                </div>
+                <div class="greeting-date" id="greetingDate">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+
+            <!-- ── STAT CARDS ──────────────────────────────────────── -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="sc-top">
+                        <div class="sc-icon ws"><i class="bi bi-folder2-open"></i></div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+1 this week</div>
+                    </div>
+                    <!-- th:text="${workspaceCount}" -->
+                    <div class="sc-value" data-count="4">4</div>
+                    <div class="sc-label">Workspaces</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="sc-top">
+                        <div class="sc-icon notes"><i class="bi bi-journal-text"></i></div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+3 this week</div>
+                    </div>
+                    <!-- th:text="${noteCount}" -->
+                    <div class="sc-value" data-count="24">24</div>
+                    <div class="sc-label">Notes</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="sc-top">
+                        <div class="sc-icon resources"><i class="bi bi-link-45deg"></i></div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+2 this week</div>
+                    </div>
+                    <!-- th:text="${resourceCount}" -->
+                    <div class="sc-value" data-count="11">11</div>
+                    <div class="sc-label">Resources</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="sc-top">
+                        <div class="sc-icon tags"><i class="bi bi-tags"></i></div>
+                        <div class="sc-trend neutral"><i class="bi bi-dash"></i> same</div>
+                    </div>
+                    <!-- th:text="${tagCount}" -->
+                    <div class="sc-value" data-count="18">18</div>
+                    <div class="sc-label">Tags</div>
+                </div>
+
+            </div>
+
+            <!-- ── MAIN GRID ──────────────────────────────────────── -->
+            <div class="dash-grid">
+
+                <!-- Recent Notes -->
+                <div class="dash-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="bi bi-journal-text"></i> Recent Notes</h2>
+                        <button class="panel-action" data-page="notes">View all</button>
+                    </div>
+                    <div class="panel-body">
+                        <!-- th:each="note : ${recentNotes}" -->
+                        <div class="note-row" data-note-id="1">
+                            <div class="note-row-left">
+                                <div class="note-ws-dot" style="--ws-color:#ea580c;"></div>
+                                <div>
+                                    <!-- th:text="${note.title}" -->
+                                    <div class="note-row-title">Spring Security Config</div>
+                                    <!-- th:text="${note.workspaceName}" -->
+                                    <div class="note-row-meta">Java Backend · <span class="note-tag">#security</span> <span class="note-tag">#spring</span></div>
+                                </div>
+                            </div>
+                            <!-- th:text="${#temporals.format(note.updatedAt, 'dd MMM')}" -->
+                            <div class="note-row-date">2h ago</div>
+                        </div>
+
+                        <div class="note-row" data-note-id="2">
+                            <div class="note-row-left">
+                                <div class="note-ws-dot" style="--ws-color:#6366f1;"></div>
+                                <div>
+                                    <div class="note-row-title">Thesis Literature Review</div>
+                                    <div class="note-row-meta">Research · <span class="note-tag">#thesis</span></div>
+                                </div>
+                            </div>
+                            <div class="note-row-date">Yesterday</div>
+                        </div>
+
+                        <div class="note-row" data-note-id="3">
+                            <div class="note-row-left">
+                                <div class="note-ws-dot" style="--ws-color:#10b981;"></div>
+                                <div>
+                                    <div class="note-row-title">Interview Prep — Java Q&A</div>
+                                    <div class="note-row-meta">Career · <span class="note-tag">#interview</span></div>
+                                </div>
+                            </div>
+                            <div class="note-row-date">3d ago</div>
+                        </div>
+
+                        <div class="note-row" data-note-id="4">
+                            <div class="note-row-left">
+                                <div class="note-ws-dot" style="--ws-color:#ea580c;"></div>
+                                <div>
+                                    <div class="note-row-title">JPA Repository Patterns</div>
+                                    <div class="note-row-meta">Java Backend · <span class="note-tag">#jpa</span></div>
+                                </div>
+                            </div>
+                            <div class="note-row-date">5d ago</div>
+                        </div>
+
+                        <div class="note-row" data-note-id="5">
+                            <div class="note-row-left">
+                                <div class="note-ws-dot" style="--ws-color:#f59e0b;"></div>
+                                <div>
+                                    <div class="note-row-title">Music Theory Basics</div>
+                                    <div class="note-row-meta">Music · <span class="note-tag">#theory</span></div>
+                                </div>
+                            </div>
+                            <div class="note-row-date">1w ago</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right column -->
+                <div class="dash-right-col">
+
+                    <!-- Workspaces panel -->
+                    <div class="dash-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="bi bi-folder2-open"></i> Workspaces</h2>
+                            <button class="panel-action" data-page="workspaces">Manage</button>
+                        </div>
+                        <div class="panel-body">
+                            <!-- th:each="ws : ${workspaces}" -->
+                            <div class="ws-card" data-workspace="1">
+                                <div class="ws-card-bar" style="--ws-color:#ea580c;"></div>
+                                <div class="ws-card-body">
+                                    <div class="ws-card-name">Java Backend</div>
+                                    <!-- th:text="${ws.noteCount} + ' notes'" -->
+                                    <div class="ws-card-count">12 notes · 4 resources</div>
+                                </div>
+                                <i class="bi bi-chevron-right ws-card-arrow"></i>
+                            </div>
+
+                            <div class="ws-card" data-workspace="2">
+                                <div class="ws-card-bar" style="--ws-color:#6366f1;"></div>
+                                <div class="ws-card-body">
+                                    <div class="ws-card-name">Research</div>
+                                    <div class="ws-card-count">6 notes · 3 resources</div>
+                                </div>
+                                <i class="bi bi-chevron-right ws-card-arrow"></i>
+                            </div>
+
+                            <div class="ws-card" data-workspace="3">
+                                <div class="ws-card-bar" style="--ws-color:#10b981;"></div>
+                                <div class="ws-card-body">
+                                    <div class="ws-card-name">Career</div>
+                                    <div class="ws-card-count">4 notes · 2 resources</div>
+                                </div>
+                                <i class="bi bi-chevron-right ws-card-arrow"></i>
+                            </div>
+
+                            <div class="ws-card" data-workspace="4">
+                                <div class="ws-card-bar" style="--ws-color:#f59e0b;"></div>
+                                <div class="ws-card-body">
+                                    <div class="ws-card-name">Music</div>
+                                    <div class="ws-card-count">2 notes · 2 resources</div>
+                                </div>
+                                <i class="bi bi-chevron-right ws-card-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick stats / Activity sparkline -->
+                    <div class="dash-panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title"><i class="bi bi-bar-chart-line"></i> Activity This Week</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="activity-bars" id="activityBars" aria-label="Notes created per day this week">
+                                <!-- Filled by JS with th:data-* values in real app -->
+                                <!-- th:each: data-day and data-value attributes per bar -->
+                            </div>
+                            <div class="activity-legend">
+                                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                            </div>
+                            <div class="activity-summary mt-3">
+                  <span class="as-item"><i class="bi bi-journal-plus"></i>
+                      <!-- th:text="${weeklyNotes} + ' notes this week'" -->
+                    8 notes this week
+                  </span>
+                                <span class="as-item"><i class="bi bi-link"></i>
+                                    <!-- th:text="${weeklyResources} + ' resources'" -->
+                    3 resources
+                  </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ── ACTIVITY FEED ──────────────────────────────────── -->
+            <div class="dash-panel mt-4">
+                <div class="panel-header">
+                    <h2 class="panel-title"><i class="bi bi-clock-history"></i> Recent Activity</h2>
+                    <button class="panel-action" data-page="activity">View all</button>
+                </div>
+                <div class="panel-body activity-feed">
+                    <!-- th:each="act : ${recentActivities}" -->
+                    <div class="activity-item">
+                        <div class="act-icon created"><i class="bi bi-journal-plus"></i></div>
+                        <div class="act-body">
+                            <!-- th:text="'Created note: ' + ${act.targetName}" -->
+                            <div class="act-text">Created note <strong>Spring Security Config</strong></div>
+                            <!-- th:text="${#temporals.format(act.createdAt, 'dd MMM yyyy, HH:mm')}" -->
+                            <div class="act-time">Today at 09:14</div>
+                        </div>
+                        <span class="act-workspace" style="--ws-color:#ea580c;">Java Backend</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="act-icon updated"><i class="bi bi-pencil-square"></i></div>
+                        <div class="act-body">
+                            <div class="act-text">Updated note <strong>Thesis Literature Review</strong></div>
+                            <div class="act-time">Yesterday at 22:41</div>
+                        </div>
+                        <span class="act-workspace" style="--ws-color:#6366f1;">Research</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="act-icon resource"><i class="bi bi-link-45deg"></i></div>
+                        <div class="act-body">
+                            <div class="act-text">Saved resource <strong>docs.spring.io/security</strong></div>
+                            <div class="act-time">Yesterday at 18:05</div>
+                        </div>
+                        <span class="act-workspace" style="--ws-color:#ea580c;">Java Backend</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="act-icon ws-created"><i class="bi bi-folder-plus"></i></div>
+                        <div class="act-body">
+                            <div class="act-text">Created workspace <strong>Music</strong></div>
+                            <div class="act-time">Mon, 23 Jun · 11:30</div>
+                        </div>
+                        <span class="act-workspace" style="--ws-color:#f59e0b;">Music</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="act-icon created"><i class="bi bi-journal-plus"></i></div>
+                        <div class="act-body">
+                            <div class="act-text">Created note <strong>Interview Prep — Java Q&amp;A</strong></div>
+                            <div class="act-time">Mon, 23 Jun · 09:00</div>
+                        </div>
+                        <span class="act-workspace" style="--ws-color:#10b981;">Career</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- end #pageDashboard -->
+
+    </main>
+</div><!-- end .main-wrapper -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SEARCH MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+    <div class="search-backdrop" id="searchBackdrop"></div>
+    <div class="search-box">
+        <div class="search-input-wrap">
+            <i class="bi bi-search search-input-icon"></i>
+            <!-- In real Thymeleaf: th:action="@{/search}" method="GET" wrapping this -->
+            <input type="text" class="search-input" id="searchInput" placeholder="Search notes, workspaces, resources..." autocomplete="off" />
+            <kbd class="search-esc">ESC</kbd>
+        </div>
+        <div class="search-results" id="searchResults">
+            <div class="search-hint">
+                <i class="bi bi-lightning-charge"></i> Type to search across all your workspaces
+            </div>
+        </div>
+        <div class="search-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+            <span><kbd>↵</kbd> open</span>
+            <span><kbd>ESC</kbd> close</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NEW WORKSPACE MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="newWorkspaceModal" tabindex="-1" aria-labelledby="newWorkspaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newWorkspaceLabel">New Workspace</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <!-- th:action="@{/workspaces}" th:method="post" -->
+            <form id="newWorkspaceForm">
+                <!-- th:hidden input for CSRF: <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+                <div class="modal-body">
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="wsName">Workspace name</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-folder2 input-icon"></i>
+                            <input type="text" id="wsName" name="name" class="form-input" placeholder="e.g. Research, Career, Side Project" required />
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="wsDesc">Description <span class="optional-label">(optional)</span></label>
+                        <textarea id="wsDesc" name="description" class="form-input form-textarea" rows="3" placeholder="What will you store here?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-custom">Colour tag</label>
+                        <div class="color-picker" id="colorPicker">
+                            <button type="button" class="cp-swatch active" data-color="#ea580c" style="--sw:#ea580c;" aria-label="Orange"></button>
+                            <button type="button" class="cp-swatch" data-color="#6366f1" style="--sw:#6366f1;" aria-label="Indigo"></button>
+                            <button type="button" class="cp-swatch" data-color="#10b981" style="--sw:#10b981;" aria-label="Emerald"></button>
+                            <button type="button" class="cp-swatch" data-color="#f59e0b" style="--sw:#f59e0b;" aria-label="Amber"></button>
+                            <button type="button" class="cp-swatch" data-color="#0ea5e9" style="--sw:#0ea5e9;" aria-label="Sky"></button>
+                            <button type="button" class="cp-swatch" data-color="#ec4899" style="--sw:#ec4899;" aria-label="Pink"></button>
+                        </div>
+                        <!-- hidden field carries chosen colour to backend -->
+                        <input type="hidden" id="wsColor" name="color" value="#ea580c" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-accent" id="wsSubmitBtn">
+                        <span class="btn-text">Create workspace</span>
+                        <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     QUICK NOTE MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="quickNoteModal" tabindex="-1" aria-labelledby="quickNoteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickNoteLabel">New Note</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <!-- th:action="@{/notes}" th:method="post" -->
+            <form id="quickNoteForm">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <input type="text" id="noteTitle" name="title" class="form-input note-title-input" placeholder="Note title..." required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <select id="noteWorkspace" name="workspaceId" class="form-input form-select-custom">
+                            <!-- th:each="ws : ${workspaces}" -->
+                            <option value="1">Java Backend</option>
+                            <option value="2">Research</option>
+                            <option value="3">Career</option>
+                            <option value="4">Music</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="7" placeholder="Start writing..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-wrap">
+                            <i class="bi bi-tags input-icon"></i>
+                            <input type="text" id="noteTags" name="tags" class="form-input" placeholder="Add tags — e.g. #spring, #jpa" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Discard</button>
+                    <button type="submit" class="btn-modal-accent" id="noteSubmitBtn">
+                        <span class="btn-text"><i class="bi bi-floppy"></i> Save note</span>
+                        <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+    <span class="toast-msg" id="toastMsg">Done!</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="/static/javaScript/dashboard.js"></script>
+</body>
+</html>
