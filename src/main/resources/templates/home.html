@@ -1,294 +1,446 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en">
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>INFERA | Personal Knowledge & Research Vault</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="/static/cssStyles/styles.css" th:href="@{/cssStyles/styles.css}">
-    <link rel="icon" th:href="@{/static/resources/logo.jpg}" href="/static/resources/logo.jpg">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>INFERA — Organize Knowledge. Build Understanding.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/home.css" />
+    <link type="image/x-icon" rel="shortcut icon" href="/static/resources/logo.jpg">
 </head>
-
 <body>
 
-<nav class="navbar navbar-expand-lg fixed-top infera-navbar">
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-    <div class="container">
+<!-- ─── NAVBAR ─────────────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg infera-nav fixed-top" id="mainNav">
+    <div class="container nav-container">
 
-        <a class="navbar-brand d-flex align-items-center"
-           href="#">
-
-            <img src="/static/resources/logo.jpg"
-                 alt="INFERA"
-                 height="60"
-                 width="80">
-
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <div class="logo-mark">
+                <span class="logo-icon"><i class="bi bi-layers-half"></i></span>
+            </div>
+            <span class="logo-text">INFERA</span>
         </a>
 
-        <button class="navbar-toggler border-0 shadow-none"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbar">
-
-            <i class="bi bi-list fs-2 text-light"></i>
-
+        <!-- Hamburger -->
+        <button class="navbar-toggler custom-toggler ms-auto" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="toggler-bar"></span>
+            <span class="toggler-bar"></span>
+            <span class="toggler-bar"></span>
         </button>
 
-        <div class="collapse navbar-collapse"
-             id="navbar">
-
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#home">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#features">Features</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#research">Research</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About</a>
-                </li>
-
-                <li class="nav-item ms-lg-3">
-                    <a href="login.html"
-                       class="btn infera-btn" th:href="@{/login}">
-                        Sign In
-                    </a>
-                </li>
-
+        <!-- Nav links — centered via absolute positioning -->
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav nav-center mx-auto">
+                <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="#how">How it works</a></li>
+                <li class="nav-item"><a class="nav-link" href="#usecases">Use cases</a></li>
+                <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
             </ul>
-
+            <div class="nav-actions d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                <a href="signin.html" class="btn-nav-ghost">Sign in</a>
+                <a href="signup.html" class="btn-nav-accent">Get started free</a>
+            </div>
         </div>
 
     </div>
-
 </nav>
 
-<section id="home" class="hero-section">
+<!-- ─── HERO ──────────────────────────────────────────────────── -->
+<section class="hero-section" id="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
 
-    <div class="container">
-
-        <div class="row align-items-center min-vh-100">
-
-            <div class="col-lg-7 reveal">
-
-                <img src="/static/resources/logo.jpg"
-                     class="hero-logo img-fluid mb-4"
-                     alt="logo">
-
-                <h1 class="hero-title">
-
-                    Your Second Brain.
-
-                </h1>
-
-                <p class="hero-subtitle">
-
-                    Capture ideas, organize research,
-                    preserve knowledge and build a
-                    personal vault of understanding.
-
-                </p>
-
-                <div class="typing-container">
-
-                    <span id="typing"></span>
-
-                </div>
-
-                <div class="mt-5">
-
-                    <a href="/register"
-                       class="btn infera-btn me-3">
-                        Get Started
-                    </a>
-
-                    <a href="#features"
-                       class="btn btn-outline-light">
-                        Explore Features
-                    </a>
-
-                </div>
-
-            </div>
-
-            <div class="col-lg-5 reveal">
-
-                <div class="vault-card">
-
-                    <h4>Vault Status</h4>
-
-                    <p>
-                        <span class="status-dot"></span>
-                        Operational
-                    </p>
-
-                    <hr>
-
-                    <h5>Knowledge Stored</h5>
-                    <h2>1,250+</h2>
-
-                    <h5 class="mt-4">Research Notes</h5>
-                    <h2>430+</h2>
-
-                </div>
-
-            </div>
-
+    <div class="container hero-content text-center">
+        <div class="hero-badge mb-4" data-aos="fade-down">
+            <span class="badge-dot"></span>
+            <span>Now in open beta — free forever for students</span>
         </div>
 
+        <h1 class="hero-headline" data-aos="fade-up" data-aos-delay="50">
+            Your second brain.<br />
+            <span class="accent-underline">Finally organised.</span>
+        </h1>
+
+        <p class="hero-sub mt-4" data-aos="fade-up" data-aos-delay="100">
+            INFERA brings your notes, research, resources, and ideas into one focused workspace —
+            so you can think deeper and ship faster.
+        </p>
+
+        <div class="hero-cta mt-5 d-flex flex-column flex-sm-row justify-content-center gap-3" data-aos="fade-up" data-aos-delay="150">
+            <a href="signup.html" class="btn-primary-accent btn-lg-custom">
+                Start for free <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+            <a href="#how" class="btn-ghost-outline btn-lg-custom">
+                See how it works <i class="bi bi-play-circle ms-1"></i>
+            </a>
+        </div>
+
+        <div class="hero-stats mt-5 d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-chip"><strong>10k+</strong> <span>notes created</span></div>
+            <div class="stat-sep"></div>
+            <div class="stat-chip"><strong>3k+</strong> <span>active users</span></div>
+            <div class="stat-sep"></div>
+            <div class="stat-chip"><strong>4.9 ★</strong> <span>avg. rating</span></div>
+        </div>
     </div>
 
+    <!-- App preview mockup -->
+    <div class="hero-mockup-wrapper" data-aos="fade-up" data-aos-delay="250">
+        <div class="mockup-browser">
+            <div class="browser-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <span class="browser-url">app.infera.io/dashboard</span>
+            </div>
+            <div class="browser-body">
+                <div class="mock-sidebar">
+                    <div class="mock-ws-label">WORKSPACES</div>
+                    <div class="mock-ws-item active"><i class="bi bi-folder2"></i> Java Backend</div>
+                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Research</div>
+                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Career</div>
+                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Music</div>
+                    <div class="mock-divider"></div>
+                    <div class="mock-ws-item"><i class="bi bi-search"></i> Search</div>
+                    <div class="mock-ws-item"><i class="bi bi-clock-history"></i> Activity</div>
+                </div>
+                <div class="mock-main">
+                    <div class="mock-header">
+                        <span class="mock-title">Java Backend</span>
+                        <span class="mock-badge">12 notes</span>
+                    </div>
+                    <div class="mock-note-list">
+                        <div class="mock-note active-note">
+                            <div class="mn-title">Spring Security Config</div>
+                            <div class="mn-meta">Updated 2h ago · <span class="mn-tag">#security</span> <span class="mn-tag">#spring</span></div>
+                        </div>
+                        <div class="mock-note">
+                            <div class="mn-title">JPA Repository Patterns</div>
+                            <div class="mn-meta">Updated yesterday · <span class="mn-tag">#jpa</span></div>
+                        </div>
+                        <div class="mock-note">
+                            <div class="mn-title">REST API Design Notes</div>
+                            <div class="mn-meta">Updated 3d ago · <span class="mn-tag">#api</span></div>
+                        </div>
+                        <div class="mock-note">
+                            <div class="mn-title">Docker Deployment Guide</div>
+                            <div class="mn-meta">Updated 1w ago · <span class="mn-tag">#devops</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
-<section id="features" class="py-5">
-
-    <div class="container">
-
-        <div class="text-center mb-5 reveal">
-
-            <h2 class="section-title">
-                Why INFERA?
-            </h2>
-
+<!-- ─── LOGOS (social proof) ──────────────────────────────────── -->
+<section class="logos-section py-4">
+    <div class="container text-center">
+        <p class="logos-label">Trusted by students and builders at</p>
+        <div class="logos-row d-flex flex-wrap justify-content-center align-items-center gap-4 mt-3">
+            <span class="logo-name">University of Pretoria</span>
+            <span class="logo-dot-sep">·</span>
+            <span class="logo-name">Wits University</span>
+            <span class="logo-dot-sep">·</span>
+            <span class="logo-name">UCT</span>
+            <span class="logo-dot-sep">·</span>
+            <span class="logo-name">UNISA</span>
+            <span class="logo-dot-sep">·</span>
+            <span class="logo-name">Freelancers</span>
         </div>
-
-        <div class="row g-4">
-
-            <div class="col-md-4 reveal">
-
-                <div class="feature-card">
-
-
-                    <i class="bi bi-database-lock fs-1"></i>
-
-                    <h4>Knowledge Vaults</h4>
-
-                    <p>
-                        Store and organize everything
-                        that matters.
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4 reveal">
-
-                <div class="feature-card">
-
-                    <i class="bi bi-search fs-1"></i>
-
-                    <h4>Smart Search</h4>
-
-                    <p>
-                        Instantly find information.
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4 reveal">
-
-                <div class="feature-card">
-
-                    <i class="bi bi-shield-lock fs-1"></i>
-
-                    <h4>Secure Storage</h4>
-
-                    <p>
-                        Your research remains private.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
-
 </section>
 
-<section class="stats-section">
-
+<!-- ─── FEATURES ──────────────────────────────────────────────── -->
+<section class="features-section section-pad" id="features">
     <div class="container">
+        <div class="section-eyebrow text-center mb-2">What you get</div>
+        <h2 class="section-title text-center">Everything your knowledge needs</h2>
+        <p class="section-sub text-center mx-auto mt-3">Purpose-built for thinkers who are tired of losing good ideas to scattered apps and forgotten tabs.</p>
 
-        <div class="row text-center">
+        <div class="row g-4 mt-4">
 
-            <div class="col-md-4">
-                <h2>10K+</h2>
-                <p>Research Entries</p>
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up">
+                <div class="feature-card h-100">
+                    <div class="fc-icon"><i class="bi bi-layout-sidebar"></i></div>
+                    <h3 class="fc-title">Smart Workspaces</h3>
+                    <p class="fc-desc">Segment your knowledge by project, subject, or role. Each workspace is a focused environment with its own notes, resources, and activity log.</p>
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <h2>500+</h2>
-                <p>Vaults Created</p>
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
+                <div class="feature-card h-100">
+                    <div class="fc-icon"><i class="bi bi-journal-text"></i></div>
+                    <h3 class="fc-title">Rich Note Editor</h3>
+                    <p class="fc-desc">Write, tag, and archive notes with a clean editor. Add structure without getting in the way of your thinking.</p>
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <h2>99.9%</h2>
-                <p>Availability</p>
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="120">
+                <div class="feature-card h-100 fc-highlight">
+                    <div class="fc-icon accent"><i class="bi bi-search"></i></div>
+                    <h3 class="fc-title">Global Search</h3>
+                    <p class="fc-desc">Find anything instantly. Search across titles, content, workspace names, and resource links — all in one keystroke.</p>
+                    <span class="fc-badge">Most loved</span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
+                <div class="feature-card h-100">
+                    <div class="fc-icon"><i class="bi bi-tags"></i></div>
+                    <h3 class="fc-title">Tag System</h3>
+                    <p class="fc-desc">Create flexible tag hierarchies that cut across workspaces. Group ideas in ways that make sense to you — not to the app.</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="120">
+                <div class="feature-card h-100">
+                    <div class="fc-icon"><i class="bi bi-link-45deg"></i></div>
+                    <h3 class="fc-title">Resource Library</h3>
+                    <p class="fc-desc">Save docs, articles, tutorials, and videos with context. Stop losing great links in a sea of browser bookmarks.</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="180">
+                <div class="feature-card h-100">
+                    <div class="fc-icon"><i class="bi bi-bar-chart-line"></i></div>
+                    <h3 class="fc-title">Dashboard Analytics</h3>
+                    <p class="fc-desc">See your knowledge stats at a glance — total notes, workspaces, recent activity. Stay aware of your learning momentum.</p>
+                </div>
             </div>
 
         </div>
-
     </div>
-
 </section>
 
-<footer class="footer">
-
+<!-- ─── HOW IT WORKS ─────────────────────────────────────────── -->
+<section class="how-section section-pad" id="how">
     <div class="container">
+        <div class="section-eyebrow text-center mb-2">How it works</div>
+        <h2 class="section-title text-center">From chaos to clarity in minutes</h2>
 
-        <div class="row">
+        <div class="how-steps mt-5">
 
-            <div class="col-md-6">
-
-                <h4>INFERA</h4>
-
-                <p>
-                    Personal Knowledge & Research Vault
-                </p>
-
+            <div class="how-step" data-aos="fade-right">
+                <div class="step-num">01</div>
+                <div class="step-body">
+                    <h3 class="step-title">Create your workspace</h3>
+                    <p class="step-desc">Set up a dedicated space for each project, subject, or role. Name it, describe it, and you're ready.</p>
+                </div>
+                <div class="step-visual">
+                    <div class="step-visual-card">
+                        <div class="svc-label"><i class="bi bi-plus-circle"></i> New Workspace</div>
+                        <div class="svc-input">Java Backend <span class="svc-cursor">|</span></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-6 text-md-end">
+            <div class="how-step reverse" data-aos="fade-left">
+                <div class="step-num">02</div>
+                <div class="step-body">
+                    <h3 class="step-title">Capture notes and resources</h3>
+                    <p class="step-desc">Write notes, save links, and tag everything as you go. No friction — just information where it belongs.</p>
+                </div>
+                <div class="step-visual">
+                    <div class="step-visual-card">
+                        <div class="svc-label"><i class="bi bi-journal-plus"></i> New Note</div>
+                        <div class="svc-tags"><span class="svc-tag">#spring</span><span class="svc-tag">#security</span></div>
+                    </div>
+                </div>
+            </div>
 
-                <p>
-                    © 2026 INFERA. All Rights Reserved.
-                </p>
-
+            <div class="how-step" data-aos="fade-right">
+                <div class="step-num">03</div>
+                <div class="step-body">
+                    <h3 class="step-title">Find anything instantly</h3>
+                    <p class="step-desc">Global search across all your workspaces, notes, and resources. What took minutes now takes seconds.</p>
+                </div>
+                <div class="step-visual">
+                    <div class="step-visual-card">
+                        <div class="svc-label"><i class="bi bi-search"></i> Search INFERA...</div>
+                        <div class="svc-result"><i class="bi bi-journal-text"></i> Spring Security Config</div>
+                        <div class="svc-result dim"><i class="bi bi-link"></i> docs.spring.io/security</div>
+                    </div>
+                </div>
             </div>
 
         </div>
-
     </div>
+</section>
 
+<!-- ─── USE CASES ─────────────────────────────────────────────── -->
+<section class="usecases-section section-pad" id="usecases">
+    <div class="container">
+        <div class="section-eyebrow text-center mb-2">Who it's for</div>
+        <h2 class="section-title text-center">Built for every kind of thinker</h2>
+
+        <div class="row g-4 mt-4">
+            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up">
+                <div class="uc-card">
+                    <div class="uc-icon"><i class="bi bi-mortarboard"></i></div>
+                    <h4 class="uc-title">Students</h4>
+                    <ul class="uc-list">
+                        <li>Lecture notes & summaries</li>
+                        <li>Study material by subject</li>
+                        <li>Research repositories</li>
+                        <li>Assignment tracking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="60">
+                <div class="uc-card">
+                    <div class="uc-icon"><i class="bi bi-code-slash"></i></div>
+                    <h4 class="uc-title">Developers</h4>
+                    <ul class="uc-list">
+                        <li>Code snippets & patterns</li>
+                        <li>Technical documentation</li>
+                        <li>Learning roadmaps</li>
+                        <li>Architecture notes</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="120">
+                <div class="uc-card">
+                    <div class="uc-icon"><i class="bi bi-lightbulb"></i></div>
+                    <h4 class="uc-title">Creators</h4>
+                    <ul class="uc-list">
+                        <li>Content ideas & drafts</li>
+                        <li>Reference & inspiration</li>
+                        <li>Script outlines</li>
+                        <li>Brand notes</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="180">
+                <div class="uc-card">
+                    <div class="uc-icon"><i class="bi bi-briefcase"></i></div>
+                    <h4 class="uc-title">Entrepreneurs</h4>
+                    <ul class="uc-list">
+                        <li>Business idea vault</li>
+                        <li>Planning documents</li>
+                        <li>Market research</li>
+                        <li>Project management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── PRICING ───────────────────────────────────────────────── -->
+<section class="pricing-section section-pad" id="pricing">
+    <div class="container">
+        <div class="section-eyebrow text-center mb-2">Pricing</div>
+        <h2 class="section-title text-center">Simple, honest pricing</h2>
+        <p class="section-sub text-center mx-auto mt-3">Start free. Upgrade when you need more.</p>
+
+        <div class="row g-4 mt-4 justify-content-center">
+            <div class="col-12 col-md-5 col-lg-4" data-aos="fade-up">
+                <div class="price-card">
+                    <div class="price-plan">Starter</div>
+                    <div class="price-amount">R0 <span>/mo</span></div>
+                    <p class="price-desc">Everything you need to get started. Free forever.</p>
+                    <ul class="price-features">
+                        <li><i class="bi bi-check2"></i> 3 Workspaces</li>
+                        <li><i class="bi bi-check2"></i> 100 Notes</li>
+                        <li><i class="bi bi-check2"></i> 50 Resources</li>
+                        <li><i class="bi bi-check2"></i> Global Search</li>
+                        <li><i class="bi bi-check2"></i> Tag System</li>
+                    </ul>
+                    <a href="signup.html" class="btn-price-ghost w-100">Get started</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-5 col-lg-4" data-aos="fade-up" data-aos-delay="80">
+                <div class="price-card price-popular">
+                    <span class="popular-badge">Most popular</span>
+                    <div class="price-plan">Pro</div>
+                    <div class="price-amount">R79 <span>/mo</span></div>
+                    <p class="price-desc">For builders and learners who need unlimited room.</p>
+                    <ul class="price-features">
+                        <li><i class="bi bi-check2"></i> Unlimited Workspaces</li>
+                        <li><i class="bi bi-check2"></i> Unlimited Notes</li>
+                        <li><i class="bi bi-check2"></i> Unlimited Resources</li>
+                        <li><i class="bi bi-check2"></i> Advanced Search</li>
+                        <li><i class="bi bi-check2"></i> Activity Analytics</li>
+                        <li><i class="bi bi-check2"></i> Priority Support</li>
+                    </ul>
+                    <a href="signup.html" class="btn-price-accent w-100">Start 14-day free trial</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CTA BANNER ────────────────────────────────────────────── -->
+<section class="cta-banner section-pad">
+    <div class="cta-orb"></div>
+    <div class="container text-center" data-aos="fade-up">
+        <h2 class="cta-headline">Stop losing your best ideas.</h2>
+        <p class="cta-sub mt-3">Join thousands of students and builders who've made INFERA their knowledge home base.</p>
+        <a href="signup.html" class="btn-primary-accent btn-lg-custom mt-4 d-inline-flex align-items-center gap-2">
+            Create your free account <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────────── -->
+<footer class="infera-footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-12 col-lg-4">
+                <div class="footer-brand d-flex align-items-center gap-2 mb-3">
+                    <div class="logo-mark sm"><i class="bi bi-layers-half"></i></div>
+                    <span class="logo-text">INFERA</span>
+                </div>
+                <p class="footer-tagline">Organize Knowledge.<br />Capture Ideas. Build Understanding.</p>
+                <div class="footer-socials d-flex gap-3 mt-3">
+                    <a href="mailto:belmiredub4@gmail.com" class="social-link"><i class="bi bi-envelope-at-fill"></i></a>
+                    <a href="https://github.com/Boitumelo-09" class="social-link"><i class="bi bi-github"></i></a>
+                    <a href="https://www.linkedin.com/in/boitumelo-mkhondo/" class="social-link"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-2 offset-lg-2">
+                <h6 class="footer-col-title">Product</h6>
+                <ul class="footer-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#how">How it works</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-2">
+                <h6 class="footer-col-title">Company</h6>
+                <ul class="footer-links">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-2">
+                <h6 class="footer-col-title">Legal</h6>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom mt-5 pt-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <span class="footer-copy">© 2025 INFERA. All rights reserved.</span>
+            <span class="footer-built">Built for your mind</span>
+        </div>
+    </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-<script th:src="@{/js/app.js}" src="/static/javaScript/app.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="/static/javaScript/home.js"></script>
 </body>
 </html>

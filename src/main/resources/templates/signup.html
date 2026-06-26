@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create your account — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/auth.css" />
+    <link type="image/x-icon" rel="shortcut icon" href="/static/resources/logo.jpg">
+
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Background FX -->
+<div class="auth-bg">
+    <div class="auth-grid"></div>
+    <div class="auth-orb orb-tl"></div>
+    <div class="auth-orb orb-br"></div>
+</div>
+
+<!-- ─── NAVBAR minimal ─── -->
+<nav class="auth-nav">
+    <div class="auth-nav-inner">
+        <a href="home.html" class="navbar-brand d-flex align-items-center gap-2">
+            <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
+            <span class="logo-text">INFERA</span>
+        </a>
+        <a href="signin.html" class="btn-nav-ghost">Already have an account? <strong>Sign in</strong></a>
+    </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<main class="auth-main">
+    <div class="auth-container">
+
+        <!-- Left panel — info (hidden on mobile) -->
+        <div class="auth-panel-left d-none d-lg-flex">
+            <div class="panel-content">
+                <div class="panel-quote">
+                    <div class="quote-mark">"</div>
+                    <p>INFERA changed how I study. My notes are finally connected — not scattered across five apps.</p>
+                    <div class="quote-author">
+                        <div class="author-avatar av1">NK</div>
+                        <div>
+                            <div class="author-name">Nomvula K.</div>
+                            <div class="author-role">Computer Science · UP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-features mt-5">
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> Unlimited workspaces during beta</div>
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> No credit card required</div>
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> Free forever for students</div>
+                </div>
+
+                <div class="panel-stats mt-5">
+                    <div class="ps-stat"><strong>3k+</strong><span>Active users</span></div>
+                    <div class="ps-sep"></div>
+                    <div class="ps-stat"><strong>10k+</strong><span>Notes created</span></div>
+                </div>
+            </div>
+
+            <!-- Floating cards decoration -->
+            <div class="float-card fc-top">
+                <div class="fc-icon-sm"><i class="bi bi-journal-text"></i></div>
+                <div>
+                    <div class="fc-label">New note saved</div>
+                    <div class="fc-sub">Spring Security Config</div>
+                </div>
+            </div>
+            <div class="float-card fc-bottom">
+                <div class="fc-icon-sm accent"><i class="bi bi-search"></i></div>
+                <div>
+                    <div class="fc-label">Found 8 results for</div>
+                    <div class="fc-sub">"JPA patterns"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right panel — form -->
+        <div class="auth-panel-right">
+            <div class="auth-form-wrapper">
+                <div class="auth-heading">
+                    <div class="auth-badge mb-3">
+                        <span class="badge-dot"></span> Start for free
+                    </div>
+                    <h1 class="auth-title">Create your account</h1>
+                    <p class="auth-sub">Your knowledge vault is one step away.</p>
+                </div>
+
+                <!-- Social signup buttons -->
+                <div class="social-btns d-flex flex-column gap-3 mt-4">
+                    <button type="button" class="btn-social">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.576c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.576 9 3.576z" fill="#EA4335"/></svg>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="btn-social">
+                        <i class="bi bi-github" style="font-size:1.1rem;"></i>
+                        Continue with GitHub
+                    </button>
+                </div>
+
+                <div class="divider-text my-4"><span>or sign up with email</span></div>
+
+                <!-- Form -->
+                <form id="signupForm" novalidate>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label class="form-label-custom" for="firstName">First name</label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-person input-icon"></i>
+                                    <input type="text" id="firstName" class="form-input" placeholder="Sipho" required />
+                                </div>
+                                <div class="field-error" id="firstNameErr"></div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label class="form-label-custom" for="lastName">Last name</label>
+                                <div class="input-wrap">
+                                    <i class="bi bi-person input-icon"></i>
+                                    <input type="text" id="lastName" class="form-input" placeholder="Ndlovu" required />
+                                </div>
+                                <div class="field-error" id="lastNameErr"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="form-label-custom" for="email">Email address</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" id="email" class="form-input" placeholder="you@example.com" required />
+                        </div>
+                        <div class="field-error" id="emailErr"></div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="form-label-custom" for="password">Password</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-lock input-icon"></i>
+                            <input type="password" id="password" class="form-input" placeholder="Min. 8 characters" required />
+                            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show/hide password">
+                                <i class="bi bi-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="field-error" id="passwordErr"></div>
+                        <!-- Strength bar -->
+                        <div class="strength-bar mt-2" id="strengthBar" aria-hidden="true">
+                            <div class="sb-track"><div class="sb-fill" id="sbFill"></div></div>
+                            <span class="sb-label" id="sbLabel"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="form-label-custom" for="confirmPassword">Confirm password</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-lock-fill input-icon"></i>
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" required />
+                        </div>
+                        <div class="field-error" id="confirmPasswordErr"></div>
+                    </div>
+
+                    <div class="form-check-custom mt-4">
+                        <input type="checkbox" id="agree" class="check-input" required />
+                        <label for="agree" class="check-label">
+                            I agree to the <a href="#" class="link-accent">Terms of Service</a> and <a href="#" class="link-accent">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-submit mt-4 w-100" id="submitBtn">
+                        <span class="btn-submit-text">Create account</span>
+                        <span class="btn-submit-spinner d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+
+                </form>
+
+                <p class="auth-footer-link mt-4 text-center">
+                    Already have an account? <a href="signin.html" class="link-accent">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="/static/javaScript/auth.js"></script>
+</body>
+</html>
