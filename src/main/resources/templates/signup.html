@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,11 +29,11 @@
 <!-- ─── NAVBAR minimal ─── -->
 <nav class="auth-nav">
     <div class="auth-nav-inner">
-        <a href="home.html" class="navbar-brand d-flex align-items-center gap-2">
+        <a th:href="@{/home}" href="home.html" class="navbar-brand d-flex align-items-center gap-2">
             <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
             <span class="logo-text">INFERA</span>
         </a>
-        <a href="signin.html" class="btn-nav-ghost">Already have an account? <strong>Sign in</strong></a>
+        <a href="signin.html" th:href="@{/signin}" class="btn-nav-ghost">Already have an account? <strong>Sign in</strong></a>
     </div>
 </nav>
 
@@ -112,7 +112,7 @@
                 <div class="divider-text my-4"><span>or sign up with email</span></div>
 
                 <!-- Form -->
-                <form id="signupForm" novalidate>
+                <form id="signupForm" novalidate autocomplete="off" th:action="@{/signup}" th:object="${signUpRequest}" >
 
                     <div class="row g-3">
                         <div class="col-12 col-sm-6">
@@ -120,7 +120,7 @@
                                 <label class="form-label-custom" for="firstName">First name</label>
                                 <div class="input-wrap">
                                     <i class="bi bi-person input-icon"></i>
-                                    <input type="text" id="firstName" class="form-input" placeholder="Sipho" required />
+                                    <input th:field="*{firstName}" type="text" id="firstName" class="form-input" placeholder="Sipho" required />
                                 </div>
                                 <div class="field-error" id="firstNameErr"></div>
                             </div>
@@ -130,7 +130,7 @@
                                 <label class="form-label-custom" for="lastName">Last name</label>
                                 <div class="input-wrap">
                                     <i class="bi bi-person input-icon"></i>
-                                    <input type="text" id="lastName" class="form-input" placeholder="Ndlovu" required />
+                                    <input th:field="*{lastName}" type="text" id="lastName" class="form-input" placeholder="Ndlovu" required />
                                 </div>
                                 <div class="field-error" id="lastNameErr"></div>
                             </div>
@@ -141,7 +141,7 @@
                         <label class="form-label-custom" for="email">Email address</label>
                         <div class="input-wrap">
                             <i class="bi bi-envelope input-icon"></i>
-                            <input type="email" id="email" class="form-input" placeholder="you@example.com" required />
+                            <input th:field="*{email}" type="email" id="email" class="form-input" placeholder="you@example.com" required />
                         </div>
                         <div class="field-error" id="emailErr"></div>
                     </div>
@@ -150,7 +150,7 @@
                         <label class="form-label-custom" for="password">Password</label>
                         <div class="input-wrap">
                             <i class="bi bi-lock input-icon"></i>
-                            <input type="password" id="password" class="form-input" placeholder="Min. 8 characters" required />
+                            <input th:field="*{password}" type="password" id="password" class="form-input" placeholder="Min. 8 characters" required />
                             <button type="button" class="toggle-pw" id="togglePw" aria-label="Show/hide password">
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
@@ -167,7 +167,7 @@
                         <label class="form-label-custom" for="confirmPassword">Confirm password</label>
                         <div class="input-wrap">
                             <i class="bi bi-lock-fill input-icon"></i>
-                            <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" required />
+                            <input th:field="*{confirmPassword}" type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" required />
                         </div>
                         <div class="field-error" id="confirmPasswordErr"></div>
                     </div>
@@ -187,7 +187,7 @@
                 </form>
 
                 <p class="auth-footer-link mt-4 text-center">
-                    Already have an account? <a href="signin.html" class="link-accent">Sign in</a>
+                    Already have an account? <a th:href="@{/signin}" href="signin.html" class="link-accent">Sign in</a>
                 </p>
             </div>
         </div>

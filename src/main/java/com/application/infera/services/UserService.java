@@ -1,10 +1,11 @@
 package com.application.infera.services;
 
+import com.application.infera.dtos.requests.SignUpRequest;
 import com.application.infera.enums.Role;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.UserSecurityConfig;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,13 +13,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserSecurityConfig userSecurityConfig;
 
+
     public UserService(UserRepository userRepository, UserSecurityConfig userSecurityConfig) {
         this.userRepository = userRepository;
         this.userSecurityConfig = userSecurityConfig;
-    }
 
-    public void saveUserToDatabase(@NotNull User user) {
-        user.setPassword(userSecurityConfig.passwordEncoder().encode(user.getPassword()));
+    }
+    public void registerUserToDatabase(@Valid SignUpRequest signUpRequest) {
+        User user = new User();
+        user.setFirstName(signUpRequest.getFirstName());
+        user.setLastName(signUpRequest.getLastName());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(userSecurityConfig.passwordEncoder().encode(signUpRequest.getPassword()));
         user.setRole(Role.USER);
         userRepository.save(user);
     }
