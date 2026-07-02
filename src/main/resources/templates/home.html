@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/home.css" />
-    <link type="image/x-icon" rel="shortcut icon" href="/static/resources/logo.jpg">
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/resources/logo.jpg}" href="/static/resources/logo.jpg">
+
+    <link rel="stylesheet"
+          th:href="@{home.css}">
+
+    <link rel="icon"
+          th:href="@{/resources/logo.jpg}">
+
 </head>
 <body>
 
@@ -48,8 +55,8 @@
                 <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
             </ul>
             <div class="nav-actions d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                <a href="signin.html" class="btn-nav-ghost">Sign in</a>
-                <a href="signup.html" class="btn-nav-accent">Get started free</a>
+                <a th:href="@{/signin}" href="signin.html" class="btn-nav-ghost">Sign in</a>
+                <a th:href="@{/signup}" href="signup.html" class="btn-nav-accent">Get started free</a>
             </div>
         </div>
 
@@ -79,7 +86,7 @@
         </p>
 
         <div class="hero-cta mt-5 d-flex flex-column flex-sm-row justify-content-center gap-3" data-aos="fade-up" data-aos-delay="150">
-            <a href="signup.html" class="btn-primary-accent btn-lg-custom">
+            <a th:href="@{/signup}" href="signup.html" class="btn-primary-accent btn-lg-custom">
                 Start for free <i class="bi bi-arrow-right ms-1"></i>
             </a>
             <a href="#how" class="btn-ghost-outline btn-lg-custom">
@@ -148,7 +155,7 @@
     <div class="container text-center">
         <p class="logos-label">Trusted by students and builders at</p>
         <div class="logos-row d-flex flex-wrap justify-content-center align-items-center gap-4 mt-3">
-            <span class="logo-name">University of Pretoria</span>
+            <span class="logo-name">University of Limpopo</span>
             <span class="logo-dot-sep">·</span>
             <span class="logo-name">Wits University</span>
             <span class="logo-dot-sep">·</span>
@@ -357,14 +364,14 @@
                         <li><i class="bi bi-check2"></i> Global Search</li>
                         <li><i class="bi bi-check2"></i> Tag System</li>
                     </ul>
-                    <a href="signup.html" class="btn-price-ghost w-100">Get started</a>
+                    <a th:href="@{/signup}" href="signup.html" class="btn-price-ghost w-100">Get started</a>
                 </div>
             </div>
             <div class="col-12 col-md-5 col-lg-4" data-aos="fade-up" data-aos-delay="80">
                 <div class="price-card price-popular">
                     <span class="popular-badge">Most popular</span>
-                    <div class="price-plan">Pro</div>
-                    <div class="price-amount">R79 <span>/mo</span></div>
+                    <div class="price-plan">Unavailable</div>
+                    <div class="price-amount">R30 <span>/mo</span></div>
                     <p class="price-desc">For builders and learners who need unlimited room.</p>
                     <ul class="price-features">
                         <li><i class="bi bi-check2"></i> Unlimited Workspaces</li>
@@ -374,7 +381,7 @@
                         <li><i class="bi bi-check2"></i> Activity Analytics</li>
                         <li><i class="bi bi-check2"></i> Priority Support</li>
                     </ul>
-                    <a href="signup.html" class="btn-price-accent w-100">Start 14-day free trial</a>
+                    <a href="signup.html" class="btn-price-accent w-100">Coming Soon</a>
                 </div>
             </div>
         </div>
@@ -441,6 +448,7 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="/static/javaScript/home.js"></script>
+
+<script th:src="@{/javaScript/home.js}"></script>
 </body>
 </html>

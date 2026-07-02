@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,7 +31,7 @@
             <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
             <span class="logo-text">INFERA</span>
         </a>
-        <a href="signup.html" class="btn-nav-ghost">New here? <strong>Create account</strong></a>
+        <a th:href="@{signup}" href="signup.html" class="btn-nav-ghost">New here? <strong>Create account</strong></a>
     </div>
 </nav>
 
