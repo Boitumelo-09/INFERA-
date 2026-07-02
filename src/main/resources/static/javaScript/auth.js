@@ -108,39 +108,37 @@ if (signupForm) {
     document.getElementById('password')?.addEventListener('blur',  validatePassword);
     document.getElementById('confirmPassword')?.addEventListener('blur', validateConfirmPassword);
 
-    signupForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const ok = [validateFirstName(), validateLastName(), validateEmail(), validatePassword(), validateConfirmPassword()].every(Boolean);
+    signupForm.addEventListener("submit", (e) => {
 
-        const agree = document.getElementById('agree');
-        if (!agree.checked) {
-            agree.style.outline = '2px solid #ef4444';
+        const ok = [
+            validateFirstName(),
+            validateLastName(),
+            validateEmail(),
+            validatePassword(),
+            validateConfirmPassword()
+        ].every(Boolean);
+
+        const agree = document.getElementById("agree");
+
+        if (!ok || !agree.checked) {
+            e.preventDefault();
+
+            if (!agree.checked) {
+                agree.style.outline = "2px solid #ef4444";
+            }
+
             return;
-        } else {
-            agree.style.outline = '';
         }
-        if (!ok) return;
 
-        // Simulate async submit
-        const btn     = document.getElementById('submitBtn');
-        const btnText = btn.querySelector('.btn-submit-text');
-        const spinner = btn.querySelector('.btn-submit-spinner');
+        const btn = document.getElementById("submitBtn");
+        const btnText = btn.querySelector(".btn-submit-text");
+        const spinner = btn.querySelector(".btn-submit-spinner");
+
         btn.disabled = true;
-        btnText.classList.add('d-none');
-        spinner.classList.remove('d-none');
+        btnText.classList.add("d-none");
+        spinner.classList.remove("d-none");
 
-        await new Promise(r => setTimeout(r, 1800));
-
-        // Success state
-        btn.style.background = '#16a34a';
-        spinner.classList.add('d-none');
-        btnText.classList.remove('d-none');
-        btnText.innerHTML = '<i class="bi bi-check2"></i> Account created!';
-
-        setTimeout(() => {
-            // In real app: redirect to dashboard
-            window.location.href = 'signin.html';
-        }, 1200);
+        // Let the browser continue submitting naturally.
     });
 
     function validateFirstName() {

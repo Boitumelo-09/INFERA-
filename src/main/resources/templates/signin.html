@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/auth.css" />
+    <link rel="stylesheet" href="/static/cssStyles/auth.css" th:href="@{/cssStyles/auth.css}" />
+    <link type="image/x-icon" rel="shortcut icon" href="/app_resources/logo.jpg">
 </head>
 <body>
 
@@ -27,7 +28,7 @@
 <!-- ─── NAVBAR minimal ─── -->
 <nav class="auth-nav">
     <div class="auth-nav-inner">
-        <a href="home.html" class="navbar-brand d-flex align-items-center gap-2">
+        <a th:href="@{/home}" href="home.html" class="navbar-brand d-flex align-items-center gap-2">
             <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
             <span class="logo-text">INFERA</span>
         </a>
@@ -150,7 +151,7 @@
                 </form>
 
                 <p class="auth-footer-link mt-4 text-center">
-                    Don't have an account? <a href="signup.html" class="link-accent">Create one free</a>
+                    Don't have an account? <a th:href="@{/signup}" href="signup.html" class="link-accent">Create one free</a>
                 </p>
             </div>
         </div>
@@ -159,6 +160,6 @@
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="/static/javaScript/auth.js"></script>
+<script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
 </body>
 </html>

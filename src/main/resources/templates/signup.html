@@ -9,9 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/auth.css" />
-    <link type="image/x-icon" rel="shortcut icon" href="/static/resources/logo.jpg">
-
+    <link rel="stylesheet" href="/static/cssStyles/auth.css" th:href="@{/cssStyles/auth.css}" />
+    <link type="image/x-icon" rel="shortcut icon" href="/app_resources/logo.jpg" th:href="@{/app_resources/logo.jpg}">
 </head>
 <body>
 
@@ -50,7 +49,7 @@
                     <div class="quote-author">
                         <div class="author-avatar av1">NK</div>
                         <div>
-                            <div class="author-name">Nomvula K.</div>
+                            <div class="author-name">Dolly D.</div>
                             <div class="author-role">Computer Science · UP</div>
                         </div>
                     </div>
@@ -112,7 +111,7 @@
                 <div class="divider-text my-4"><span>or sign up with email</span></div>
 
                 <!-- Form -->
-                <form id="signupForm" novalidate autocomplete="off" th:action="@{/signup}" th:object="${signUpRequest}" >
+                <form id="signupForm" novalidate autocomplete="off" th:action="@{/signup}" th:object="${signUpRequest}" th:method="post" class="auth-form">
 
                     <div class="row g-3">
                         <div class="col-12 col-sm-6">
@@ -196,6 +195,6 @@
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="/static/javaScript/auth.js"></script>
+<script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
 </body>
 </html>

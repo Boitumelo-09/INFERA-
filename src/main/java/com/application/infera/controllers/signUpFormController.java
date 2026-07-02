@@ -5,6 +5,7 @@ import com.application.infera.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +20,17 @@ public class signUpFormController {
 
     @GetMapping("/signup")
     public String signUpForm(Model model) {
+
        model.addAttribute("signUpRequest", new SignUpRequest());
         return "signup";
     }
     @PostMapping("/signup")
-    public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest) {
+    public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest, BindingResult bindingResult) {
+        System.out.println("Controller Reached");
+        if (bindingResult.hasErrors()) {
+            System.out.println("Binding Result has Errors");
+            return "signup";
+        }
         userService.registerUserToDatabase(signUpRequest);
         return "redirect:/signin";
     }
