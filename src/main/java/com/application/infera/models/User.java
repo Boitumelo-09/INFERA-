@@ -4,7 +4,6 @@ import com.application.infera.enums.Role;
 import jakarta.persistence.*;
 
 import lombok.Data;
-import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
 
