@@ -9,15 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/home.css" />
-    <link type="image/x-icon" rel="shortcut icon" th:href="@{/resources/logo.jpg}" href="/static/resources/logo.jpg">
-
-    <link rel="stylesheet"
-          th:href="@{home.css}">
-
-    <link rel="icon"
-          th:href="@{/resources/logo.jpg}">
-
+    <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 </head>
 <body>
 
@@ -449,6 +442,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 
-<script th:src="@{/javaScript/home.js}"></script>
+<script th:src="@{/javaScript/home.js}" src="/static/javaScript/home.js"></script>
 </body>
 </html>
