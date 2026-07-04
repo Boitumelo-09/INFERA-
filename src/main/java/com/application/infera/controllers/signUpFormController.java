@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.SignUpRequest;
+import com.application.infera.exception.UserExistsByEmailException;
 import com.application.infera.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -25,13 +26,19 @@ public class signUpFormController {
         return "signup";
     }
     @PostMapping("/signup")
-    public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest, BindingResult bindingResult) {
+    public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest, BindingResult bindingResult, Model model) {
         System.out.println("Controller Reached");
         if (bindingResult.hasErrors()) {
             System.out.println("Binding Result has Errors");
             return "signup";
         }
-        userService.registerUserToDatabase(signUpRequest);
-        return "redirect:/signin";
+        try {
+            userService.registerUserToDatabase(signUpRequest);
+            return "redirect:/signin";
+        } catch (UserExistsByEmailException e)
+            {
+             model.addAttribute("errorMessage", e.getMessage());
+             return "signup";
+            }
     }
 }
