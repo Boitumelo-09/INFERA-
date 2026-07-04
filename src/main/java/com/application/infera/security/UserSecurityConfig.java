@@ -12,7 +12,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class UserSecurityConfig {
-
+    private final OAuth2AuthenticationSuccessHandler o;
+    public UserSecurityConfig(OAuth2AuthenticationSuccessHandler o) {
+        this.o = o;
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -32,7 +35,7 @@ public class UserSecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/signin")
                         .permitAll()
-                ).oauth2Login(oauth2 -> oauth2.loginPage("/signin").defaultSuccessUrl("/dashboard", true))
+                ).oauth2Login(oauth2 -> oauth2.loginPage("/signin").successHandler(o))
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();
