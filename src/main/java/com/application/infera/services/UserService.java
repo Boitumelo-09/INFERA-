@@ -2,9 +2,9 @@ package com.application.infera.services;
 
 import com.application.infera.dtos.requests.SignUpRequest;
 import com.application.infera.enums.Role;
+import com.application.infera.exception.UserExistsByEmailException;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
-import com.application.infera.security.UserSecurityConfig;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,9 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(Role.USER);
+        if(userRepository.existsByEmail(user.getEmail())){
+            throw new UserExistsByEmailException("Email already exists");
+        }
         userRepository.save(user);
     }
 }
