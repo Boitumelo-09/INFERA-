@@ -50,11 +50,12 @@ a { text-decoration: none; color: inherit; }
     transform: translate(-50%, -50%);
     transition: opacity 0.3s;
 }
-.cursor-dot { width: 7px; height: 7px; background: var(--accent); }
+.cursor-dot { width: 7px; height: 7px; background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent); }
 .cursor-ring {
     width: 32px; height: 32px;
     border: 1.5px solid rgba(234,88,12,0.5);
     transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
+    box-shadow: 0 0 0 1.5px var(--accent);
 }
 body.cursor-hover .cursor-ring { width: 46px; height: 46px; border-color: var(--accent); }
 
