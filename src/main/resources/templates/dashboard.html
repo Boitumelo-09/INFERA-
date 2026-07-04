@@ -12,11 +12,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/dashboard.css" />
+    <link rel="stylesheet" href="/static/cssStyles/dashboard.css" th:href="@{/cssStyles/dashboard.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 
 </head>
 <body>
 
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 <!-- ═══════════════════════════════════════════════════════════════
      SIDEBAR
 ════════════════════════════════════════════════════════════════ -->
@@ -24,7 +28,7 @@
 
     <!-- Logo -->
     <div class="sidebar-logo">
-        <a href="home.html" class="logo-link d-flex align-items-center gap-2">
+        <a th:href="@{/home}" href="home.html" class="logo-link d-flex align-items-center gap-2">
             <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
             <span class="logo-text">INFERA</span>
         </a>
@@ -153,7 +157,7 @@
             <div class="user-email">sipho@example.com</div>
         </div>
         <!-- th:action="@{/logout}" method="post" -->
-        <a href="signin.html" class="logout-btn" title="Sign out">
+        <a th:href="@{signin}" href="signin.html" class="logout-btn" title="Sign out">
             <i class="bi bi-box-arrow-right"></i>
         </a>
     </div>
@@ -624,6 +628,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="/static/javaScript/dashboard.js"></script>
+<script src="/static/javaScript/dashboard.js" th:src="@{/javaScript/dashboard.js}"></script>
 </body>
 </html>

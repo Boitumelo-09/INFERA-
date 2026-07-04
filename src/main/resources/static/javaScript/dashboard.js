@@ -49,6 +49,30 @@ function setLoading(btn, isLoading) {
     txt.classList.toggle('d-none', isLoading);
     spin.classList.toggle('d-none', !isLoading);
 }
+// ─── CUSTOM CURSOR ───────────────────────
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top  = mouseY + 'px';
+});
+(function animateRing() {
+    ringX += (mouseX - ringX) * 0.14;
+    ringY += (mouseY - ringY) * 0.14;
+    ring.style.left = ringX + 'px';
+    ring.style.top  = ringY + 'px';
+    requestAnimationFrame(animateRing);
+})();
+
+document.querySelectorAll('a, button, input, label').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
 
 /* ───────────────────────────────────────────────────────────────────
    SIDEBAR TOGGLE  (mobile)
