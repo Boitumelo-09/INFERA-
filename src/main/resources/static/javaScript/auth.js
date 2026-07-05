@@ -100,33 +100,20 @@ function clearState(inputId, errId) {
 // ─── SIGNUP FORM ─────────────────────────
 const signupForm = document.getElementById('signupForm');
 
-if (signupForm) {
-    // Real-time validation
-    document.getElementById('firstName')?.addEventListener('blur', validateFirstName);
-    document.getElementById('lastName')?.addEventListener('blur',  validateLastName);
-    document.getElementById('email')?.addEventListener('blur',     validateEmail);
-    document.getElementById('password')?.addEventListener('blur',  validatePassword);
-    document.getElementById('confirmPassword')?.addEventListener('blur', validateConfirmPassword);
+if (signinForm) {
 
-    signupForm.addEventListener("submit", (e) => {
+    document.getElementById("email")?.addEventListener("blur", validateSigninEmail);
+    document.getElementById("password")?.addEventListener("blur", validateSigninPassword);
+
+    signinForm.addEventListener("submit", (e) => {
 
         const ok = [
-            validateFirstName(),
-            validateLastName(),
-            validateEmail(),
-            validatePassword(),
-            validateConfirmPassword()
+            validateSigninEmail(),
+            validateSigninPassword()
         ].every(Boolean);
 
-        const agree = document.getElementById("agree");
-
-        if (!ok || !agree.checked) {
+        if (!ok) {
             e.preventDefault();
-
-            if (!agree.checked) {
-                agree.style.outline = "2px solid #ef4444";
-            }
-
             return;
         }
 
@@ -135,10 +122,15 @@ if (signupForm) {
         const spinner = btn.querySelector(".btn-submit-spinner");
 
         btn.disabled = true;
+
         btnText.classList.add("d-none");
         spinner.classList.remove("d-none");
 
-        // Let the browser continue submitting naturally.
+        // IMPORTANT:
+        // No preventDefault().
+        // No fetch().
+        // No window.location.href.
+        // Let Spring Boot submit the form naturally.
     });
 
     function validateFirstName() {

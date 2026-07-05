@@ -146,20 +146,23 @@
 
     <!-- User chip at bottom -->
     <div class="sidebar-user">
-        <div class="user-avatar" id="sidebarAvatar">
+        <div th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" class="user-avatar" id="sidebarAvatar">
             <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
             SN
         </div>
         <div class="user-info">
             <!-- th:text="${user.firstName + ' ' + user.lastName}" -->
-            <div class="user-name">Sipho Ndlovu</div>
+            <div th:text="${user.firstName + ' ' + user.lastName}"  class="user-name">Sipho Ndlovu</div>
             <!-- th:text="${user.email}" -->
-            <div class="user-email">sipho@example.com</div>
+            <div th:text="${user.email}" class="user-email">sipho@example.com</div>
         </div>
         <!-- th:action="@{/logout}" method="post" -->
-        <a th:href="@{signin}" href="signin.html" class="logout-btn" title="Sign out">
-            <i class="bi bi-box-arrow-right"></i>
-        </a>
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button  type="submit" class="logout-btn" title="Sign out">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </form>
     </div>
 
 </aside>
@@ -182,12 +185,12 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="d-none d-sm-flex">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item">
+                    <li  class="breadcrumb-item" >
                         <!-- th:text="${user.firstName + '\'s'}" -->
-                        <span class="bc-root">Sipho's</span>
+                        <span th:text="${user.firstName}+'\'s'" class="bc-root">User's</span>
                     </li>
                     <!-- th:text="${currentPage}" -->
-                    <li class="breadcrumb-item active" id="breadcrumbPage">Dashboard</li>
+                    <li  class="breadcrumb-item active" id="breadcrumbPage">Dashboard</li>
                 </ol>
             </nav>
         </div>
@@ -211,7 +214,7 @@
             </button>
 
             <!-- Avatar -->
-            <div class="topbar-avatar" id="topbarAvatar" role="button" tabindex="0">
+            <div class="topbar-avatar" id="topbarAvatar" role="button" tabindex="0" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">
                 <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
                 SN
             </div>
@@ -228,7 +231,7 @@
             <div class="dash-greeting">
                 <div>
                     <!-- th:text="'Good ' + ${timeOfDay} + ', ' + ${user.firstName} + '.'" -->
-                    <h1 class="greeting-title" id="greetingText">Good morning, Sipho.</h1>
+                    <h1 th:text="'Hello' + ', ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText">Hello, User.</h1>
                     <p class="greeting-sub">Here's what's happening in your knowledge vault.</p>
                 </div>
                 <div class="greeting-date" id="greetingDate">
