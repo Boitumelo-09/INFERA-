@@ -111,7 +111,7 @@
                 <div class="divider-text my-4"><span>or sign up with email</span></div>
 
                 <!-- Form -->
-                <form id="signupForm" novalidate autocomplete="off" th:action="@{/signup}" th:object="${signUpRequest}" th:method="post" class="auth-form">
+                <form id="signupForm" novalidate th:autocomplete="off" th:action="@{/signup}" th:object="${signUpRequest}" th:method="post" class="auth-form">
 
                     <div class="row g-3">
                         <div class="col-12 col-sm-6">
