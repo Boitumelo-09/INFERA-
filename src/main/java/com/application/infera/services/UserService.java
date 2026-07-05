@@ -1,7 +1,10 @@
 package com.application.infera.services;
 
+import com.application.infera.dtos.requests.SignInRequest;
 import com.application.infera.dtos.requests.SignUpRequest;
 import com.application.infera.enums.Role;
+import com.application.infera.exception.InvalidUserCredentialException;
+import com.application.infera.exception.UserDoesntExistByEmailException;
 import com.application.infera.exception.UserExistsByEmailException;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
@@ -34,6 +37,21 @@ public class UserService {
         if(userRepository.existsByEmail(user.getEmail())){
             throw new UserExistsByEmailException("Email already exists");
         }
+
         userRepository.save(user);
+    }
+
+    public User signIn(SignInRequest request){
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new UserDoesntExistByEmailException("User doesn't exist"));
+
+        System.out.println("User Found");
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new InvalidUserCredentialException("Invalid credentials");
+        }
+        System.out.println("Password Matched");
+        return user;
     }
 }
