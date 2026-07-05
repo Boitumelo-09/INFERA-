@@ -27,7 +27,7 @@ public class signUpFormController {
     }
     @PostMapping("/signup")
     public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest, BindingResult bindingResult, Model model) {
-        System.out.println("Controller Reached");
+        System.out.println("Somebody tries to sign up");
         if (bindingResult.hasErrors()) {
             System.out.println("Binding Result has Errors");
             return "signup";

@@ -245,6 +245,9 @@ button { font-family: var(--font-body); }
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .logout-btn {
+    text-align: left;
+    background: transparent;
+    border: none;
     color: var(--muted);
     font-size: 1rem;
     flex-shrink: 0;
