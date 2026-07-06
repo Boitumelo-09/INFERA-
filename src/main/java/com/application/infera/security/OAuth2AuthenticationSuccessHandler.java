@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                                         @NonNull HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        System.out.println("Authentication successful");
+        System.out.println("Someone Is Authenticated");
 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
 

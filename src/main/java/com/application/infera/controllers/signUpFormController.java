@@ -1,7 +1,9 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.SignUpRequest;
+import com.application.infera.exception.PasswordsDontMatchException;
 import com.application.infera.exception.UserExistsByEmailException;
+import com.application.infera.exception.UserNameOrLastNameCantBeNullException;
 import com.application.infera.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -35,10 +37,21 @@ public class signUpFormController {
         try {
             userService.registerUserToDatabase(signUpRequest);
             return "redirect:/signin";
-        } catch (UserExistsByEmailException e)
+        } catch (UserExistsByEmailException  e)
             {
+                System.out.println("Somebody Encountered An Error: " + e.getMessage());
              model.addAttribute("errorMessage", e.getMessage());
              return "signup";
             }
+         catch (PasswordsDontMatchException e){
+            System.out.println("Somebody Encountered An Error: " + e.getMessage());
+            model.addAttribute("confirmPassError", e.getMessage());
+             return "signup";
+         }
+        catch (UserNameOrLastNameCantBeNullException e) {
+            System.out.println("Somebody Encountered An Error: " + e.getMessage());
+            model.addAttribute("errorNamesMessage", e.getMessage());
+            return "signup";
+        }
     }
 }

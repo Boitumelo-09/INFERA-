@@ -121,7 +121,7 @@
                                     <i class="bi bi-person input-icon"></i>
                                     <input th:field="*{firstName}" type="text" id="firstName" class="form-input" placeholder="Sipho" required />
                                 </div>
-                                <div class="field-error" id="firstNameErr"></div>
+                                <div class="field-error" id="firstNameErr" th:if="${errorNamesMessage}" th:text="${errorNamesMessage}" ></div>
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
@@ -131,7 +131,7 @@
                                     <i class="bi bi-person input-icon"></i>
                                     <input th:field="*{lastName}" type="text" id="lastName" class="form-input" placeholder="Ndlovu" required />
                                 </div>
-                                <div class="field-error" id="lastNameErr"></div>
+                                <div class="field-error" id="lastNameErr" th:if="${errorNamesMessage}" th:text="${errorNamesMessage}"></div>
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                             <i class="bi bi-lock-fill input-icon"></i>
                             <input th:field="*{confirmPassword}" type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" required />
                         </div>
-                        <div class="field-error" id="confirmPasswordErr"></div>
+                        <div class="field-error" id="confirmPasswordErr" th:if="${confirmPassError}" th:text="${confirmPassError}"></div>
                     </div>
 
                     <div class="form-check-custom mt-4">
