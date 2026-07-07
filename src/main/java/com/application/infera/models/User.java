@@ -1,14 +1,19 @@
 package com.application.infera.models;
 
-import com.application.infera.enums.Role;
 import jakarta.persistence.*;
-
-import lombok.Data;
-
+import com.application.infera.enums.Role;
+import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "workspaces")
+@EqualsAndHashCode(exclude = "workspaces")
 @Table(name = "users")
 public class User {
 
