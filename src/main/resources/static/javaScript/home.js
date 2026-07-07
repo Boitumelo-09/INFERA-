@@ -127,3 +127,4 @@ window.addEventListener('scroll', () => {
 const style = document.createElement('style');
 style.textContent = `.nav-center .nav-link.active-link { color: var(--text) !important; }`;
 document.head.appendChild(style);
+document.getElementById("year").textContent = new Date().getFullYear().toString();

@@ -133,11 +133,11 @@ function initGreeting() {
             const now  = new Date();
             const day  = now.toLocaleDateString('en-ZA', { weekday: 'long' });
             const date = now.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
-            const time = now.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+            const time = now.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit',second: '2-digit' });
             dateEl.innerHTML = `${day}<br>${date}<br><span style="color:var(--accent);font-weight:600;">${time}</span>`;
         }
         updateDate();
-        setInterval(updateDate, 30_000);
+        setInterval(updateDate, 1);
     }
 }
 
