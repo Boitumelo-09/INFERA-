@@ -76,6 +76,7 @@ button { font-family: var(--font-body); }
     transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
     box-shadow: 0 0 0 1.5px var(--accent);
 }
+
 /* Logo row */
 .sidebar-logo {
     display: flex;
@@ -924,3 +925,4 @@ button { font-family: var(--font-body); }
     .stats-grid { grid-template-columns: 1fr 1fr; }
     .sc-value { font-size: 1.6rem; }
 }
+
