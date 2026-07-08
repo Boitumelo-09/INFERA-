@@ -90,7 +90,7 @@
         <div class="hero-stats mt-5 d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-delay="200">
             <div class="stat-chip"><strong>10k+</strong> <span>notes created</span></div>
             <div class="stat-sep"></div>
-            <div class="stat-chip"><strong>3k+</strong> <span>active users</span></div>
+            <div class="stat-chip"><strong th:text="${activeUsers}">+</strong> <span>active users</span></div>
             <div class="stat-sep"></div>
             <div class="stat-chip"><strong>4.9 ★</strong> <span>avg. rating</span></div>
         </div>
@@ -101,7 +101,7 @@
         <div class="mockup-browser">
             <div class="browser-bar">
                 <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                <span class="browser-url">app.infera.io/dashboard</span>
+                <span class="browser-url">Calvin's /dashboard</span>
             </div>
             <div class="browser-body">
                 <div class="mock-sidebar">
