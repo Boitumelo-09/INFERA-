@@ -425,6 +425,13 @@ newWorkspaceForm?.addEventListener('submit', async e => {
 
        Then redirect or update the sidebar workspace list.
     ──────────────────────────────────────────────────────────────── */
+    const form = newWorkspaceForm;
+    const data = new FormData(form);
+    await fetch(form.action || '/workspaces', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_csrf]')?.value },
+        body: data
+    });
     await fakeDelay(1200);
 
     const color = wsColorInput?.value || '#ea580c';

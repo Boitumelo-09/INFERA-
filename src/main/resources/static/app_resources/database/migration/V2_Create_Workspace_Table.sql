@@ -23,8 +23,8 @@ INSERT INTO workspaces (
     updated_at
 )
 VALUES (
-           'My First Workspace',
-           'This is my first workspace',
+           'My Second Workspace',
+           'This is my Second workspace',
            '#ea580c',
            22,
            NOW(),
