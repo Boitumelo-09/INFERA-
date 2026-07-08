@@ -19,7 +19,7 @@ public class WorkspaceService {
     }
 
     // Create a new workspace linked to the logged-in user
-    public Workspace createWorkspace(WorkspaceRequest request, User user) {
+    public void createWorkspace(WorkspaceRequest request, User user) {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
@@ -30,7 +30,7 @@ public class WorkspaceService {
         workspace.setColor(request.getColor() != null ? request.getColor() : "#ea580c");
         workspace.setUser(user);  // link to the signed-in user
 
-        return workspaceRepository.save(workspace);
+        workspaceRepository.save(workspace);
     }
 
     // Get all workspaces for a user
