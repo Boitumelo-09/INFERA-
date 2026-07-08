@@ -61,8 +61,8 @@
                 <a href="#" class="nav-item" data-page="workspaces">
                     <i class="bi bi-folder2-open"></i>
                     <span>Workspaces</span>
-                    <!-- th:text="${workspaceCount}" -->
-                    <span class="nav-badge" id="navWorkspaceBadge">4</span>
+                    <!--  -->
+                    <span th:text="${workspaceCount}" class="nav-badge" id="navWorkspaceBadge"></span>
                 </a>
             </li>
             <li>
@@ -84,32 +84,12 @@
         </ul>
 
         <div class="nav-section-label mt-3">Workspaces</div>
-        <!-- th:each="ws : ${workspaces}" -->
+        <!--  -->
         <ul class="nav-list" id="workspaceList">
-            <li>
-                <a href="#" class="nav-item ws-item" data-workspace="1">
-                    <!-- th:style="'--ws-color:' + ${ws.color}" inline color per workspace -->
-                    <span class="ws-dot" style="--ws-color:#ea580c;"></span>
-                    <!-- th:text="${ws.name}" -->
-                    <span>Java Backend</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-item ws-item" data-workspace="2">
-                    <span class="ws-dot" style="--ws-color:#6366f1;"></span>
-                    <span>Research</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-item ws-item" data-workspace="3">
-                    <span class="ws-dot" style="--ws-color:#10b981;"></span>
-                    <span>Career</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="nav-item ws-item" data-workspace="4">
-                    <span class="ws-dot" style="--ws-color:#f59e0b;"></span>
-                    <span>Music</span>
+            <li th:each="ws : ${workspaces}">
+                <a th:href="@{/workspaces}" class="nav-item ws-item">
+                    <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
+                    <span th:text="${ws.name}">Workspace</span>
                 </a>
             </li>
             <li>
@@ -245,10 +225,10 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon ws"><i class="bi bi-folder2-open"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+1 this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${workspaceCount}"></span> this week</div>
                     </div>
                     <!-- th:text="${workspaceCount}" -->
-                    <div class="sc-value" data-count="4">4</div>
+                    <div th:text="${workspaceCount}" class="sc-value" th:data-count="${workspaceCount}"></div>
                     <div class="sc-label">Workspaces</div>
                 </div>
 
@@ -535,7 +515,8 @@
                 </button>
             </div>
             <!-- th:action="@{/workspaces}" th:method="post" -->
-            <form id="newWorkspaceForm">
+            <form id="newWorkspaceForm" th:action="@{/workspaces}" th:method="post" >
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <!-- th:hidden input for CSRF: <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
                 <div class="modal-body">
                     <div class="form-group mb-4">
