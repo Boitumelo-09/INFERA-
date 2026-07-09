@@ -114,17 +114,15 @@ function initGreeting() {
     if (!greetingEl && !dateEl) return;
 
     const hour = new Date().getHours();
-    let period = 'morning';
-    if (hour >= 12 && hour < 17) period = 'afternoon';
-    else if (hour >= 17)         period = 'evening';
+    let period = 'Morning';
+    if (hour >= 12 && hour < 17) period = 'Afternoon';
+    else if (hour >= 17)         period = 'Evening';
 
-    /* In Thymeleaf, th:text handles the name. Here we keep the static
-       text but swap just the time-of-day portion for the demo. */
     if (greetingEl) {
         const current = greetingEl.textContent;
         greetingEl.textContent = current.replace(
             /^Good \w+/,
-            `Good ${period}`
+            `${period}`
         );
     }
 
@@ -133,13 +131,15 @@ function initGreeting() {
             const now  = new Date();
             const day  = now.toLocaleDateString('en-ZA', { weekday: 'long' });
             const date = now.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
-            const time = now.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit',second: '2-digit' });
+            const time = now.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             dateEl.innerHTML = `${day}<br>${date}<br><span style="color:var(--accent);font-weight:600;">${time}</span>`;
         }
         updateDate();
-        setInterval(updateDate, 1);
+        setInterval(updateDate, 1000);
     }
 }
+let k =document.getElementById("greetingText");
+  k.style.color = "var(--accent)";
 
 /* ───────────────────────────────────────────────────────────────────
    STAT COUNTER ANIMATION
@@ -712,3 +712,5 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
+document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });

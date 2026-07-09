@@ -12,8 +12,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/signup")
 public class signUpFormController {
     private final UserService userService;
 
@@ -21,13 +23,13 @@ public class signUpFormController {
         this.userService = userService;
     }
 
-    @GetMapping("/signup")
+    @GetMapping
     public String signUpForm(Model model) {
-
+       model.addAttribute("pageTitle","Create your account — INFERA");
        model.addAttribute("signUpRequest", new SignUpRequest());
         return "signup";
     }
-    @PostMapping("/signup")
+    @PostMapping
     public String signUp(@Valid @ModelAttribute SignUpRequest signUpRequest, BindingResult bindingResult, Model model) {
         System.out.println("Somebody tries to sign up");
         if (bindingResult.hasErrors()) {

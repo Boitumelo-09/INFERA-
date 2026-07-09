@@ -23,7 +23,7 @@ public class DashBoardController {
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal Object principal, Model model, HttpSession session) {
-
+        System.out.println(model.asMap());
         User user = resolveUser(principal);
 
         if (user == null) {
@@ -37,6 +37,7 @@ public class DashBoardController {
         System.out.println("Localed Session ID: "+ "\u001B[32m" + user.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
         System.out.println(".".repeat(50));
+        model.addAttribute("pageTitle","Dashboard — INFERA");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         return "dashboard";

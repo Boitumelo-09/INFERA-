@@ -1,7 +1,5 @@
 package com.application.infera.models;
 
-
-
 import jakarta.persistence.*;
 import lombok.*;
 
