@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
+import com.application.infera.exception.WorkspaceAlreadyExistExeption;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.security.CustomUserDetails;
@@ -37,6 +38,7 @@ public class WorkspaceController {
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
+        model.addAttribute("pageTitle", "Workspaces — INFERA");
         return "workspaces";
     }
 
@@ -52,11 +54,11 @@ public class WorkspaceController {
         try {
             workspaceService.createWorkspace(workspaceRequest, user);
             redirectAttributes.addFlashAttribute("successMessage", "Workspace \"" + workspaceRequest.getName() + "\" created!");
-        } catch (IllegalArgumentException e) {
+        } catch (WorkspaceAlreadyExistExeption e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
-        return "redirect:/workspaces";
+        return "redirect:/dashboard";
     }
 
     // Resolves the logged-in user regardless of login method

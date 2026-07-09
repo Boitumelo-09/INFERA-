@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- th:text="${pageTitle} + ' — INFERA'" -->
-    <title>Dashboard — INFERA</title>
+    <title th:text="${pageTitle}"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -211,11 +211,12 @@
             <div class="dash-greeting">
                 <div>
                     <!-- th:text="'Good ' + ${timeOfDay} + ', ' + ${user.firstName} + '.'" -->
-                    <h1 th:text="'Hello' + ', ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText">Hello, User.</h1>
+<!--                    <h1 th:text="'Good' + ${timeOfDay} + + ', ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText">Hello, User.</h1>-->
+                    <h1 th:text="'Good morning, ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText"></h1>
                     <p class="greeting-sub">Here's what's happening in your knowledge vault.</p>
                 </div>
                 <div class="greeting-date" id="greetingDate">
-                    <!-- Filled by JS -->
+
                 </div>
             </div>
 
@@ -344,41 +345,13 @@
                             <h2 class="panel-title"><i class="bi bi-folder2-open"></i> Workspaces</h2>
                             <button class="panel-action" data-page="workspaces">Manage</button>
                         </div>
-                        <div class="panel-body">
-                            <!-- th:each="ws : ${workspaces}" -->
-                            <div class="ws-card" data-workspace="1">
-                                <div class="ws-card-bar" style="--ws-color:#ea580c;"></div>
+                        <div  class="panel-body">
+                            <div th:each="ws : ${workspaces}" class="ws-card" data-workspace="1">
+                                <div class="ws-card-bar" style="--ws-color:#ea580c;" th:style="'--ws-color:' + ${ws.color} + ';'"></div>
                                 <div class="ws-card-body">
-                                    <div class="ws-card-name">Java Backend</div>
+                                    <div th:text="${ws.name}" class="ws-card-name">Workspace</div>
                                     <!-- th:text="${ws.noteCount} + ' notes'" -->
-                                    <div class="ws-card-count">12 notes · 4 resources</div>
-                                </div>
-                                <i class="bi bi-chevron-right ws-card-arrow"></i>
-                            </div>
-
-                            <div class="ws-card" data-workspace="2">
-                                <div class="ws-card-bar" style="--ws-color:#6366f1;"></div>
-                                <div class="ws-card-body">
-                                    <div class="ws-card-name">Research</div>
-                                    <div class="ws-card-count">6 notes · 3 resources</div>
-                                </div>
-                                <i class="bi bi-chevron-right ws-card-arrow"></i>
-                            </div>
-
-                            <div class="ws-card" data-workspace="3">
-                                <div class="ws-card-bar" style="--ws-color:#10b981;"></div>
-                                <div class="ws-card-body">
-                                    <div class="ws-card-name">Career</div>
-                                    <div class="ws-card-count">4 notes · 2 resources</div>
-                                </div>
-                                <i class="bi bi-chevron-right ws-card-arrow"></i>
-                            </div>
-
-                            <div class="ws-card" data-workspace="4">
-                                <div class="ws-card-bar" style="--ws-color:#f59e0b;"></div>
-                                <div class="ws-card-body">
-                                    <div class="ws-card-name">Music</div>
-                                    <div class="ws-card-count">2 notes · 2 resources</div>
+                                    <div class="ws-card-count">0 notes · 0 resources</div>
                                 </div>
                                 <i class="bi bi-chevron-right ws-card-arrow"></i>
                             </div>
@@ -519,11 +492,14 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <!-- th:hidden input for CSRF: <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
                 <div class="modal-body">
+
                     <div class="form-group mb-4">
                         <label class="form-label-custom" for="wsName">Workspace name</label>
                         <div class="input-wrap">
                             <i class="bi bi-folder2 input-icon"></i>
                             <input type="text" id="wsName" name="name" class="form-input" placeholder="e.g. Research, Career, Side Project" required />
+
+
                         </div>
                     </div>
                     <div class="form-group mb-4">
@@ -550,6 +526,7 @@
                         <span class="btn-text">Create workspace</span>
                         <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
                     </button>
+
                 </div>
             </form>
         </div>
