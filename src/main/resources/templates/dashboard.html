@@ -52,13 +52,13 @@
         <ul class="nav-list">
             <li>
                 <!-- th:classappend="${activePage == 'dashboard'} ? 'active'" -->
-                <a href="#" class="nav-item active" data-page="dashboard">
+                <a  href="#" class="nav-item active" data-page="dashboard">
                     <i class="bi bi-grid-1x2"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="workspaces">
+                <a th:href="@{/workspaces}" class="nav-item" data-page="workspaces">
                     <i class="bi bi-folder2-open"></i>
                     <span>Workspaces</span>
                     <!--  -->
