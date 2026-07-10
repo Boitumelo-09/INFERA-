@@ -105,14 +105,14 @@
     position: relative;
     transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
     cursor: default;
-    overflow: visible;
+    overflow: hidden;
 }
 .ws-tile::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 15px 15px 0 0;
     background: var(--ws-color, var(--accent));
 }
 .ws-tile:hover {
@@ -226,6 +226,7 @@
     gap: 14px;
     align-items: flex-start;
     padding: 4px;
+    margin-top: 20px;
 }
 .delete-warning i {
     font-size: 1.4rem;
@@ -241,6 +242,7 @@
 .delete-warning strong { color: var(--text); }
 
 .btn-modal-danger {
+    margin-top: 20px;
     padding: 9px 22px;
     border-radius: 8px;
     font-size: 0.86rem;

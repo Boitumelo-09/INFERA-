@@ -36,6 +36,7 @@ public class WorkspaceController {
         if (user == null) return "redirect:/signin";
 
         List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
+        model.addAttribute("pageTitle","Workspaces — INFERA");
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
@@ -56,6 +57,7 @@ public class WorkspaceController {
             redirectAttributes.addFlashAttribute("successMessage", "Workspace \"" + workspaceRequest.getName() + "\" created!");
         } catch (WorkspaceAlreadyExistExeption e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
         }
 
         return "redirect:/workspaces";

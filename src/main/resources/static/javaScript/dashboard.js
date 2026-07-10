@@ -398,58 +398,17 @@ $$('.cp-swatch').forEach(swatch => {
 });
 
 /* Form submit */
-newWorkspaceForm?.addEventListener('submit', async e => {
-    e.preventDefault();
+newWorkspaceForm?.addEventListener('submit', e => {
     const nameInput = $('#wsName');
-    const name      = nameInput?.value.trim();
+    const name = nameInput?.value.trim();
+
     if (!name) {
+        e.preventDefault();               // only block if invalid
         nameInput?.focus();
         nameInput?.style.setProperty('border-color', '#ef4444');
-        return;
+        window.location.reload();
     }
-    nameInput?.style.removeProperty('border-color');
-
-    const btn = $('#wsSubmitBtn');
-    setLoading(btn, true);
-
-    /* ── THYMELEAF INTEGRATION ─────────────────────────────────────
-       Replace the setTimeout below with a real fetch / form submit:
-
-       const form = newWorkspaceForm;
-       const data = new FormData(form);
-       await fetch(form.action || '/workspaces', {
-         method: 'POST',
-         headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_csrf]')?.value },
-         body: data
-       });
-
-       Then redirect or update the sidebar workspace list.
-    ──────────────────────────────────────────────────────────────── */
-    const form = newWorkspaceForm;
-    const data = new FormData(form);
-    await fetch(form.action || '/workspaces', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_csrf]')?.value },
-        body: data
-    });
-    await fakeDelay(1000);
-
-    const color = wsColorInput?.value || '#ea580c';
-    addWorkspaceToSidebar(name, color);
-
-    setLoading(btn, false);
-    newWorkspaceModal.hide();
-    newWorkspaceForm.reset();
-    $$('.cp-swatch').forEach((s, i) => s.classList.toggle('active', i === 0));
-    if (wsColorInput) wsColorInput.value = '#ea580c';
-
-    
-    showToast(`Workspace "${name}" created`);
-    setTimeout(() =>{
-        window.location.href = '/dashboard';
-    },1000 );
-
-
+    // if valid, do nothing — browser submits the form to th:action="@{/workspaces}"
 });
 
 function addWorkspaceToSidebar(name, color) {
@@ -581,7 +540,7 @@ function setActiveNav(page) {
 
 $$('.nav-item[data-page]').forEach(el => {
     el.addEventListener('click', e => {
-        e.preventDefault();
+
         setActiveNav(el.dataset.page);
         if (window.innerWidth < 992) closeSidebar();
         /* Real app: window.location.href = '/' + el.dataset.page; */
