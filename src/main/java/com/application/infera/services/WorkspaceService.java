@@ -2,6 +2,7 @@ package com.application.infera.services;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.repositories.WorkspaceRepository;
@@ -41,5 +42,34 @@ public class WorkspaceService {
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
         return workspaceRepository.countByUser(user);
+    }
+
+    // Get a single workspace, scoped to the owner (used before edit/delete)
+    public Workspace getWorkspaceForUser(Long id, User user) {
+        return workspaceRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
+    }
+
+    // Update an existing workspace — only if it belongs to this user
+    public void updateWorkspace(Long id, WorkspaceRequest request, User user) {
+        Workspace workspace = getWorkspaceForUser(id, user);
+
+        // If renaming, make sure the new name isn't already taken by another workspace
+        boolean nameChanged = !workspace.getName().equalsIgnoreCase(request.getName());
+        if (nameChanged && workspaceRepository.existsByNameAndUser(request.getName(), user)) {
+            throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
+        }
+
+        workspace.setName(request.getName());
+        workspace.setDescription(request.getDescription());
+        workspace.setColor(request.getColor() != null ? request.getColor() : workspace.getColor());
+
+        workspaceRepository.save(workspace);
+    }
+
+    // Delete a workspace — only if it belongs to this user
+    public void deleteWorkspace(Long id, User user) {
+        Workspace workspace = getWorkspaceForUser(id, user);
+        workspaceRepository.delete(workspace);
     }
 }

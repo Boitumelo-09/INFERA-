@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,11 +9,360 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/dashboard.css" th:href="@{/cssStyles/dashboard.css}" />
+    <!-- Reuses sidebar / topbar / modal / form styles already defined for the dashboard -->
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" href="dashboard.css" />
+    <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}" href="workspaces.css" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
-
 </head>
 <body>
 
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-logo">
+        <a th:href="@{/home}" href="home.html" class="logo-link d-flex align-items-center gap-2">
+            <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
+            <span class="logo-text">INFERA</span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0" aria-label="Open search">
+        <i class="bi bi-search"></i>
+        <span>Search...</span>
+        <kbd>⌘K</kbd>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+
+        <div class="nav-section-label">Main</div>
+        <ul class="nav-list">
+            <li>
+                <a th:href="@{/dashboard}" class="nav-item">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/workspaces}" class="nav-item active">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Workspaces</span>
+                    <span class="nav-badge" th:text="${workspaceCount}">0</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="notes">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Notes</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-item" data-page="resources">
+                    <i class="bi bi-link-45deg"></i>
+                    <span>Resources</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="nav-section-label mt-3">Workspaces</div>
+        <ul class="nav-list" id="workspaceList">
+            <li th:each="ws : ${workspaces}">
+                <a th:href="@{/workspaces}" class="nav-item ws-item">
+                    <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
+                    <span th:text="${ws.name}">Workspace</span>
+                </a>
+            </li>
+            <li>
+                <button class="nav-item nav-item-btn" id="newWorkspaceBtn">
+                    <i class="bi bi-plus"></i>
+                    <span>New workspace</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="nav-section-label mt-3">Account</div>
+        <ul class="nav-list">
+            <li><a href="#" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
+            <li><a href="#" class="nav-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
+            <li><a href="#" class="nav-item"><i class="bi bi-sliders"></i><span>Settings</span></a></li>
+        </ul>
+
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="user-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+        <div class="user-info">
+            <div class="user-name" th:text="${user.firstName + ' ' + user.lastName}">Sipho Ndlovu</div>
+            <div class="user-email" th:text="${user.email}">sipho@example.com</div>
+        </div>
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="logout-btn" title="Sign out">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+</aside>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════════════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open sidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            <nav aria-label="breadcrumb" class="d-none d-sm-flex">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <span class="bc-root" th:text="${user.firstName} + '\'s'">User's</span>
+                    </li>
+                    <li class="breadcrumb-item active">Workspaces</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
+                <i class="bi bi-search"></i>
+            </button>
+            <button class="btn-topbar-accent" id="newWorkspaceBtnTop">
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-sm-inline">New workspace</span>
+            </button>
+            <div class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+        </div>
+    </header>
+
+    <main class="page-content" id="pageContent">
+
+        <!-- Flash messages from redirect -->
+        <div class="flash-alert success" th:if="${successMessage}">
+            <i class="bi bi-check2-circle"></i>
+            <span th:text="${successMessage}">Success</span>
+        </div>
+        <div class="flash-alert error" th:if="${errorMessage}">
+            <i class="bi bi-exclamation-circle"></i>
+            <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <!-- Page header -->
+        <div class="ws-page-header">
+            <div>
+                <h1 class="ws-page-title">Your Workspaces</h1>
+                <p class="ws-page-sub">
+                    <span th:text="${workspaceCount}">0</span> workspace<span th:if="${workspaceCount != 1}">s</span> — organise your notes and resources by project or subject.
+                </p>
+            </div>
+            <button class="btn-topbar-accent" id="newWorkspaceBtnHeader">
+                <i class="bi bi-plus-lg"></i>
+                <span>New workspace</span>
+            </button>
+        </div>
+
+        <!-- Empty state -->
+        <div class="ws-empty" th:if="${#lists.isEmpty(workspaces)}">
+            <div class="ws-empty-icon"><i class="bi bi-folder2-open"></i></div>
+            <h3>No workspaces yet</h3>
+            <p>Create your first workspace to start organising your notes and resources.</p>
+            <button class="btn-topbar-accent mt-2" id="newWorkspaceBtnEmpty">
+                <i class="bi bi-plus-lg"></i> Create your first workspace
+            </button>
+        </div>
+
+        <!-- Workspace grid -->
+        <div class="ws-grid" th:unless="${#lists.isEmpty(workspaces)}">
+            <div class="ws-tile"
+                 th:each="ws : ${workspaces}"
+                 th:style="'--ws-color:' + ${ws.color}"
+                 th:data-id="${ws.id}"
+                 th:data-name="${ws.name}"
+                 th:data-description="${ws.description}"
+                 th:data-color="${ws.color}">
+
+                <div class="ws-tile-top">
+                    <div class="ws-tile-icon"><i class="bi bi-folder2-open"></i></div>
+                    <div class="ws-tile-menu">
+                        <button class="ws-menu-btn" aria-label="Workspace options">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <div class="ws-menu-dropdown">
+                            <button class="ws-menu-item ws-edit-trigger">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            <button class="ws-menu-item danger ws-delete-trigger">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="ws-tile-name" th:text="${ws.name}">Workspace name</h3>
+                <p class="ws-tile-desc" th:text="${ws.description != null and ws.description != '' ? ws.description : 'No description yet.'}">Description</p>
+
+                <div class="ws-tile-footer">
+                    <span class="ws-tile-date">
+                        <i class="bi bi-calendar3"></i>
+                        <span th:text="${#temporals.format(ws.createdAt, 'dd MMM yyyy')}">01 Jan 2026</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NEW WORKSPACE MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="newWorkspaceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Workspace</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <form th:action="@{/workspaces}" method="post" id="newWorkspaceForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="modal-body">
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="wsName">Workspace name</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-folder2 input-icon"></i>
+                            <input type="text" id="wsName" name="name" class="form-input" placeholder="e.g. Research, Career, Side Project" required maxlength="100" />
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="wsDesc">Description <span class="optional-label">(optional)</span></label>
+                        <textarea id="wsDesc" name="description" class="form-input form-textarea" rows="3" placeholder="What will you store here?" maxlength="255"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-custom">Colour tag</label>
+                        <div class="color-picker" id="colorPicker">
+                            <button type="button" class="cp-swatch active" data-color="#ea580c" style="--sw:#ea580c;" aria-label="Orange"></button>
+                            <button type="button" class="cp-swatch" data-color="#6366f1" style="--sw:#6366f1;" aria-label="Indigo"></button>
+                            <button type="button" class="cp-swatch" data-color="#10b981" style="--sw:#10b981;" aria-label="Emerald"></button>
+                            <button type="button" class="cp-swatch" data-color="#f59e0b" style="--sw:#f59e0b;" aria-label="Amber"></button>
+                            <button type="button" class="cp-swatch" data-color="#0ea5e9" style="--sw:#0ea5e9;" aria-label="Sky"></button>
+                            <button type="button" class="cp-swatch" data-color="#ec4899" style="--sw:#ec4899;" aria-label="Pink"></button>
+                        </div>
+                        <input type="hidden" id="wsColor" name="color" value="#ea580c" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-accent">
+                        <span class="btn-text">Create workspace</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EDIT WORKSPACE MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="editWorkspaceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Workspace</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <!-- action is rewritten by JS to /workspaces/{id}/update before submit -->
+            <form method="post" id="editWorkspaceForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="modal-body">
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="editWsName">Workspace name</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-folder2 input-icon"></i>
+                            <input type="text" id="editWsName" name="name" class="form-input" required maxlength="100" />
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="form-label-custom" for="editWsDesc">Description <span class="optional-label">(optional)</span></label>
+                        <textarea id="editWsDesc" name="description" class="form-input form-textarea" rows="3" maxlength="255"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-custom">Colour tag</label>
+                        <div class="color-picker" id="editColorPicker">
+                            <button type="button" class="cp-swatch" data-color="#ea580c" style="--sw:#ea580c;" aria-label="Orange"></button>
+                            <button type="button" class="cp-swatch" data-color="#6366f1" style="--sw:#6366f1;" aria-label="Indigo"></button>
+                            <button type="button" class="cp-swatch" data-color="#10b981" style="--sw:#10b981;" aria-label="Emerald"></button>
+                            <button type="button" class="cp-swatch" data-color="#f59e0b" style="--sw:#f59e0b;" aria-label="Amber"></button>
+                            <button type="button" class="cp-swatch" data-color="#0ea5e9" style="--sw:#0ea5e9;" aria-label="Sky"></button>
+                            <button type="button" class="cp-swatch" data-color="#ec4899" style="--sw:#ec4899;" aria-label="Pink"></button>
+                        </div>
+                        <input type="hidden" id="editWsColor" name="color" value="#ea580c" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-accent">
+                        <span class="btn-text">Save changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DELETE CONFIRM MODAL
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="deleteWorkspaceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Workspace</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>Are you sure you want to delete <strong id="deleteWsName">this workspace</strong>? This will permanently remove all notes and resources inside it. This cannot be undone.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- action is rewritten by JS to /workspaces/{id}/delete before submit -->
+                <form method="post" id="deleteWorkspaceForm" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-danger">
+                        <i class="bi bi-trash"></i> Delete permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+    <span class="toast-msg" id="toastMsg">Done!</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/javaScript/workspaces.js}" src="workspaces.js"></script>
 </body>
 </html>

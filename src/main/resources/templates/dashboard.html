@@ -346,10 +346,16 @@
                             <button class="panel-action" data-page="workspaces">Manage</button>
                         </div>
                         <div  class="panel-body">
+                            <div th:if="${#lists.isEmpty(workspaces)}" class="text-center py-4 text-muted" style="color: #ea580c;">
+                                <i class="bi bi-folder-x fs-3"></i>
+                                <p class="mt-2 mb-0">No Workspace.</p>
+                            </div>
                             <div th:each="ws : ${workspaces}" class="ws-card" data-workspace="1">
                                 <div class="ws-card-bar" style="--ws-color:#ea580c;" th:style="'--ws-color:' + ${ws.color} + ';'"></div>
+
                                 <div class="ws-card-body">
-                                    <div th:text="${ws.name}" class="ws-card-name">Workspace</div>
+                                    <div th:text="${ws.name}"  class="ws-card-name"></div>
+
                                     <!-- th:text="${ws.noteCount} + ' notes'" -->
                                     <div class="ws-card-count">0 notes · 0 resources</div>
                                 </div>
@@ -589,6 +595,11 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:if="${successMessage}">
+    document.addEventListener("DOMContentLoaded", () => {
+        showToast('[[${successMessage}]]');
+    });
+</script>
 <script src="/static/javaScript/dashboard.js" th:src="@{/javaScript/dashboard.js}"></script>
 </body>
 </html>
