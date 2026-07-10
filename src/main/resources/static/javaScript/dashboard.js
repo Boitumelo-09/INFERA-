@@ -432,7 +432,7 @@ newWorkspaceForm?.addEventListener('submit', async e => {
         headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_csrf]')?.value },
         body: data
     });
-    await fakeDelay(1200);
+    await fakeDelay(1000);
 
     const color = wsColorInput?.value || '#ea580c';
     addWorkspaceToSidebar(name, color);
@@ -443,7 +443,13 @@ newWorkspaceForm?.addEventListener('submit', async e => {
     $$('.cp-swatch').forEach((s, i) => s.classList.toggle('active', i === 0));
     if (wsColorInput) wsColorInput.value = '#ea580c';
 
+    
     showToast(`Workspace "${name}" created`);
+    setTimeout(() =>{
+        window.location.href = '/dashboard';
+    },1000 );
+
+
 });
 
 function addWorkspaceToSidebar(name, color) {

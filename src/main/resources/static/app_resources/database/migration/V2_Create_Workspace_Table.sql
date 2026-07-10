@@ -30,3 +30,6 @@ VALUES (
            NOW(),
            NOW()
        );
+
+
+SELECT * FROM workspaces Where description = '';

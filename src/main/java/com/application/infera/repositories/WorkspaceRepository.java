@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
@@ -17,4 +18,8 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
 
     // Check if a workspace name already exists for this user
     boolean existsByNameAndUser(String name, User user);
+    
+    // Fetch a single workspace, but ONLY if it belongs to this user
+    // (prevents User A from editing/deleting User B's workspace by guessing an id)
+    Optional<Workspace> findByIdAndUser(Long id, User user);
 }

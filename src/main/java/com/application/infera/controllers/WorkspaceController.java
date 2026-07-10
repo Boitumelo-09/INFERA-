@@ -2,8 +2,10 @@ package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
+import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
 import com.application.infera.services.WorkspaceService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.application.infera.repositories.UserRepository;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class WorkspaceController {
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
-        model.addAttribute("pageTitle", "Workspaces — INFERA");
+        model.addAttribute("workspaceCount", workspaces.size());
         return "workspaces";
     }
 
@@ -47,7 +48,6 @@ public class WorkspaceController {
     public String createWorkspace(@AuthenticationPrincipal Object principal,
                                   @ModelAttribute WorkspaceRequest workspaceRequest,
                                   RedirectAttributes redirectAttributes) {
-        System.out.println("Someone tries to create a workspace");
         User user = resolveUser(principal);
         if (user == null) return "redirect:/signin";
 
@@ -58,7 +58,44 @@ public class WorkspaceController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
-        return "redirect:/dashboard";
+        return "redirect:/workspaces";
+    }
+
+    // POST /workspaces/{id}/update — edit an existing workspace
+    @PostMapping("/{id}/update")
+    public String updateWorkspace(@AuthenticationPrincipal Object principal,
+                                  @PathVariable Long id,
+                                  @ModelAttribute WorkspaceRequest workspaceRequest,
+                                  RedirectAttributes redirectAttributes) {
+        User user = resolveUser(principal);
+        if (user == null) return "redirect:/signin";
+
+        try {
+            workspaceService.updateWorkspace(id, workspaceRequest, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Workspace updated!");
+        } catch (WorkspaceAlreadyExistExeption | WorkspaceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/workspaces";
+    }
+
+    // POST /workspaces/{id}/delete — remove a workspace
+    @PostMapping("/{id}/delete")
+    public String deleteWorkspace(@AuthenticationPrincipal Object principal,
+                                  @PathVariable Long id,
+                                  RedirectAttributes redirectAttributes) {
+        User user = resolveUser(principal);
+        if (user == null) return "redirect:/signin";
+
+        try {
+            workspaceService.deleteWorkspace(id, user);
+            redirectAttributes.addFlashAttribute("successMessage", "Workspace deleted.");
+        } catch (WorkspaceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/workspaces";
     }
 
     // Resolves the logged-in user regardless of login method
