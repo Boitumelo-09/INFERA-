@@ -551,7 +551,7 @@ $$('.nav-item[data-page]').forEach(el => {
 $$('.panel-action[data-page]').forEach(btn => {
     btn.addEventListener('click', () => {
         setActiveNav(btn.dataset.page);
-        /* Real app: window.location.href = '/' + btn.dataset.page; */
+        window.location.href = '/' + btn.dataset.page; 
         showToast(`Navigating to ${btn.dataset.page}…`);
     });
 });
