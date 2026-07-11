@@ -88,22 +88,22 @@ function showToast(msg, type = 'success') {
 }
 
 /* Auto-toast from Thymeleaf flash messages already rendered in the DOM */
-document.addEventListener('DOMContentLoaded', () => {
-  const successEl = $('.flash-alert.success');
-  const errorEl   = $('.flash-alert.error');
-  if (successEl) showToast(successEl.querySelector('span')?.textContent || 'Success', 'success');
-  if (errorEl)   showToast(errorEl.querySelector('span')?.textContent || 'Something went wrong', 'error');
-
-  // Auto-hide flash banners after a few seconds
-  $$('.flash-alert').forEach(el => {
-    setTimeout(() => {
-      el.style.transition = 'opacity 0.4s, transform 0.4s';
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(-8px)';
-      setTimeout(() => el.remove(), 400);
-    }, 4000);
-  });
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//   const successEl = $('.flash-alert.success');
+//   const errorEl   = $('.flash-alert.error');
+//   if (successEl) showToast(successEl.querySelector('span')?.textContent || 'Success', 'success');
+//   if (errorEl)   showToast(errorEl.querySelector('span')?.textContent || 'Something went wrong', 'error');
+//
+//   // Auto-hide flash banners after a few seconds
+//   $$('.flash-alert').forEach(el => {
+//     setTimeout(() => {
+//       el.style.transition = 'opacity 0.4s, transform 0.4s';
+//       el.style.opacity = '0';
+//       el.style.transform = 'translateY(-8px)';
+//       setTimeout(() => el.remove(), 400);
+//     }, 4000);
+//   });
+// });
 
 /* ───────────────────────────────────────────────────────────────────
    NEW WORKSPACE MODAL

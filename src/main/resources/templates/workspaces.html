@@ -149,14 +149,14 @@
     <main class="page-content" id="pageContent">
 
         <!-- Flash messages from redirect -->
-        <div class="flash-alert success" th:if="${successMessage}">
-            <i class="bi bi-check2-circle"></i>
-            <span th:text="${successMessage}">Success</span>
-        </div>
-        <div class="flash-alert error" th:if="${errorMessage}">
-            <i class="bi bi-exclamation-circle"></i>
-            <span th:text="${errorMessage}">Error</span>
-        </div>
+<!--        <div class="flash-alert success" th:if="${successMessage}">-->
+<!--            <i class="bi bi-check2-circle"></i>-->
+<!--            <span th:text="${successMessage}">Success</span>-->
+<!--        </div>-->
+<!--        <div class="flash-alert error" th:if="${errorMessage}">-->
+<!--            <i class="bi bi-exclamation-circle"></i>-->
+<!--            <span th:text="${errorMessage}">Error</span>-->
+<!--        </div>-->
 
         <!-- Page header -->
         <div class="ws-page-header">
@@ -361,7 +361,17 @@
     <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
     <span class="toast-msg" id="toastMsg">Done!</span>
 </div>
+<script th:inline="javascript" th:if="${successMessage}">
+    document.addEventListener("DOMContentLoaded", () => {
+        showToast([[${successMessage}]]);
+    });
+</script>
 
+<script th:inline="javascript" th:if="${errorMessage}">
+    document.addEventListener("DOMContentLoaded", () => {
+        showToast([[${errorMessage}]], 'error');
+    });
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javaScript/workspaces.js}" src="workspaces.js"></script>
 </body>
