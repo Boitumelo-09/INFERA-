@@ -2,6 +2,7 @@ package com.application.infera.services;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
+import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -24,6 +25,9 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
+      if(countWorkspacesForUser(user) > 10){
+          throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
+      }
 
         Workspace workspace = new Workspace();
         workspace.setName(request.getName());
