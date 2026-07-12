@@ -2,6 +2,7 @@ package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
+import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -55,7 +56,7 @@ public class WorkspaceController {
         try {
             workspaceService.createWorkspace(workspaceRequest, user);
             redirectAttributes.addFlashAttribute("successMessage", String.format("Workspace \"%s\" created!", workspaceRequest.getName()));
-        } catch (WorkspaceAlreadyExistExeption e) {
+        } catch (WorkspaceAlreadyExistExeption | WorkspaceLimitReachedException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 

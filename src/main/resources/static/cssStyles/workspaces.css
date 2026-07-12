@@ -88,14 +88,19 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 2px;
     border-radius: 15px 15px 0 0;
-    background: var(--ws-color, var(--accent));
+    /*background: var(--ws-color, var(--accent));*/
+    /*background: linear-gradient(90deg, var(--ws-color, var(--accent)), transparent);*/
+
 }
 .ws-tile:hover {
     border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
     transform: translateY(-3px);
     box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+}
+.ws-tile:hover::before {
+    background: linear-gradient(90deg, var(--ws-color, var(--accent)), transparent);
 }
 
 .ws-tile-top {
