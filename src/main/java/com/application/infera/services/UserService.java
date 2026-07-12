@@ -31,8 +31,8 @@ public class UserService {
         if (signUpRequest.getFirstName().isBlank() || signUpRequest.getLastName().isBlank()){
             throw new UserNameOrLastNameCantBeNullException("Required!");
         }
-        user.setFirstName(signUpRequest.getFirstName());
-        user.setLastName(signUpRequest.getLastName());
+        user.setFirstName(signUpRequest.getFirstName().substring(0,1).toUpperCase() + signUpRequest.getFirstName().substring(1).toLowerCase());
+        user.setLastName(signUpRequest.getLastName().substring(0,1).toUpperCase() + signUpRequest.getLastName().substring(1).toLowerCase());
 
         user.setEmail(signUpRequest.getEmail());
         if(!signUpRequest.getPassword().equals(signUpRequest.getConfirmPassword())){
