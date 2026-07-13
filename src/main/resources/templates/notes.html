@@ -143,10 +143,10 @@
     <main class="page-content" id="pageContent">
 
         <!-- Page header -->
-        <div class="ws-page-header">
+        <div class="notes-page-header">
             <div>
-                <h1 class="ws-page-title">Your Notes</h1>
-                <p class="ws-page-sub">
+                <h1 class="notes-page-title">Your Notes</h1>
+                <p class="notes-page-sub">
                     <span th:text="${noteCount}">0</span> note<span th:if="${noteCount != 1}">s</span> across all your workspaces.
                 </p>
             </div>
@@ -156,7 +156,7 @@
             </button>
         </div>
 
-        <!-- Warn if no workspaces exist yet — notes need a workspace to belong to -->
+        <!-- No workspaces yet -->
         <div class="notes-empty" th:if="${#lists.isEmpty(workspaces)}">
             <div class="notes-empty-icon"><i class="bi bi-folder2-open"></i></div>
             <h3>Create a workspace first</h3>
@@ -166,7 +166,7 @@
             </a>
         </div>
 
-        <!-- Workspace filter pills — only shown when there's more than one workspace -->
+        <!-- Workspace filter pills -->
         <div class="ws-filter-row" th:if="${!#lists.isEmpty(workspaces) and workspaces.size() > 1}">
             <button class="ws-filter-pill active" data-filter="all">
                 <span>All notes</span>
@@ -179,7 +179,7 @@
             </button>
         </div>
 
-        <!-- Empty state — has workspaces, but zero notes yet -->
+        <!-- Zero notes yet -->
         <div class="notes-empty" th:if="${!#lists.isEmpty(workspaces) and #lists.isEmpty(notes)}">
             <div class="notes-empty-icon"><i class="bi bi-journal-text"></i></div>
             <h3>No notes yet</h3>
@@ -189,23 +189,44 @@
             </button>
         </div>
 
-        <!-- Notes grid -->
-        <div class="notes-grid" id="notesGrid" th:unless="${#lists.isEmpty(notes)}">
-            <div class="note-tile"
+        <!-- ── NOTES LIST ─────────────────────────────────────── -->
+        <div class="notes-list" id="notesList" th:unless="${#lists.isEmpty(notes)}">
+            <div class="note-row-item"
                  th:each="note : ${notes}"
                  th:style="'--ws-color:' + ${note.workspace.color}"
                  th:data-id="${note.id}"
                  th:data-title="${note.title}"
                  th:data-content="${note.content}"
-                 th:data-workspace-id="${note.workspace.id}">
+                 th:data-workspace-id="${note.workspace.id}"
+                 th:data-workspace-name="${note.workspace.name}">
 
-                <div class="note-tile-top">
-                    <span class="note-tile-ws" th:text="${note.workspace.name}">Workspace</span>
+                <div class="nri-accent"></div>
+
+                <div class="nri-main">
+                    <div class="nri-top">
+                        <h3 class="nri-title" th:text="${note.title}">Note title</h3>
+                        <span class="nri-ws-tag" th:text="${note.workspace.name}">Workspace</span>
+                    </div>
+                    <p class="nri-preview"
+                       th:text="${note.content != null and note.content != '' ? #strings.abbreviate(note.content, 120) : 'No content yet.'}">
+                        Preview line...
+                    </p>
+                </div>
+
+                <div class="nri-meta">
+                    <span class="nri-date">
+                        <i class="bi bi-clock-history"></i>
+                        <span th:text="${#temporals.format(note.updatedAt, 'dd MMM, HH:mm')}">01 Jan, 09:00</span>
+                    </span>
+
                     <div class="ws-tile-menu">
-                        <button class="ws-menu-btn" aria-label="Note options">
+                        <button class="ws-menu-btn nri-menu-btn" aria-label="Note options">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <div class="ws-menu-dropdown">
+                            <button class="ws-menu-item note-view-trigger">
+                                <i class="bi bi-eye"></i> View
+                            </button>
                             <button class="ws-menu-item note-edit-trigger">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
@@ -215,21 +236,39 @@
                         </div>
                     </div>
                 </div>
-
-                <h3 class="note-tile-title" th:text="${note.title}">Note title</h3>
-                <p class="note-tile-preview"
-                   th:text="${note.content != null and note.content != '' ? #strings.abbreviate(note.content, 140) : 'No content yet.'}">
-                    Preview of the note content goes here...
-                </p>
-
-                <div class="note-tile-footer">
-                    <i class="bi bi-clock-history"></i>
-                    <span th:text="${#temporals.format(note.updatedAt, 'dd MMM yyyy, HH:mm')}">01 Jan 2026</span>
-                </div>
             </div>
         </div>
 
     </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     VIEW NOTE MODAL — read-only, opened by clicking a row
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="viewNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content view-note-content">
+            <div class="modal-header">
+                <div>
+                    <span class="view-note-ws" id="viewNoteWs" style="--ws-color:#ea580c;">Workspace</span>
+                    <h5 class="modal-title mt-2" id="viewNoteTitle">Note title</h5>
+                    <span class="view-note-date" id="viewNoteDate"><i class="bi bi-clock-history"></i> Updated</span>
+                </div>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn-modal-accent" id="viewNoteEditBtn">
+                    <i class="bi bi-pencil"></i> Edit this note
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════

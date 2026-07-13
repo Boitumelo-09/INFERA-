@@ -1,13 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════
    INFERA — notes.js
-   Handles:
-     · Sidebar toggle + custom cursor (shared behaviour)
-     · New Note modal
-     · Edit Note modal — pre-filled from the clicked tile's data-* attrs
-     · Delete Note modal — confirms before submitting
-     · Tile dropdown menus
-     · Workspace filter pills — client-side show/hide, no server round trip
-     · Toast (shared showToast pattern)
+   Key behaviour change from the tile version:
+     · Clicking a ROW opens the VIEW modal (read-only)
+     · Clicking the three-dot menu → View / Edit / Delete
+     · Edit modal is ONLY reachable via the menu or the
+       "Edit this note" button inside the View modal
 ═══════════════════════════════════════════════════════════════════ */
 
 'use strict';
@@ -88,6 +85,43 @@ function showToast(msg, type = 'success') {
 }
 
 /* ───────────────────────────────────────────────────────────────────
+   VIEW NOTE MODAL — the default action when clicking a row
+─────────────────────────────────────────────────────────────────── */
+const viewNoteModalEl = $('#viewNoteModal');
+const viewNoteModal    = viewNoteModalEl ? new bootstrap.Modal(viewNoteModalEl) : null;
+
+let currentlyViewedRow = null;   // remembers which row is open, so "Edit this note" knows what to edit
+
+function openViewNoteModal(row) {
+    currentlyViewedRow = row;
+
+    const title       = row.dataset.title;
+    const content     = row.dataset.content || '';
+    const wsName      = row.dataset.workspaceName;
+    const wsColor     = getComputedStyle(row).getPropertyValue('--ws-color').trim() || '#ea580c';
+    const dateText    = row.querySelector('.nri-date span')?.textContent || '';
+
+    $('#viewNoteTitle').textContent = title;
+    $('#viewNoteWs').textContent    = wsName;
+    $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
+    $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
+
+    const bodyEl = $('#viewNoteContent');
+    const cleanContent = content === 'null' ? '' : content;
+    bodyEl.textContent = cleanContent;
+    bodyEl.classList.toggle('is-empty', !cleanContent.trim());
+
+    viewNoteModal?.show();
+}
+
+/* "Edit this note" button inside the View modal — hands off to the Edit modal */
+$('#viewNoteEditBtn')?.addEventListener('click', () => {
+    if (!currentlyViewedRow) return;
+    viewNoteModal?.hide();
+    setTimeout(() => openEditNoteModal(currentlyViewedRow), 250);
+});
+
+/* ───────────────────────────────────────────────────────────────────
    NEW NOTE MODAL
 ─────────────────────────────────────────────────────────────────── */
 const newNoteModalEl = $('#newNoteModal');
@@ -112,17 +146,17 @@ $('#newNoteForm')?.addEventListener('submit', e => {
 });
 
 /* ───────────────────────────────────────────────────────────────────
-   EDIT NOTE MODAL
+   EDIT NOTE MODAL — only reachable via menu or View modal's edit button
 ─────────────────────────────────────────────────────────────────── */
 const editNoteModalEl = $('#editNoteModal');
 const editNoteModal   = editNoteModalEl ? new bootstrap.Modal(editNoteModalEl) : null;
 const editNoteForm    = $('#editNoteForm');
 
-function openEditNoteModal(tile) {
-    const id          = tile.dataset.id;
-    const title       = tile.dataset.title;
-    const content     = tile.dataset.content || '';
-    const workspaceId = tile.dataset.workspaceId;
+function openEditNoteModal(row) {
+    const id          = row.dataset.id;
+    const title       = row.dataset.title;
+    const content     = row.dataset.content || '';
+    const workspaceId = row.dataset.workspaceId;
 
     editNoteForm.action = `/notes/${id}/update`;
 
@@ -150,9 +184,9 @@ const deleteNoteModalEl = $('#deleteNoteModal');
 const deleteNoteModal   = deleteNoteModalEl ? new bootstrap.Modal(deleteNoteModalEl) : null;
 const deleteNoteForm    = $('#deleteNoteForm');
 
-function openDeleteNoteModal(tile) {
-    const id    = tile.dataset.id;
-    const title = tile.dataset.title;
+function openDeleteNoteModal(row) {
+    const id    = row.dataset.id;
+    const title = row.dataset.title;
 
     deleteNoteForm.action = `/notes/${id}/delete`;
     $('#deleteNoteTitle').textContent = title;
@@ -161,13 +195,20 @@ function openDeleteNoteModal(tile) {
 }
 
 /* ───────────────────────────────────────────────────────────────────
-   TILE MENU (three-dot dropdown) + edit/delete wiring
+   ROW WIRING — click row = View, three-dot menu = View/Edit/Delete
 ─────────────────────────────────────────────────────────────────── */
-$$('.note-tile').forEach(tile => {
-    const menuWrap  = tile.querySelector('.ws-tile-menu');
-    const menuBtn   = tile.querySelector('.ws-menu-btn');
-    const editBtn   = tile.querySelector('.note-edit-trigger');
-    const deleteBtn = tile.querySelector('.note-delete-trigger');
+$$('.note-row-item').forEach(row => {
+    const menuWrap   = row.querySelector('.ws-tile-menu');
+    const menuBtn    = row.querySelector('.nri-menu-btn');
+    const viewBtn    = row.querySelector('.note-view-trigger');
+    const editBtn    = row.querySelector('.note-edit-trigger');
+    const deleteBtn  = row.querySelector('.note-delete-trigger');
+
+    // Clicking anywhere on the row (but not the menu) opens the read-only view
+    row.addEventListener('click', e => {
+        if (menuWrap.contains(e.target)) return;   // let the menu handle its own clicks
+        openViewNoteModal(row);
+    });
 
     menuBtn?.addEventListener('click', e => {
         e.stopPropagation();
@@ -175,21 +216,23 @@ $$('.note-tile').forEach(tile => {
         menuWrap.classList.toggle('open');
     });
 
+    viewBtn?.addEventListener('click', e => {
+        e.stopPropagation();
+        menuWrap.classList.remove('open');
+        openViewNoteModal(row);
+    });
+
     editBtn?.addEventListener('click', e => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
-        openEditNoteModal(tile);
+        openEditNoteModal(row);
     });
 
     deleteBtn?.addEventListener('click', e => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
-        openDeleteNoteModal(tile);
+        openDeleteNoteModal(row);
     });
-
-    // Clicking anywhere else on the tile (not the menu) also opens edit —
-    // convenient shortcut, matches "click a card to open it" expectations
-    tile.addEventListener('click', () => openEditNoteModal(tile));
 });
 
 document.addEventListener('click', () => {
@@ -206,9 +249,9 @@ $$('.ws-filter-pill').forEach(pill => {
 
         const filter = pill.dataset.filter;
 
-        $$('.note-tile').forEach(tile => {
-            const matches = filter === 'all' || tile.dataset.workspaceId === filter;
-            tile.classList.toggle('filtered-out', !matches);
+        $$('.note-row-item').forEach(row => {
+            const matches = filter === 'all' || row.dataset.workspaceId === filter;
+            row.classList.toggle('filtered-out', !matches);
         });
     });
 });
