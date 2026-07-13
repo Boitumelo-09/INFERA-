@@ -58,9 +58,10 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="notes">
+                <a th:href="@{/notes}"  class="nav-item" data-page="notes">
                     <i class="bi bi-journal-text"></i>
                     <span>Notes</span>
+                    <span class="nav-badge" th:text="${noteCount}">0</span>
                 </a>
             </li>
             <li>

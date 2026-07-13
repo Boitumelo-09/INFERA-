@@ -563,7 +563,7 @@ $$('.note-row[data-note-id]').forEach(row => {
     row.addEventListener('click', () => {
         const id = row.dataset.noteId;
         const title = row.querySelector('.note-row-title')?.textContent;
-        /* Real app: window.location.href = '/notes/' + id; */
+       window.location.href = '/notes/' + id;
         showToast(`Opening: ${title}`);
     });
 });
@@ -575,7 +575,7 @@ $$('.ws-card[data-workspace]').forEach(card => {
     card.addEventListener('click', () => {
         const id   = card.dataset.workspace;
         const name = card.querySelector('.ws-card-name')?.textContent;
-        /* Real app: window.location.href = '/workspaces/' + id; */
+        window.location.href = '/workspaces/' + id; 
         showToast(`Opening workspace: ${name}`);
     });
 });

@@ -66,11 +66,11 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="notes">
+                <a th:href="@{/notes}"  class="nav-item" data-page="notes">
                     <i class="bi bi-journal-text"></i>
                     <span>Notes</span>
                     <!-- th:text="${noteCount}" -->
-                    <span class="nav-badge" id="navNotesBadge">24</span>
+                    <span th:text="${notesCount}" class="nav-badge" id="navNotesBadge">0</span>
                 </a>
             </li>
             <li>
@@ -239,7 +239,7 @@
                         <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+3 this week</div>
                     </div>
                     <!-- th:text="${noteCount}" -->
-                    <div class="sc-value" data-count="24">24</div>
+                    <div th:text="${notesCount}" class="sc-value" th:data-count="${notesCount}">0</div>
                     <div class="sc-label">Notes</div>
                 </div>
 
@@ -275,64 +275,67 @@
                         <button class="panel-action" data-page="notes">View all</button>
                     </div>
                     <div class="panel-body">
-                        <!-- th:each="note : ${recentNotes}" -->
-                        <div class="note-row" data-note-id="1">
+                        <!--  -->   <div th:if="${#lists.isEmpty(notes)}" class="text-center py-8 text-muted" style="color: #ea580c;">
+                        <i class="bi bi-folder-x fs-5"></i>
+                        <p class="mt-2 mb-0">No Notes.</p>
+                    </div>
+                        <div th:each="note : ${notes}" class="note-row" th:data-note-id="${note.id}">
                             <div class="note-row-left">
-                                <div class="note-ws-dot" style="--ws-color:#ea580c;"></div>
+                                <div class="note-ws-dot"   th:style="'--ws-color:' + ${note.workspace.color}"></div>
                                 <div>
-                                    <!-- th:text="${note.title}" -->
-                                    <div class="note-row-title">Spring Security Config</div>
-                                    <!-- th:text="${note.workspaceName}" -->
-                                    <div class="note-row-meta">Java Backend · <span class="note-tag">#security</span> <span class="note-tag">#spring</span></div>
+                                    <!-- " -->
+                                    <div th:text="${note.getTitle()}" class="note-row-title">Spring Security Config</div>
+                                    <!--  -->
+                                    <div th:text="${note.workspace.name}" class="note-row-meta">Java Backend · <span class="note-tag">#security</span> <span class="note-tag">#spring</span></div>
                                 </div>
                             </div>
-                            <!-- th:text="${#temporals.format(note.updatedAt, 'dd MMM')}" -->
-                            <div class="note-row-date">2h ago</div>
+                            <!--  -->
+                            <div th:text="${#temporals.format(note.updatedAt, 'dd MMM')}" class="note-row-date">2h ago</div>
                         </div>
 
-                        <div class="note-row" data-note-id="2">
-                            <div class="note-row-left">
-                                <div class="note-ws-dot" style="--ws-color:#6366f1;"></div>
-                                <div>
-                                    <div class="note-row-title">Thesis Literature Review</div>
-                                    <div class="note-row-meta">Research · <span class="note-tag">#thesis</span></div>
-                                </div>
-                            </div>
-                            <div class="note-row-date">Yesterday</div>
-                        </div>
+<!--                        <div class="note-row" data-note-id="2">-->
+<!--                            <div class="note-row-left">-->
+<!--                                <div class="note-ws-dot" style="&#45;&#45;ws-color:#6366f1;"></div>-->
+<!--                                <div>-->
+<!--                                    <div class="note-row-title">Thesis Literature Review</div>-->
+<!--                                    <div class="note-row-meta">Research · <span class="note-tag">#thesis</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="note-row-date">Yesterday</div>-->
+<!--                        </div>-->
 
-                        <div class="note-row" data-note-id="3">
-                            <div class="note-row-left">
-                                <div class="note-ws-dot" style="--ws-color:#10b981;"></div>
-                                <div>
-                                    <div class="note-row-title">Interview Prep — Java Q&A</div>
-                                    <div class="note-row-meta">Career · <span class="note-tag">#interview</span></div>
-                                </div>
-                            </div>
-                            <div class="note-row-date">3d ago</div>
-                        </div>
+<!--                        <div class="note-row" data-note-id="3">-->
+<!--                            <div class="note-row-left">-->
+<!--                                <div class="note-ws-dot" style="&#45;&#45;ws-color:#10b981;"></div>-->
+<!--                                <div>-->
+<!--                                    <div class="note-row-title">Interview Prep — Java Q&A</div>-->
+<!--                                    <div class="note-row-meta">Career · <span class="note-tag">#interview</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="note-row-date">3d ago</div>-->
+<!--                        </div>-->
 
-                        <div class="note-row" data-note-id="4">
-                            <div class="note-row-left">
-                                <div class="note-ws-dot" style="--ws-color:#ea580c;"></div>
-                                <div>
-                                    <div class="note-row-title">JPA Repository Patterns</div>
-                                    <div class="note-row-meta">Java Backend · <span class="note-tag">#jpa</span></div>
-                                </div>
-                            </div>
-                            <div class="note-row-date">5d ago</div>
-                        </div>
+<!--                        <div class="note-row" data-note-id="4">-->
+<!--                            <div class="note-row-left">-->
+<!--                                <div class="note-ws-dot" style="&#45;&#45;ws-color:#ea580c;"></div>-->
+<!--                                <div>-->
+<!--                                    <div class="note-row-title">JPA Repository Patterns</div>-->
+<!--                                    <div class="note-row-meta">Java Backend · <span class="note-tag">#jpa</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="note-row-date">5d ago</div>-->
+<!--                        </div>-->
 
-                        <div class="note-row" data-note-id="5">
-                            <div class="note-row-left">
-                                <div class="note-ws-dot" style="--ws-color:#f59e0b;"></div>
-                                <div>
-                                    <div class="note-row-title">Music Theory Basics</div>
-                                    <div class="note-row-meta">Music · <span class="note-tag">#theory</span></div>
-                                </div>
-                            </div>
-                            <div class="note-row-date">1w ago</div>
-                        </div>
+<!--                        <div class="note-row" data-note-id="5">-->
+<!--                            <div class="note-row-left">-->
+<!--                                <div class="note-ws-dot" style="&#45;&#45;ws-color:#f59e0b;"></div>-->
+<!--                                <div>-->
+<!--                                    <div class="note-row-title">Music Theory Basics</div>-->
+<!--                                    <div class="note-row-meta">Music · <span class="note-tag">#theory</span></div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="note-row-date">1w ago</div>-->
+<!--                        </div>-->
                     </div>
                 </div>
 
@@ -350,14 +353,14 @@
                                 <i class="bi bi-folder-x fs-3"></i>
                                 <p class="mt-2 mb-0">No Workspace.</p>
                             </div>
-                            <div th:each="ws : ${workspaces}" class="ws-card" data-workspace="1">
+                            <div th:each="ws : ${workspaces}" class="ws-card" th:data-workspace="${ws.id}">
                                 <div class="ws-card-bar" style="--ws-color:#ea580c;" th:style="'--ws-color:' + ${ws.color} + ';'"></div>
 
                                 <div class="ws-card-body">
                                     <div th:text="${ws.name}"  class="ws-card-name"></div>
 
                                     <!-- th:text="${ws.noteCount} + ' notes'" -->
-                                    <div class="ws-card-count">0 notes · 0 resources</div>
+                                    <div  class="ws-card-count">0 notes · 0 resources</div>
                                 </div>
                                 <i class="bi bi-chevron-right ws-card-arrow"></i>
                             </div>

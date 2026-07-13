@@ -3,6 +3,7 @@ package com.application.infera.controllers;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
+import com.application.infera.services.NoteService;
 import com.application.infera.services.WorkspaceService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,9 +17,11 @@ public class DashBoardController {
 
     private final UserRepository userRepository;
     private final WorkspaceService workspaceService;
-    public DashBoardController(UserRepository userRepository, WorkspaceService workspaceService) {
+    private final NoteService noteService;
+    public DashBoardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService) {
         this.userRepository = userRepository;
         this.workspaceService = workspaceService;
+        this.noteService = noteService;
     }
 
     @GetMapping("/dashboard")
@@ -40,6 +43,8 @@ public class DashBoardController {
         model.addAttribute("pageTitle","Dashboard — INFERA");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+        model.addAttribute("notesCount", noteService.countNotesForUser(user));
+        model.addAttribute("notes",noteService.getNotesForUser(user));
         return "dashboard";
     }
 
