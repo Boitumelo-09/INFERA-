@@ -246,7 +246,7 @@
      VIEW NOTE MODAL — read-only, opened by clicking a row
 ════════════════════════════════════════════════════════════════ -->
 <div class="modal fade infera-modal" id="viewNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg" id="viewNoteDialog">
         <div class="modal-content view-note-content">
             <div class="modal-header">
                 <div>
@@ -254,9 +254,14 @@
                     <h5 class="modal-title mt-2" id="viewNoteTitle">Note title</h5>
                     <span class="view-note-date" id="viewNoteDate"><i class="bi bi-clock-history"></i> Updated</span>
                 </div>
-                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="bi bi-x-lg"></i>
-                </button>
+                <div class="view-note-header-actions">
+                    <button type="button" class="modal-expand-btn" id="viewNoteExpandBtn" aria-label="Expand note" title="Expand">
+                        <i class="bi bi-arrows-angle-expand"></i>
+                    </button>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>

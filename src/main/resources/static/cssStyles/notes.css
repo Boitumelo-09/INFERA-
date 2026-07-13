@@ -294,12 +294,120 @@
     max-height: 55vh;
     overflow-y: auto;
     padding-right: 6px;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.3s;
+
+    /* Firefox scrollbar theming — takes the note's workspace colour */
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
 .view-note-body:empty::before,
 .view-note-body.is-empty::before {
     content: 'This note has no content yet.';
     color: var(--muted);
     font-style: italic;
+}
+
+/* Chrome / Edge / Safari scrollbar theming — same workspace colour */
+.view-note-body::-webkit-scrollbar { width: 6px; }
+.view-note-body::-webkit-scrollbar-track { background: transparent; }
+.view-note-body::-webkit-scrollbar-thumb {
+    background: var(--ws-color, var(--accent));
+    border-radius: 99px;
+}
+.view-note-body::-webkit-scrollbar-thumb:hover {
+    background: var(--ws-color, var(--accent));
+    filter: brightness(1.15);
+}
+
+/* "Edit this note" button — recolours to match the note's workspace
+   instead of the app's default orange accent */
+.view-note-content .modal-footer .btn-modal-accent {
+    background: var(--ws-color, var(--accent));
+    border-color: var(--ws-color, var(--accent));
+}
+.view-note-content .modal-footer .btn-modal-accent:hover {
+    background: var(--ws-color, var(--accent));
+    filter: brightness(0.88);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--ws-color, var(--accent)) 40%, transparent);
+}
+
+/* ─── HEADER ACTIONS (expand + close) ───── */
+.view-note-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.modal-expand-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 7px;
+    transition: color 0.2s, background 0.2s;
+}
+.modal-expand-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+/* ═══════════════════════════════════════
+   THEATER / EXPANDED MODE
+   Toggled by JS adding .theater-mode to the
+   modal-dialog — grows the note to fill most
+   of the viewport, like YouTube's expand.
+═══════════════════════════════════════ */
+#viewNoteDialog {
+    transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#viewNoteDialog.theater-mode {
+    max-width: 92vw;
+    width: 92vw;
+    height: 90vh;
+    margin: 5vh auto;
+}
+#viewNoteDialog.theater-mode .modal-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#viewNoteDialog.theater-mode .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+}
+#viewNoteDialog.theater-mode .view-note-body {
+    max-width: 760px;
+    width: 100%;
+    max-height: none;
+    font-size: 1.08rem;
+    line-height: 2;
+}
+#viewNoteDialog.theater-mode .view-note-content .modal-title {
+    font-size: 1.6rem;
+}
+
+/* Stronger blur behind the modal in theater mode — deepens the focus effect */
+.modal-backdrop.theater-backdrop {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(13,17,23,0.88);
+    transition: backdrop-filter 0.35s, background 0.35s;
+}
+
+@media (max-width: 768px) {
+    #viewNoteDialog.theater-mode {
+        max-width: 100vw;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+    #viewNoteDialog.theater-mode .modal-content { border-radius: 0; height: 100vh; }
 }
 
 /* ─── DELETE WARNING (shared pattern) ─── */
@@ -324,6 +432,7 @@
 
 .btn-modal-danger {
     padding: 9px 22px;
+    margin-top: 20px;
     border-radius: 8px;
     font-size: 0.86rem;
     font-weight: 600;

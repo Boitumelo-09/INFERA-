@@ -101,6 +101,11 @@ function openViewNoteModal(row) {
     const wsColor     = getComputedStyle(row).getPropertyValue('--ws-color').trim() || '#ea580c';
     const dateText    = row.querySelector('.nri-date span')?.textContent || '';
 
+    // Apply the workspace colour to the whole modal — scrollbar, edit button,
+    // and the badge all read from this one variable
+    const modalContent = viewNoteModalEl?.querySelector('.view-note-content');
+    modalContent?.style.setProperty('--ws-color', wsColor);
+
     $('#viewNoteTitle').textContent = title;
     $('#viewNoteWs').textContent    = wsName;
     $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
@@ -119,6 +124,48 @@ $('#viewNoteEditBtn')?.addEventListener('click', () => {
     if (!currentlyViewedRow) return;
     viewNoteModal?.hide();
     setTimeout(() => openEditNoteModal(currentlyViewedRow), 250);
+});
+
+/* ───────────────────────────────────────────────────────────────────
+   THEATER MODE — expand/shrink toggle, like YouTube's expand button
+─────────────────────────────────────────────────────────────────── */
+const viewNoteDialog     = $('#viewNoteDialog');
+const viewNoteExpandBtn  = $('#viewNoteExpandBtn');
+let isTheaterMode = false;
+
+function setTheaterMode(on) {
+    isTheaterMode = on;
+    viewNoteDialog?.classList.toggle('theater-mode', on);
+
+    const icon = viewNoteExpandBtn?.querySelector('i');
+    if (icon) {
+        icon.className = on ? 'bi bi-arrows-angle-contract' : 'bi bi-arrows-angle-expand';
+    }
+    if (viewNoteExpandBtn) {
+        viewNoteExpandBtn.title = on ? 'Shrink' : 'Expand';
+    }
+
+    // Deepen the backdrop blur while expanded — reinforces the "focus mode" feel
+    const backdrop = document.querySelector('.modal-backdrop');
+    backdrop?.classList.toggle('theater-backdrop', on);
+}
+
+viewNoteExpandBtn?.addEventListener('click', () => setTheaterMode(!isTheaterMode));
+
+/* Reset to normal size every time the modal is closed, so it doesn't
+   reopen expanded next time by surprise */
+viewNoteModalEl?.addEventListener('hidden.bs.modal', () => setTheaterMode(false));
+
+/* Keyboard shortcut: "f" toggles theater mode while the view modal is open,
+   mirroring the muscle memory people already have from video players */
+document.addEventListener('keydown', e => {
+    const modalIsOpen = viewNoteModalEl?.classList.contains('show');
+    if (!modalIsOpen) return;
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+    if (e.key === 'f' || e.key === 'F') {
+        setTheaterMode(!isTheaterMode);
+    }
 });
 
 /* ───────────────────────────────────────────────────────────────────
