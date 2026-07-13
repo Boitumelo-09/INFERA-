@@ -1,0 +1,277 @@
+/* ─────────────────────────────────────────
+   INFERA — notes.css
+   Extends dashboard.css (sidebar/topbar/modals/forms)
+   Reuses ws-page-header / delete-warning / btn-modal-danger
+   classes already defined in workspaces.css if loaded together —
+   otherwise this file defines everything standalone.
+───────────────────────────────────────── */
+
+:root {
+    --bg:           #0d1117;
+    --secondary:    #161b22;
+    --card:         #1c2128;
+    --accent:       #ea580c;
+    --accent-hover: #c2410c;
+    --text:         #f8fafc;
+    --muted:        #94a3b8;
+    --border:       rgba(255,255,255,0.07);
+    --radius:       12px;
+    --font-display: 'Sora', sans-serif;
+    --font-body:    'Inter', sans-serif;
+}
+
+/* ─── PAGE HEADER (shared shape with workspaces page) ─── */
+.ws-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.ws-page-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    font-weight: 800;
+    color: var(--text);
+}
+.ws-page-sub { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+
+/* ─── WORKSPACE FILTER PILLS ─────────────── */
+.ws-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.ws-filter-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 7px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.ws-filter-pill:hover { border-color: rgba(255,255,255,0.16); color: var(--text); }
+.ws-filter-pill.active {
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 15%, var(--card));
+    border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
+    color: var(--text);
+}
+.ws-filter-pill[data-filter="all"].active {
+    background: rgba(234,88,12,0.14);
+    border-color: rgba(234,88,12,0.35);
+    color: #fb923c;
+}
+.ws-filter-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--ws-color, var(--accent));
+    flex-shrink: 0;
+}
+
+/* ─── EMPTY STATES ───────────────────────── */
+.notes-empty {
+    text-align: center;
+    padding: 72px 24px;
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+.notes-empty-icon {
+    width: 64px; height: 64px;
+    background: rgba(234,88,12,0.1);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; color: var(--accent);
+    margin: 0 auto 20px;
+}
+.notes-empty h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+.notes-empty p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+/* ─── NOTES GRID ─────────────────────────── */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.note-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 20px 16px;
+    position: relative;
+    transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+    cursor: pointer;
+}
+.note-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+    background: var(--ws-color, var(--accent));
+}
+.note-tile:hover {
+    border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+}
+.note-tile.filtered-out { display: none; }
+
+.note-tile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.note-tile-ws {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ws-color, var(--accent));
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 13%, transparent);
+    border-radius: 99px;
+    padding: 3px 10px;
+}
+
+.note-tile-title {
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.note-tile-preview {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 60px;
+}
+.note-tile-footer {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: rgba(148,163,184,0.55);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Menu reuse (identical shape to workspace tile menu) */
+.ws-tile-menu { position: relative; }
+.ws-menu-btn {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+.ws-menu-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+.ws-menu-dropdown {
+    position: absolute;
+    top: 36px; right: 0;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 150px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 20;
+}
+.ws-tile-menu.open .ws-menu-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.ws-menu-item {
+    width: 100%;
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 0.83rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+.ws-menu-item:hover { background: rgba(255,255,255,0.06); }
+.ws-menu-item.danger { color: #f87171; }
+.ws-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
+
+/* ─── DELETE WARNING (shared with workspaces) ───── */
+.delete-warning {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 4px;
+}
+.delete-warning i {
+    font-size: 1.4rem;
+    color: #f87171;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.delete-warning p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+.delete-warning strong { color: var(--text); }
+
+.btn-modal-danger {
+    padding: 9px 22px;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #dc2626;
+    border: none;
+    color: #fff;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s, transform 0.15s;
+}
+.btn-modal-danger:hover { background: #b91c1c; transform: translateY(-1px); }
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media (max-width: 576px) {
+    .notes-grid { grid-template-columns: 1fr; }
+    .ws-page-header { flex-direction: column; align-items: stretch; }
+    .ws-page-header .btn-topbar-accent { justify-content: center; }
+}
