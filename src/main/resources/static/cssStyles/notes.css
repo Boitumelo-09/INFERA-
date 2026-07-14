@@ -139,6 +139,7 @@
     /*box-shadow: 0 8px 20px rgba(0,0,0,.25),inset 0 0 0 1px var(--ws-color, var(--accent));*/
 }
 
+
 .nri-accent {
     width: 4px;
     align-self: stretch;
@@ -379,6 +380,7 @@
     display: flex;
     flex-direction: column;
 }
+
 #viewNoteDialog.theater-mode .modal-body {
     flex: 1;
     overflow-y: auto;
@@ -386,7 +388,22 @@
     align-items: flex-start;
     justify-content: center;
     padding: 40px 20px;
+
+    /* Scroll now happens here instead of .view-note-body — needs its own theming */
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
+#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar { width: 6px; }
+#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-track { background: transparent; }
+#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-thumb {
+    background: var(--ws-color, var(--accent));
+    border-radius: 99px;
+}
+#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-thumb:hover {
+    filter: brightness(1.15);
+}
+
+
 #viewNoteDialog.theater-mode .view-note-body {
     max-width: 760px;
     width: 100%;

@@ -39,9 +39,7 @@ public class UserService {
         if(!signUpRequest.getPassword().equals(signUpRequest.getConfirmPassword())){
            throw new PasswordsDontMatchException("Passwords Don't Match!");
         }
-        if (signUpRequest.getEmail().codePoints().anyMatch(Character::isEmoji)){
-            throw new UserEmailErrorException("Email contains Emoji!");
-        }
+
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(Role.USER);
 
