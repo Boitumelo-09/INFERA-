@@ -360,7 +360,7 @@
                                     <div th:text="${ws.name}"  class="ws-card-name"></div>
 
                                     <!-- th:text="${ws.noteCount} + ' notes'" -->
-                                    <div  class="ws-card-count">0 notes · 0 resources</div>
+                                    <div  class="ws-card-count"> <span th:text="${wsNoteCount.get(ws.id) ?: 0} + ' notes'"></span> · 0 resources</div>
                                 </div>
                                 <i class="bi bi-chevron-right ws-card-arrow"></i>
                             </div>

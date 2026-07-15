@@ -9,7 +9,7 @@
      · Search results with keyboard navigation
      · New Workspace modal + colour picker
      · Quick Note modal
-     · Panel "View all" / nav routing (SPA-style stub)
+     · Soft page-transition navigation (workspace tiles/sidebar/panel)
      · Toast notification system
      · Note row + workspace card click feedback
      · Topbar active-link highlight on scroll (future sections)
@@ -98,10 +98,40 @@ sidebarToggle?.addEventListener('click', openSidebar);
 sidebarClose?.addEventListener('click', closeSidebar);
 sidebarOverlay?.addEventListener('click', closeSidebar);
 
+/* ───────────────────────────────────────────────────────────────────
+   SOFT PAGE NAVIGATION
+   Fades the current page out before navigating, instead of the
+   abrupt jump cut of a normal link click or redirect. The arriving
+   page fades back IN on load via 'pageshow' (also covers the
+   browser's back/forward cache, not just fresh loads).
+
+   Requires this in dashboard.css:
+     body { opacity: 1; transition: opacity .28s ease; }
+     body.page-transitioning { opacity: 0; pointer-events: none; }
+─────────────────────────────────────────────────────────────────── */
+function softNavigate(url) {
+    document.body.classList.add('page-transitioning');
+    setTimeout(() => { window.location.href = url; }, 240);
+}
+
+window.addEventListener('pageshow', () => {
+    document.body.classList.remove('page-transitioning');
+});
+
 /* Close sidebar on nav-item click on mobile */
 $$('.nav-item, .nav-item-btn').forEach(item => {
     item.addEventListener('click', () => {
         if (window.innerWidth < 992) closeSidebar();
+    });
+});
+
+/* Sidebar workspace links (Workspaces section) soft-navigate to Notes,
+   pre-filtered to that workspace — href already carries ?workspace={id}
+   from th:href="@{/notes(workspace=${ws.id})}" in the template */
+$$('#workspaceList .ws-item').forEach(link => {
+    link.addEventListener('click', e => {
+        e.preventDefault();
+        softNavigate(link.href);
     });
 });
 
@@ -138,8 +168,8 @@ function initGreeting() {
         setInterval(updateDate, 1000);
     }
 }
-let k =document.getElementById("greetingText");
-  k.style.color = "var(--accent)";
+let k = document.getElementById("greetingText");
+if (k) k.style.color = "var(--accent)";
 
 /* ───────────────────────────────────────────────────────────────────
    STAT COUNTER ANIMATION
@@ -406,7 +436,10 @@ newWorkspaceForm?.addEventListener('submit', e => {
         e.preventDefault();               // only block if invalid
         nameInput?.focus();
         nameInput?.style.setProperty('border-color', '#ef4444');
-        window.location.reload();
+        // NOTE: removed window.location.reload() that used to be here —
+        // reloading on a failed validation wipes the open modal and
+        // anything else the user typed. We just block submission and
+        // let them fix the field in place instead.
     }
     // if valid, do nothing — browser submits the form to th:action="@{/workspaces}"
 });
@@ -547,12 +580,12 @@ $$('.nav-item[data-page]').forEach(el => {
     });
 });
 
-/* "View all" / panel actions */
+/* "View all" / panel actions — soft-navigate to the target page
+   instead of an instant hard redirect */
 $$('.panel-action[data-page]').forEach(btn => {
     btn.addEventListener('click', () => {
         setActiveNav(btn.dataset.page);
-        window.location.href = '/' + btn.dataset.page; 
-        showToast(`Navigating to ${btn.dataset.page}…`);
+        softNavigate('/' + btn.dataset.page);
     });
 });
 
@@ -563,20 +596,20 @@ $$('.note-row[data-note-id]').forEach(row => {
     row.addEventListener('click', () => {
         const id = row.dataset.noteId;
         const title = row.querySelector('.note-row-title')?.textContent;
-       window.location.href = '/notes/' + id;
-        showToast(`Opening: ${title}`);
+        softNavigate('/notes/' + id);
     });
 });
 
 /* ───────────────────────────────────────────────────────────────────
    WORKSPACE CARD CLICK
+   Same story as the tiles on /workspaces and the sidebar links above —
+   clicking a workspace card takes you to Notes, pre-filtered to
+   just that workspace, with the same soft fade transition.
 ─────────────────────────────────────────────────────────────────── */
 $$('.ws-card[data-workspace]').forEach(card => {
     card.addEventListener('click', () => {
-        const id   = card.dataset.workspace;
-        const name = card.querySelector('.ws-card-name')?.textContent;
-        window.location.href = '/workspaces/' + id; 
-        showToast(`Opening workspace: ${name}`);
+        const id = card.dataset.workspace;
+        softNavigate(`/notes?workspace=${id}`);
     });
 });
 
@@ -678,4 +711,7 @@ if (document.readyState === 'loading') {
     init();
 }
 
-document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const greetingDateEl = document.getElementById('greetingDate');
+if (greetingDateEl) {
+    greetingDateEl.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}

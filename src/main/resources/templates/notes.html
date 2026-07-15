@@ -70,17 +70,22 @@
                 </a>
             </li>
         </ul>
-
+        
         <div class="nav-section-label mt-3">Workspaces</div>
         <ul class="nav-list" id="workspaceList">
             <li th:each="ws : ${workspaces}">
-                <a th:href="@{/workspaces}" class="nav-item ws-item">
+                <a th:href="@{/notes(workspace=${ws.id})}" class="nav-item ws-item">
                     <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
                     <span th:text="${ws.name}">Workspace</span>
                 </a>
             </li>
+            <li>
+                <a th:href="@{/workspaces}" class="nav-item nav-item-btn" id="newWorkspaceBtn">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Workspaces</span>
+                </a>
+            </li>
         </ul>
-
         <div class="nav-section-label mt-3">Account</div>
         <ul class="nav-list">
             <li><a href="#" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
@@ -392,16 +397,17 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script th:if="${successMessage}">
+<script th:inline="javascript" th:if="${successMessage}">
     document.addEventListener("DOMContentLoaded", () => {
         showToast('[[${successMessage}]]');
     });
 </script>
-<script th:if="${errorMessage}">
+<script th:inline="javascript" th:if="${errorMessage}">
     document.addEventListener("DOMContentLoaded", () => {
         showToast('[[${errorMessage}]]', 'error');
     });
 </script>
-<script th:src="@{/javaScript/notes.js}" src="notes.js"></script>
+<script th:src="@{/javaScript/notes.js}" ></script>
+
 </body>
 </html>

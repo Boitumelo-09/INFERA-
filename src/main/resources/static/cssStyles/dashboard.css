@@ -43,6 +43,15 @@ button { font-family: var(--font-body); }
 ::-webkit-scrollbar-thumb { background: rgba(234,88,12,0.4); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+body {
+    opacity: 1;
+    transition: opacity .15s ease;
+}
+
+body.page-transitioning {
+    opacity: 0;
+    pointer-events: none;
+}
 /* ═══════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════ */
