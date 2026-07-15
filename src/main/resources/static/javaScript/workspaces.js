@@ -68,6 +68,22 @@ window.addEventListener('resize', () => {
 });
 
 /* ───────────────────────────────────────────────────────────────────
+   SOFT PAGE NAVIGATION
+   Fades the current page out before navigating, instead of the
+   abrupt jump cut of a normal link/redirect. Also fades the
+   NEXT page in on load via the 'pageshow' event (covers back/forward
+   cache too, not just fresh loads).
+─────────────────────────────────────────────────────────────────── */
+function softNavigate(url) {
+  document.body.classList.add('page-transitioning');
+  setTimeout(() => { window.location.href = url; }, 240);
+}
+
+window.addEventListener('pageshow', () => {
+  document.body.classList.remove('page-transitioning');
+});
+
+/* ───────────────────────────────────────────────────────────────────
    TOAST
 ─────────────────────────────────────────────────────────────────── */
 function showToast(msg, type = 'success') {
@@ -79,8 +95,8 @@ function showToast(msg, type = 'success') {
   toastMsg.textContent = msg;
   toastIcon.className  = 'toast-icon' + (type === 'error' ? ' error' : '');
   toastIcon.innerHTML  = type === 'error'
-    ? '<i class="bi bi-exclamation-circle"></i>'
-    : '<i class="bi bi-check2-circle"></i>';
+      ? '<i class="bi bi-exclamation-circle"></i>'
+      : '<i class="bi bi-check2-circle"></i>';
 
   toast.classList.add('show');
   clearTimeout(toast._timer);
@@ -88,22 +104,22 @@ function showToast(msg, type = 'success') {
 }
 
 /* Auto-toast from Thymeleaf flash messages already rendered in the DOM */
-// document.addEventListener('DOMContentLoaded', () => {
-//   const successEl = $('.flash-alert.success');
-//   const errorEl   = $('.flash-alert.error');
-//   if (successEl) showToast(successEl.querySelector('span')?.textContent || 'Success', 'success');
-//   if (errorEl)   showToast(errorEl.querySelector('span')?.textContent || 'Something went wrong', 'error');
-//
-//   // Auto-hide flash banners after a few seconds
-//   $$('.flash-alert').forEach(el => {
-//     setTimeout(() => {
-//       el.style.transition = 'opacity 0.4s, transform 0.4s';
-//       el.style.opacity = '0';
-//       el.style.transform = 'translateY(-8px)';
-//       setTimeout(() => el.remove(), 400);
-//     }, 4000);
-//   });
-// });
+document.addEventListener('DOMContentLoaded', () => {
+  const successEl = $('.flash-alert.success');
+  const errorEl   = $('.flash-alert.error');
+  if (successEl) showToast(successEl.querySelector('span')?.textContent || 'Success', 'success');
+  if (errorEl)   showToast(errorEl.querySelector('span')?.textContent || 'Something went wrong', 'error');
+
+  // Auto-hide flash banners after a few seconds
+  $$('.flash-alert').forEach(el => {
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.4s, transform 0.4s';
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(-8px)';
+      setTimeout(() => el.remove(), 400);
+    }, 4000);
+  });
+});
 
 /* ───────────────────────────────────────────────────────────────────
    NEW WORKSPACE MODAL
@@ -230,6 +246,24 @@ $$('.ws-tile').forEach(tile => {
     e.stopPropagation();
     menuWrap.classList.remove('open');
     openDeleteModal(tile);
+  });
+
+  // Clicking the tile itself (not the menu) navigates to Notes,
+  // pre-filtered to only this workspace — soft fade, not an abrupt jump
+  tile.addEventListener('click', e => {
+    if (menuWrap.contains(e.target)) return;   // let the menu handle its own clicks
+    const id = tile.dataset.id;
+    softNavigate(`/notes?workspace=${id}`);
+  });
+});
+
+/* ───────────────────────────────────────────────────────────────────
+   SIDEBAR WORKSPACE LINKS — same soft filter-navigate as the tiles
+─────────────────────────────────────────────────────────────────── */
+$$('#workspaceList .ws-item').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    softNavigate(link.href);   // href already carries ?workspace={id} from Thymeleaf
   });
 });
 

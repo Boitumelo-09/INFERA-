@@ -75,15 +75,15 @@
         <div class="nav-section-label mt-3">Workspaces</div>
         <ul class="nav-list" id="workspaceList">
             <li th:each="ws : ${workspaces}">
-                <a th:href="@{/workspaces}" class="nav-item ws-item">
+                <a th:href="@{/notes(workspace=${ws.id})}" class="nav-item ws-item">
                     <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
                     <span th:text="${ws.name}">Workspace</span>
                 </a>
             </li>
             <li>
                 <button class="nav-item nav-item-btn" id="newWorkspaceBtn">
-                    <i class="bi bi-plus"></i>
-                    <span>New workspace</span>
+                    <i class="bi bi-folder-plus"></i>
+                    <span>Add workspace</span>
                 </button>
             </li>
         </ul>

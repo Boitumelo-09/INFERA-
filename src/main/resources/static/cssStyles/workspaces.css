@@ -98,6 +98,8 @@
     border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
     transform: translateY(-3px);
     box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+    cursor: pointer;
+    text-shadow: 0 1px 2px color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
 }
 .ws-tile:hover::before {
     background: linear-gradient(90deg, var(--ws-color, var(--accent)), transparent);

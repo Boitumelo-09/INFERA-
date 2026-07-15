@@ -25,7 +25,7 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
-      if(countWorkspacesForUser(user) > 10){
+      if(countWorkspacesForUser(user) > 8){
           throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
       }
 
