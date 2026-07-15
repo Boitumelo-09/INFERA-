@@ -46,6 +46,7 @@ public class NoteController {
         model.addAttribute("noteCount", notes.size());
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+
         return "notes";
     }
 

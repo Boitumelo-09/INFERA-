@@ -8,7 +8,9 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NoteService {
@@ -40,9 +42,39 @@ public class NoteService {
         return noteRepository.findByWorkspace_UserOrderByUpdatedAtDesc(user);
     }
 
+    // Notes for ONE specific workspace — ownership is verified first via
+    // WorkspaceService, THEN the notes are fetched. This two-step order
+    // matters: never trust a workspaceId alone, always confirm it's the
+    // user's before touching anything that belongs to it.
+    public List<Note> getNotesForWorkspace(Long workspaceId, User user) {
+        Workspace workspace = workspaceService.getWorkspaceForUser(workspaceId, user);
+        return noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
+    }
+
     // Count for dashboard stat card
     public long countNotesForUser(User user) {
         return noteRepository.countByWorkspace_User(user);
+    }
+
+    // Note count for ONE workspace — fine for a single lookup, but avoid
+    // calling this inside a th:each loop (N queries). Use the method below instead.
+    public long countNotesInWorkspace(Workspace workspace) {
+        return noteRepository.countByWorkspace(workspace);
+    }
+
+    // EFFICIENT version — one query gets note counts for ALL of the user's
+    // workspaces at once. Returns a Map so the template can look up
+    // noteCounts.get(ws.id) for each tile with zero extra database hits.
+    public Map<Long, Long> getNoteCountsByWorkspace(User user) {
+        List<Object[]> rows = noteRepository.countNotesGroupedByWorkspace(user);
+
+        Map<Long, Long> counts = new HashMap<>();
+        for (Object[] row : rows) {
+            Long workspaceId = (Long) row[0];
+            Long count       = (Long) row[1];
+            counts.put(workspaceId, count);
+        }
+        return counts;   // workspaces with zero notes simply won't have an entry here
     }
 
     // Ownership-scoped single lookup, used before update/delete

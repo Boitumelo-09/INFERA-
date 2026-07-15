@@ -60,6 +60,20 @@ sidebarToggle?.addEventListener('click', openSidebar);
 sidebarClose?.addEventListener('click', closeSidebar);
 sidebarOverlay?.addEventListener('click', closeSidebar);
 
+/* ───────────────────────────────────────────────────────────────────
+   SOFT PAGE NAVIGATION
+   Fades THIS page in on arrival (continuity with whichever page
+   linked here), and is available for any future outbound links too.
+─────────────────────────────────────────────────────────────────── */
+function softNavigate(url) {
+    document.body.classList.add('page-transitioning');
+    setTimeout(() => { window.location.href = url; }, 240);
+}
+
+window.addEventListener('pageshow', () => {
+    document.body.classList.remove('page-transitioning');
+});
+
 window.addEventListener('resize', () => {
     if (window.innerWidth >= 992) closeSidebar();
 });
@@ -289,19 +303,40 @@ document.addEventListener('click', () => {
 /* ───────────────────────────────────────────────────────────────────
    WORKSPACE FILTER PILLS — pure client-side, no server round trip
 ─────────────────────────────────────────────────────────────────── */
-$$('.ws-filter-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-        $$('.ws-filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-
-        const filter = pill.dataset.filter;
-
-        $$('.note-row-item').forEach(row => {
-            const matches = filter === 'all' || row.dataset.workspaceId === filter;
-            row.classList.toggle('filtered-out', !matches);
-        });
+function applyWorkspaceFilter(filter) {
+    $$('.ws-filter-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.filter === filter);
     });
+
+    $$('.note-row-item').forEach(row => {
+        const matches = filter === 'all' || row.dataset.workspaceId === filter;
+        row.classList.toggle('filtered-out', !matches);
+    });
+}
+
+$$('.ws-filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => applyWorkspaceFilter(pill.dataset.filter));
 });
+
+/* ───────────────────────────────────────────────────────────────────
+   PRE-APPLY FILTER FROM URL
+   Lets a workspace tile link (e.g. /notes?workspace=3) land here
+   already filtered — as if the user had clicked that filter pill.
+─────────────────────────────────────────────────────────────────── */
+(function applyFilterFromUrl() {
+    const params      = new URLSearchParams(window.location.search);
+    const workspaceId = params.get('workspace');
+    if (!workspaceId) return;
+
+    // Only proceed if a matching pill actually exists (it won't if there's
+    // just one workspace, since the pill row isn't rendered in that case —
+    // and with only one workspace, every note already belongs to it anyway)
+    const targetPill = document.querySelector(`.ws-filter-pill[data-filter="${workspaceId}"]`);
+    if (!targetPill) return;
+
+    applyWorkspaceFilter(workspaceId);
+    targetPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+})();
 
 /* ───────────────────────────────────────────────────────────────────
    FORM INPUT FOCUS STYLES
