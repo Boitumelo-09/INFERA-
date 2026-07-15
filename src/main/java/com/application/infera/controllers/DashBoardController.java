@@ -45,6 +45,7 @@ public class DashBoardController {
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
         model.addAttribute("notes",noteService.getNotesForUser(user));
+        model.addAttribute("wsNoteCount",noteService.getNoteCountsByWorkspace(user));
         return "dashboard";
     }
 
