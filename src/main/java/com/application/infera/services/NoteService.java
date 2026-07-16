@@ -56,12 +56,6 @@ public class NoteService {
         return noteRepository.countByWorkspace_User(user);
     }
 
-    // Note count for ONE workspace — fine for a single lookup, but avoid
-    // calling this inside a th:each loop (N queries). Use the method below instead.
-    public long countNotesInWorkspace(Workspace workspace) {
-        return noteRepository.countByWorkspace(workspace);
-    }
-
     // EFFICIENT version — one query gets note counts for ALL of the user's
     // workspaces at once. Returns a Map so the template can look up
     // noteCounts.get(ws.id) for each tile with zero extra database hits.
