@@ -98,4 +98,7 @@ public class NoteService {
         Note note = getNoteForUser(id, user);
         noteRepository.delete(note);
     }
+    public Long countAllNotes(){
+        return noteRepository.count();
+    }
 }
