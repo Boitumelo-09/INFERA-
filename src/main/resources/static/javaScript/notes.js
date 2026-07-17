@@ -349,7 +349,16 @@ $$('.ws-filter-pill').forEach(pill => {
     applyWorkspaceFilter(workspaceId);
     targetPill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 })();
+(function openViewFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const noteId = params.get('view');
+    if (!noteId) return;
 
+    const targetRow = document.querySelector(`.note-row-item[data-id="${noteId}"]`);
+    if (!targetRow) return;
+
+    setTimeout(() => openViewNoteModal(targetRow), 10);
+})();
 /* ───────────────────────────────────────────────────────────────────
    FORM INPUT FOCUS STYLES
 ─────────────────────────────────────────────────────────────────── */
