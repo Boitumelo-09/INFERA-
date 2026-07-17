@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/signup")
-public class signUpFormController {
+public class signupformController {
     private final UserService userService;
 
-    public signUpFormController(UserService userService) {
+    public signupformController(UserService userService) {
         this.userService = userService;
     }
 

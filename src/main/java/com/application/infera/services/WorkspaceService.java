@@ -76,4 +76,7 @@ public class WorkspaceService {
         Workspace workspace = getWorkspaceForUser(id, user);
         workspaceRepository.delete(workspace);
     }
+    public long countAllWorkspaces(){
+        return workspaceRepository.count();
+    }
 }

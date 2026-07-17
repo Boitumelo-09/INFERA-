@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/signin")
-public class signInFormController {
+public class signinformController {
     @GetMapping
     public String signInForm(Model model) {
         model.addAttribute("pageTitle","Sign in — INFERA");
