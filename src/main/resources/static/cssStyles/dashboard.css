@@ -498,7 +498,7 @@ body.page-transitioning {
     border-bottom: 1px solid var(--border);
 }
 .panel-title {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--text);
@@ -516,8 +516,20 @@ body.page-transitioning {
     transition: background 0.2s;
 }
 .panel-action:hover { background: rgba(234,88,12,0.1); }
-.panel-body { padding: 8px 0; }
 
+.panel-body {
+    padding: 8px 0;
+
+}
+.notes-scroll {
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.ws-scroll {
+    max-height: 260px;
+    overflow-y: auto;
+}
 /* ─── NOTE ROWS ─────────────────────── */
 .note-row {
     display: flex;

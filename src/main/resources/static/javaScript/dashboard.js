@@ -478,8 +478,7 @@ $('#quickNoteBtn')?.addEventListener('click', () => {
 quickNoteForm?.addEventListener('submit', async e => {
     e.preventDefault();
 
-    const title   = $('#noteTitle')?.value.trim();
-    const content = $('#noteContent')?.value.trim();
+    const title = $('#noteTitle')?.value.trim();
 
     if (!title) {
         $('#noteTitle')?.focus();
@@ -489,27 +488,29 @@ quickNoteForm?.addEventListener('submit', async e => {
     const btn = $('#noteSubmitBtn');
     setLoading(btn, true);
 
-    /* ── THYMELEAF INTEGRATION ─────────────────────────────────────
-       const form = quickNoteForm;
-       const data = new FormData(form);
-       const res  = await fetch('/notes', {
-         method: 'POST',
-         headers: { 'X-CSRF-TOKEN': document.querySelector('[name=_csrf]')?.value },
-         body: data
-       });
-       if (res.ok) { ... }
-    ──────────────────────────────────────────────────────────────── */
-    await fakeDelay(1000);
+    try {
+        const form = quickNoteForm;
+        const data = new FormData(form);
+        const res  = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': form.querySelector('[name=_csrf]')?.value },
+            body: data
+        });
 
-    /* Prepend to recent notes list (demo only — real app re-renders via Thymeleaf) */
-    prependNoteRow(title);
-    updateBadgeCount('navNotesBadge', 1);
+        if (!res.ok) throw new Error('Request failed: ' + res.status);
 
-    setLoading(btn, false);
-    quickNoteModal.hide();
-    quickNoteForm.reset();
+        prependNoteRow(title);
+        updateBadgeCount('navNotesBadge', 1);
 
-    showToast(`Note "${title}" saved`);
+        quickNoteModal.hide();
+        quickNoteForm.reset();
+        showToast(`Note "${title}" saved`);
+
+    } catch (err) {
+        showToast('Could not save note. Please try again.', 'error');
+    } finally {
+        setLoading(btn, false);
+    }
 });
 
 function prependNoteRow(title) {
