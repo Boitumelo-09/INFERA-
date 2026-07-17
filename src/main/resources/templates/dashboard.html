@@ -290,7 +290,7 @@
                                 </div>
                             </div>
                             <!--  -->
-                            <div th:text="${#temporals.format(note.updatedAt, 'dd MMM')}" class="note-row-date">2h ago</div>
+                            <div class="note-row-date" th:data-datetime="${note.updatedAt}" th:text="${#temporals.format(note.updatedAt, 'dd MMM, HH:mm')}">2h ago</div>
                         </div>
 
                     </div>

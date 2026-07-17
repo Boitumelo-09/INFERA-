@@ -596,10 +596,9 @@ $$('.panel-action[data-page]').forEach(btn => {
 $$('.note-row[data-note-id]').forEach(row => {
     row.addEventListener('click', () => {
         const id = row.dataset.noteId;
-        const title = row.querySelector('.note-row-title')?.textContent;
-        softNavigate('/notes/' + id);
+        softNavigate(`/notes?view=${id}`);
     });
-});
+})
 
 /* ───────────────────────────────────────────────────────────────────
    WORKSPACE CARD CLICK
@@ -704,6 +703,7 @@ function init() {
     initGreeting();
     animateCounters();
     buildActivityBars();
+    applyRelativeDates();
 }
 
 if (document.readyState === 'loading') {
@@ -715,4 +715,28 @@ if (document.readyState === 'loading') {
 const greetingDateEl = document.getElementById('greetingDate');
 if (greetingDateEl) {
     greetingDateEl.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+function formatRelativeDate(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date)) return null;
+
+    const now = new Date();
+    const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const diffDays = Math.round((startOfDay(now) - startOfDay(date)) / 86400000);
+
+    const time = date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    if (diffDays === 0) return `Today ${time}`;
+    if (diffDays === 1) return `Yesterday ${time}`;
+    if (diffDays > 1 && diffDays < 7) return `${date.toLocaleDateString('en-ZA', { weekday: 'long' })} ${time}`;
+
+    const day = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
+    return `${day}, ${time}`;
+}
+
+function applyRelativeDates() {
+    $$('.note-row-date[data-datetime]').forEach(el => {
+        const formatted = formatRelativeDate(el.dataset.datetime);
+        if (formatted) el.textContent = formatted;
+    });
 }
