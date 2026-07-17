@@ -273,31 +273,43 @@ $$('.note-row-item').forEach(row => {
 
     menuBtn?.addEventListener('click', e => {
         e.stopPropagation();
-        $$('.ws-tile-menu.open').forEach(m => { if (m !== menuWrap) m.classList.remove('open'); });
-        menuWrap.classList.toggle('open');
+        $$('.ws-tile-menu.open').forEach(m => {
+            if (m !== menuWrap) {
+                m.classList.remove('open');
+                m.closest('.note-row-item')?.classList.remove('menu-active');
+            }
+        });
+        const isOpen = menuWrap.classList.toggle('open');
+        row.classList.toggle('menu-active', isOpen);
     });
 
     viewBtn?.addEventListener('click', e => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
+        row.classList.remove('menu-active');
         openViewNoteModal(row);
     });
 
     editBtn?.addEventListener('click', e => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
+        row.classList.remove('menu-active');
         openEditNoteModal(row);
     });
 
     deleteBtn?.addEventListener('click', e => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
+        row.classList.remove('menu-active');
         openDeleteNoteModal(row);
     });
 });
 
 document.addEventListener('click', () => {
-    $$('.ws-tile-menu.open').forEach(m => m.classList.remove('open'));
+    $$('.ws-tile-menu.open').forEach(m => {
+        m.classList.remove('open');
+        m.closest('.note-row-item')?.classList.remove('menu-active');
+    });
 });
 
 /* ───────────────────────────────────────────────────────────────────
