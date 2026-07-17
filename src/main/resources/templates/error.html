@@ -14,11 +14,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
           href="/static/cssStyles/dashboard.css"
           th:href="@{/cssStyles/dashboard.css}">
+
+    <link rel="stylesheet"
+          href="/static/cssStyles/notes.css"
+          th:href="@{/cssStyles/notes.css}">
+    <link rel="stylesheet"
+          href="/static/cssStyles/notes.css"
+          th:href="@{/cssStyles/error.css}">
 
     <link rel="shortcut icon"
           type="image/x-icon"
@@ -39,12 +46,12 @@
             <i class="bi bi-exclamation-octagon-fill"></i>
         </div>
 
-        <span class="error-status">
-            SYSTEM ERROR
-        </span>
+        <span class="error-status" th:text="${error} ?: 'SYSTEM ERROR'">SYSTEM ERROR</span>
 
-        <h1>
-            The Judgement Engine encountered an unexpected anomaly.
+        <div class="error-code" th:if="${status}" th:text="${status}">500</div>
+
+        <h1 th:text="${message} ?: 'The system encountered an unexpected anomaly.'">
+            The system encountered an unexpected anomaly.
         </h1>
 
         <p>
@@ -53,20 +60,39 @@
         </p>
 
         <div class="error-actions">
-
             <a th:href="@{/home}" class="btn-primary-custom">
                 <i class="bi bi-house-door"></i>
                 Return Home
             </a>
 
-            <button class="btn-secondary-custom"
-                    onclick="history.back()">
-
+            <button class="btn-secondary-custom" onclick="history.back()">
                 <i class="bi bi-arrow-left"></i>
                 Go Back
-
             </button>
 
+            <button class="btn-secondary-custom" id="errorDetailsToggle" type="button" th:if="${path} or ${timestamp}">
+                <i class="bi bi-code-slash"></i>
+                Technical Details
+            </button>
+        </div>
+
+        <div class="error-details" id="errorDetailsPanel" th:if="${path} or ${timestamp}">
+            <div class="error-details-row" th:if="${status}">
+                <span>Status Code</span>
+                <code th:text="${status}">500</code>
+            </div>
+            <div class="error-details-row" th:if="${error}">
+                <span>Error</span>
+                <code th:text="${error}">Internal Server Error</code>
+            </div>
+            <div class="error-details-row" th:if="${path}">
+                <span>Request Path</span>
+                <code th:text="${path}">/notes/42</code>
+            </div>
+            <div class="error-details-row" th:if="${timestamp}">
+                <span>Timestamp</span>
+                <code th:text="${timestamp}">2026-07-17T10:22:00</code>
+            </div>
         </div>
 
         <div class="error-footer">
@@ -81,6 +107,14 @@
 
 <script th:src="@{/javaScript/home.js}"
         src="/static/javaScript/home.js"></script>
+
+<script>
+    document.getElementById('errorDetailsToggle')?.addEventListener('click', function () {
+        const panel = document.getElementById('errorDetailsPanel');
+        panel?.classList.toggle('open');
+        this.classList.toggle('active');
+    });
+</script>
 
 </body>
 </html>
