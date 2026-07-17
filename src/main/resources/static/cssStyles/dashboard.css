@@ -555,7 +555,16 @@ button { font-family: var(--font-body); }
     border-radius: 4px;
     padding: 1px 5px;
 }
-.note-row-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+.note-row-date {
+    font-size: 0.72rem;
+    color: rgba(148,163,184,0.55);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
 
 /* ─── WORKSPACE CARDS ───────────────── */
 .ws-card {

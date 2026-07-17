@@ -289,9 +289,8 @@
                                     <div th:text="${note.workspace.name}" class="note-row-meta">Java Backend · <span class="note-tag">#security</span> <span class="note-tag">#spring</span></div>
                                 </div>
                             </div>
-                            <!--  -->
-                            <div class="note-row-date" th:data-datetime="${note.updatedAt}" th:text="${#temporals.format(note.updatedAt, 'dd MMM, HH:mm')}">2h ago</div>
-                        </div>
+
+                            <span style="display: inline"><span class="note-row-date" th:data-datetime="${note.updatedAt}" th:text="${#temporals.format(note.updatedAt, 'dd MMM, HH:mm')}">2h ago</span></span> </div>
 
                     </div>
                 </div>

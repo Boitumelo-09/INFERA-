@@ -721,19 +721,24 @@ function formatRelativeDate(dateStr) {
     if (isNaN(date)) return null;
 
     const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+
+    const time = date.toLocaleTimeString('en-ZA', { hour: 'numeric', minute: '2-digit', hour12: false });
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+
     const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const diffDays = Math.round((startOfDay(now) - startOfDay(date)) / 86400000);
 
-    const time = date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', hour12: false });
-
-    if (diffDays === 0) return `Today ${time}`;
-    if (diffDays === 1) return `Yesterday ${time}`;
-    if (diffDays > 1 && diffDays < 7) return `${date.toLocaleDateString('en-ZA', { weekday: 'long' })} ${time}`;
+    if (diffDays < 7) return `${date.toLocaleDateString('en-ZA', { weekday: 'short' })} ${time}`;
 
     const day = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
     return `${day}, ${time}`;
 }
-
 function applyRelativeDates() {
     $$('.note-row-date[data-datetime]').forEach(el => {
         const formatted = formatRelativeDate(el.dataset.datetime);
