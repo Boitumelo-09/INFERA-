@@ -13,12 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class DashBoardController {
+public class DashboardController {
 
     private final UserRepository userRepository;
     private final WorkspaceService workspaceService;
     private final NoteService noteService;
-    public DashBoardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService) {
+    public DashboardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService) {
         this.userRepository = userRepository;
         this.workspaceService = workspaceService;
         this.noteService = noteService;
