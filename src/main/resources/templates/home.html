@@ -88,15 +88,15 @@
         </div>
 
         <div class="hero-stats mt-5 d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="stat-chip"><strong>10k+</strong> <span>notes created</span></div>
+            <div class="stat-chip"><i class="bi bi-journals"> </i><strong th:text="${noteCount} + '+'"></strong> <span>notes created</span></div>
             <div class="stat-sep"></div>
-            <div class="stat-chip"><strong th:text="${activeUsers}">+</strong> <span>active users</span></div>
+            <div class="stat-chip"><i class="bi bi-people"> </i><strong th:text="${activeUsers}"></strong> <span>active users</span></div>
             <div class="stat-sep"></div>
-            <div class="stat-chip"><strong>4.9 ★</strong> <span>avg. rating</span></div>
+            <div class="stat-chip"><i class="bi bi-folder2-open"> </i><strong th:text="${workspaceCount} + '+'"></strong> <span>workspaces</span></div>
         </div>
     </div>
+    </div>
 
-    <!-- App preview mockup -->
     <div class="hero-mockup-wrapper" data-aos="fade-up" data-aos-delay="250">
         <div class="mockup-browser">
             <div class="browser-bar">
@@ -106,7 +106,7 @@
             <div class="browser-body">
                 <div class="mock-sidebar">
                     <div class="mock-ws-label">WORKSPACES</div>
-                    <div class="mock-ws-item active"><i class="bi bi-folder2"></i> Java Backend</div>
+                    <div class="mock-ws-item active"><i class="bi bi-folder2"></i> Opus Assignment</div>
                     <div class="mock-ws-item"><i class="bi bi-folder2"></i> Research</div>
                     <div class="mock-ws-item"><i class="bi bi-folder2"></i> Career</div>
                     <div class="mock-ws-item"><i class="bi bi-folder2"></i> Music</div>
@@ -116,25 +116,25 @@
                 </div>
                 <div class="mock-main">
                     <div class="mock-header">
-                        <span class="mock-title">Java Backend</span>
+                        <span class="mock-title">Opus Assignment</span>
                         <span class="mock-badge">12 notes</span>
                     </div>
                     <div class="mock-note-list">
                         <div class="mock-note active-note">
-                            <div class="mn-title">Spring Security Config</div>
-                            <div class="mn-meta">Updated 2h ago · <span class="mn-tag">#security</span> <span class="mn-tag">#spring</span></div>
+                            <div class="mn-title">Literature Review</div>
+                            <div class="mn-meta">Updated 2h ago · <span class="mn-tag">#literature</span> <span class="mn-tag">#research</span></div>
                         </div>
                         <div class="mock-note">
-                            <div class="mn-title">JPA Repository Patterns</div>
-                            <div class="mn-meta">Updated yesterday · <span class="mn-tag">#jpa</span></div>
+                            <div class="mn-title">Harvard Referencing notes</div>
+                            <div class="mn-meta">Updated yesterday · <span class="mn-tag">#notes</span></div>
                         </div>
                         <div class="mock-note">
-                            <div class="mn-title">REST API Design Notes</div>
-                            <div class="mn-meta">Updated 3d ago · <span class="mn-tag">#api</span></div>
+                            <div class="mn-title">Poster Design Notes</div>
+                            <div class="mn-meta">Updated 3d ago · <span class="mn-tag">#design</span></div>
                         </div>
                         <div class="mock-note">
-                            <div class="mn-title">Docker Deployment Guide</div>
-                            <div class="mn-meta">Updated 1w ago · <span class="mn-tag">#devops</span></div>
+                            <div class="mn-title">Business Development Guide</div>
+                            <div class="mn-meta">Updated 1w ago · <span class="mn-tag">#business</span></div>
                         </div>
                     </div>
                 </div>
