@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/dashboard.css" th:href="@{/cssStyles/dashboard.css}" />
+    <link rel="stylesheet" href="/static/cssStyles/notes.css" th:href="@{/cssStyles/notes.css}" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 
 </head>
@@ -527,19 +528,22 @@
                     <div class="form-group mb-3">
                         <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="7" placeholder="Start writing..."></textarea>
                     </div>
-<!--                    <div class="form-group">-->
-<!--                        <div class="input-wrap">-->
-<!--                            <i class="bi bi-tags input-icon"></i>-->
-<!--                            <input type="text" id="noteTags" name="tags" class="form-input" placeholder="Add tags — e.g. #spring, #jpa" />-->
-<!--                        </div>-->
-<!--                    </div>-->
-                </div>
+                    <div class="form-group">
+                        <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
+                        <div class="tag-input-wrap" id="quickNoteTagWrap">
+                            <div class="tag-chips" id="quickNoteTagChips"></div>
+                            <input type="text" id="quickNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
+                            <div class="tag-suggestions" id="quickNoteTagSuggestions"></div>
+                        </div>
+                        <input type="hidden" id="quickNoteTags" name="tags" />
+                    </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Discard</button>
                     <button type="submit" class="btn-modal-accent" id="noteSubmitBtn">
                         <span class="btn-text"><i class="bi bi-floppy"></i> Save note</span>
                         <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
                     </button>
+                </div>
                 </div>
             </form>
         </div>
