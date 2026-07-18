@@ -3,6 +3,7 @@ package com.application.infera.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "notes")
@@ -23,7 +24,13 @@ public class Note {
     @JoinColumn(name = "workspace_id", nullable = false)   // a note MUST belong to a workspace
     private Workspace workspace;
 
+
+    // replace with
     private boolean archived = false;   // matches your original spec's "Archive Note" feature
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "note_tags", joinColumns = @JoinColumn(name = "note_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private java.util.Set<Tag> tags = new java.util.HashSet<>();  // matches your original spec's "Archive Note" feature
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -40,5 +47,8 @@ public class Note {
     @PreUpdate
     public void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    public String getTagNamesCsv() {
+        return tags.stream().map(Tag::getName).sorted().collect(Collectors.joining(","));
     }
 }

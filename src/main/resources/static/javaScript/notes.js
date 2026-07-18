@@ -11,7 +11,14 @@
 
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-
+const newNoteTagWidget = createTagInput({
+    wrapId: 'newNoteTagWrap', chipsId: 'newNoteTagChips',
+    textInputId: 'newNoteTagsInput', suggestionsId: 'newNoteTagSuggestions', hiddenInputId: 'newNoteTags'
+});
+const editNoteTagWidget = createTagInput({
+    wrapId: 'editNoteTagWrap', chipsId: 'editNoteTagChips',
+    textInputId: 'editNoteTagsInput', suggestionsId: 'editNoteTagSuggestions', hiddenInputId: 'editNoteTags'
+});
 /* ───────────────────────────────────────────────────────────────────
    CUSTOM CURSOR
 ─────────────────────────────────────────────────────────────────── */
@@ -130,6 +137,9 @@ function openViewNoteModal(row) {
     bodyEl.textContent = cleanContent;
     bodyEl.classList.toggle('is-empty', !cleanContent.trim());
 
+    const tagList = (row.dataset.tags || '').split(',').filter(Boolean);
+    $('#viewNoteTags').innerHTML = tagList.map(t => `<span class="view-note-tag-pill">#${t}</span>`).join('');
+
     viewNoteModal?.show();
 }
 
@@ -189,6 +199,7 @@ const newNoteModalEl = $('#newNoteModal');
 const newNoteModal   = newNoteModalEl ? new bootstrap.Modal(newNoteModalEl) : null;
 
 function openNewNoteModal() {
+    newNoteTagWidget?.reset();
     newNoteModal?.show();
     setTimeout(() => $('#noteTitle')?.focus(), 300);
 }
@@ -198,6 +209,7 @@ $('#newNoteBtnHeader')?.addEventListener('click', openNewNoteModal);
 $('#newNoteBtnEmpty')?.addEventListener('click', openNewNoteModal);
 
 $('#newNoteForm')?.addEventListener('submit', e => {
+    newNoteTagWidget?.flushPending();
     const title = $('#noteTitle').value.trim();
     if (!title) {
         e.preventDefault();
@@ -224,12 +236,14 @@ function openEditNoteModal(row) {
     $('#editNoteTitle').value     = title;
     $('#editNoteContent').value   = content === 'null' ? '' : content;
     $('#editNoteWorkspace').value = workspaceId;
+    editNoteTagWidget?.setTags(row.dataset.tags ? row.dataset.tags.split(',').filter(Boolean) : []);
 
     editNoteModal?.show();
     setTimeout(() => $('#editNoteTitle')?.focus(), 300);
 }
 
 editNoteForm?.addEventListener('submit', e => {
+    editNoteTagWidget?.flushPending();
     const title = $('#editNoteTitle').value.trim();
     if (!title) {
         e.preventDefault();
@@ -376,3 +390,80 @@ $$('.form-input').forEach(input => {
 ─────────────────────────────────────────────────────────────────── */
 $('#searchTrigger')?.addEventListener('click', () => showToast('Search coming to this page soon'));
 $('#topbarSearch')?.addEventListener('click', () => showToast('Search coming to this page soon'));
+/* ───────────────────────────────────────────────────────────────────
+   TAG TECHNOLOGY
+─────────────────────────────────────────────────────────────────── */
+function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInputId }) {
+    const wrap = $(`#${wrapId}`), chipsEl = $(`#${chipsId}`), textInput = $(`#${textInputId}`),
+        suggestionsEl = $(`#${suggestionsId}`), hiddenInput = $(`#${hiddenInputId}`);
+    if (!wrap || !textInput || !hiddenInput) return null;
+
+    let tags = [], focusedIdx = -1;
+
+    function sync() {
+        hiddenInput.value = tags.join(',');
+        chipsEl.innerHTML = tags.map(t => `<span class="tag-chip">${t}<button type="button" data-tag="${t}">&times;</button></span>`).join('');
+        $$('.tag-chip button', chipsEl).forEach(btn => {
+            btn.addEventListener('click', () => { tags = tags.filter(t => t !== btn.dataset.tag); sync(); });
+        });
+    }
+
+    function addTag(raw) {
+        const name = raw.trim().toLowerCase().replace(/^#/, '');
+        if (!name || tags.includes(name)) return;
+        tags.push(name);
+        textInput.value = '';
+        closeSuggestions();
+        sync();
+    }
+
+    function closeSuggestions() { suggestionsEl.classList.remove('open'); suggestionsEl.innerHTML = ''; focusedIdx = -1; }
+
+    function renderSuggestions(items) {
+        if (!items.length) { closeSuggestions(); return; }
+        suggestionsEl.innerHTML = items.map((name, i) => `<div class="tag-suggestion-item" data-idx="${i}">${name}</div>`).join('');
+        suggestionsEl.classList.add('open');
+        $$('.tag-suggestion-item', suggestionsEl).forEach(el => el.addEventListener('click', () => addTag(el.textContent)));
+    }
+
+    let searchTimer;
+    textInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        const q = textInput.value.trim();
+        if (!q) { closeSuggestions(); return; }
+        searchTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/tags/search?q=${encodeURIComponent(q)}`);
+                const names = res.ok ? await res.json() : [];
+                renderSuggestions(names.filter(n => !tags.includes(n)));
+            } catch { closeSuggestions(); }
+        }, 180);
+    });
+
+    textInput.addEventListener('keydown', e => {
+        const items = $$('.tag-suggestion-item', suggestionsEl);
+        if (e.key === 'ArrowDown' && items.length) {
+            e.preventDefault();
+            focusedIdx = (focusedIdx + 1) % items.length;
+            items.forEach(i => i.classList.remove('focused')); items[focusedIdx].classList.add('focused');
+        } else if (e.key === 'ArrowUp' && items.length) {
+            e.preventDefault();
+            focusedIdx = (focusedIdx - 1 + items.length) % items.length;
+            items.forEach(i => i.classList.remove('focused')); items[focusedIdx].classList.add('focused');
+        } else if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            if (focusedIdx >= 0 && items[focusedIdx]) addTag(items[focusedIdx].textContent);
+            else if (textInput.value.trim()) addTag(textInput.value);
+        } else if (e.key === 'Backspace' && !textInput.value && tags.length) {
+            tags.pop(); sync();
+        } else if (e.key === 'Escape') closeSuggestions();
+    });
+
+    document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeSuggestions(); });
+
+    return {
+        setTags(t) { tags = [...t]; sync(); },
+        getTags() { return [...tags]; },
+        reset() { tags = []; sync(); },
+        flushPending() { if (textInput.value.trim()) addTag(textInput.value); }
+    };}

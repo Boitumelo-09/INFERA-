@@ -516,3 +516,52 @@
         padding-left: 20px;
     }
 }
+/* ─── TAG INPUT WIDGET ──────────────── */
+.tag-input-wrap {
+    position: relative;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.tag-input-wrap:focus-within { border-color: rgba(234,88,12,0.5); box-shadow: 0 0 0 3px rgba(234,88,12,0.1); }
+.tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(234,88,12,0.12); color: #fb923c;
+    border-radius: 99px; padding: 3px 6px 3px 10px;
+    font-size: 0.78rem; font-weight: 600;
+}
+.tag-chip button {
+    background: none; border: none; color: inherit; cursor: pointer;
+    font-size: 0.7rem; padding: 2px; border-radius: 50%;
+    display: flex; align-items: center; transition: background 0.15s;
+}
+.tag-chip button:hover { background: rgba(255,255,255,0.15); }
+.tag-text-input {
+    flex: 1; min-width: 100px;
+    background: none; border: none; outline: none;
+    color: var(--text); font-family: var(--font-body); font-size: 0.86rem;
+    padding: 4px 2px;
+}
+.tag-text-input::placeholder { color: rgba(148,163,184,0.4); }
+.tag-suggestions {
+    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--card); border: 1px solid var(--border); border-radius: 9px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    max-height: 180px; overflow-y: auto; z-index: 20; display: none;
+}
+.tag-suggestions.open { display: block; }
+.tag-suggestion-item { padding: 8px 12px; font-size: 0.82rem; color: var(--text); cursor: pointer; transition: background 0.15s; }
+.tag-suggestion-item:hover, .tag-suggestion-item.focused { background: rgba(234,88,12,0.1); }
+
+/* ─── TAG PILLS ─── */
+.nri-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.nri-tag-pill, .view-note-tag-pill {
+    font-size: 0.68rem; font-weight: 600; color: var(--muted);
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 99px; padding: 2px 9px;
+}
+.view-note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }

@@ -210,7 +210,8 @@
                  th:data-title="${note.title}"
                  th:data-content="${note.content}"
                  th:data-workspace-id="${note.workspace.id}"
-                 th:data-workspace-name="${note.workspace.name}">
+                 th:data-workspace-name="${note.workspace.name}"
+                 th:data-tags="${note.getTagNamesCsv()}">
 
                 <div class="nri-accent"></div>
 
@@ -223,6 +224,9 @@
                        th:text="${note.content != null and note.content != '' ? #strings.abbreviate(note.content, 120) : 'No content yet.'}">
                         Preview line...
                     </p>
+                    <div class="nri-tags" th:if="${!note.tags.isEmpty()}">
+                        <span class="nri-tag-pill" th:each="tag : ${note.tags}" th:text="'#' + ${tag.name}">#tag</span>
+                    </div>
                 </div>
 
                 <div class="nri-meta">
@@ -278,6 +282,7 @@
             </div>
             <div class="modal-body">
                 <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>
+                <div class="view-note-tags" id="viewNoteTags"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
@@ -315,9 +320,17 @@
                             </option>
                         </select>
                     </div>
+                    <div class="form-group mb-3">
+                        <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="8" placeholder="Start writing..."></textarea>
+                    </div>
                     <div class="form-group">
-                        <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input"
-                                  rows="8" placeholder="Start writing..."></textarea>
+                        <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
+                        <div class="tag-input-wrap" id="newNoteTagWrap">
+                            <div class="tag-chips" id="newNoteTagChips"></div>
+                            <input type="text" id="newNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
+                            <div class="tag-suggestions" id="newNoteTagSuggestions"></div>
+                        </div>
+                        <input type="hidden" id="newNoteTags" name="tags" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -359,9 +372,17 @@
                             </option>
                         </select>
                     </div>
+                    <div class="form-group mb-3">
+                        <textarea id="editNoteContent" name="content" class="form-input form-textarea note-content-input" rows="8"></textarea>
+                    </div>
                     <div class="form-group">
-                        <textarea id="editNoteContent" name="content"
-                                  class="form-input form-textarea note-content-input" rows="8"></textarea>
+                        <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
+                        <div class="tag-input-wrap" id="editNoteTagWrap">
+                            <div class="tag-chips" id="editNoteTagChips"></div>
+                            <input type="text" id="editNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
+                            <div class="tag-suggestions" id="editNoteTagSuggestions"></div>
+                        </div>
+                        <input type="hidden" id="editNoteTags" name="tags" />
                     </div>
                 </div>
                 <div class="modal-footer">
