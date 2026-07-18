@@ -17,10 +17,12 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final WorkspaceService workspaceService;
+    private final TagService tagService;
 
-    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService) {
+    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService) {
         this.noteRepository = noteRepository;
         this.workspaceService = workspaceService;
+        this.tagService = tagService;
     }
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
@@ -33,6 +35,7 @@ public class NoteService {
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
         note.setWorkspace(workspace);
+        note.setTags(tagService.resolveTags(request.getTags()));
 
         noteRepository.save(note);
     }
@@ -89,6 +92,7 @@ public class NoteService {
 
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
+        note.setTags(tagService.resolveTags(request.getTags()));
 
         noteRepository.save(note);
     }

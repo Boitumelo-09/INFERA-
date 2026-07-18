@@ -471,48 +471,21 @@ const quickNoteModal = new bootstrap.Modal('#quickNoteModal', { backdrop: true }
 const quickNoteForm  = $('#quickNoteForm');
 
 $('#quickNoteBtn')?.addEventListener('click', () => {
+    quickNoteTagWidget?.reset();
     quickNoteModal.show();
     setTimeout(() => $('#noteTitle')?.focus(), 300);
-});
-
-quickNoteForm?.addEventListener('submit', async e => {
-    e.preventDefault();
+})
+quickNoteForm?.addEventListener('submit', e => {
+    quickNoteTagWidget?.flushPending();
 
     const title = $('#noteTitle')?.value.trim();
-
     if (!title) {
+        e.preventDefault();
         $('#noteTitle')?.focus();
         return;
     }
-
-    const btn = $('#noteSubmitBtn');
-    setLoading(btn, true);
-
-    try {
-        const form = quickNoteForm;
-        const data = new FormData(form);
-        const res  = await fetch(form.action, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': form.querySelector('[name=_csrf]')?.value },
-            body: data
-        });
-
-        if (!res.ok) throw new Error('Request failed: ' + res.status);
-
-        prependNoteRow(title);
-        updateBadgeCount('navNotesBadge', 1);
-
-        quickNoteModal.hide();
-        quickNoteForm.reset();
-        showToast(`Note "${title}" saved`);
-
-    } catch (err) {
-        showToast('Could not save note. Please try again.', 'error');
-    } finally {
-        setLoading(btn, false);
-    }
+    // no preventDefault — native submit, server redirects to /dashboard with fresh data + toast
 });
-
 function prependNoteRow(title) {
     const list = $('.panel-body', $('.dash-panel'));   /* first panel = recent notes */
     if (!list) return;
@@ -542,7 +515,10 @@ function prependNoteRow(title) {
     const rows = $$('.note-row', list);
     if (rows.length > 5) rows[rows.length - 1].remove();
 }
-
+const quickNoteTagWidget = createTagInput({
+    wrapId: 'quickNoteTagWrap', chipsId: 'quickNoteTagChips',
+    textInputId: 'quickNoteTagsInput', suggestionsId: 'quickNoteTagSuggestions', hiddenInputId: 'quickNoteTags'
+});
 /* ───────────────────────────────────────────────────────────────────
    BADGE COUNT HELPERS
 ─────────────────────────────────────────────────────────────────── */
@@ -745,3 +721,80 @@ function applyRelativeDates() {
         if (formatted) el.textContent = formatted;
     });
 }
+// x
+// Tag Technology
+// x
+function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInputId }) {
+    const wrap = $(`#${wrapId}`), chipsEl = $(`#${chipsId}`), textInput = $(`#${textInputId}`),
+        suggestionsEl = $(`#${suggestionsId}`), hiddenInput = $(`#${hiddenInputId}`);
+    if (!wrap || !textInput || !hiddenInput) return null;
+
+    let tags = [], focusedIdx = -1;
+
+    function sync() {
+        hiddenInput.value = tags.join(',');
+        chipsEl.innerHTML = tags.map(t => `<span class="tag-chip">${t}<button type="button" data-tag="${t}">&times;</button></span>`).join('');
+        $$('.tag-chip button', chipsEl).forEach(btn => {
+            btn.addEventListener('click', () => { tags = tags.filter(t => t !== btn.dataset.tag); sync(); });
+        });
+    }
+
+    function addTag(raw) {
+        const name = raw.trim().toLowerCase().replace(/^#/, '');
+        if (!name || tags.includes(name)) return;
+        tags.push(name);
+        textInput.value = '';
+        closeSuggestions();
+        sync();
+    }
+
+    function closeSuggestions() { suggestionsEl.classList.remove('open'); suggestionsEl.innerHTML = ''; focusedIdx = -1; }
+
+    function renderSuggestions(items) {
+        if (!items.length) { closeSuggestions(); return; }
+        suggestionsEl.innerHTML = items.map((name, i) => `<div class="tag-suggestion-item" data-idx="${i}">${name}</div>`).join('');
+        suggestionsEl.classList.add('open');
+        $$('.tag-suggestion-item', suggestionsEl).forEach(el => el.addEventListener('click', () => addTag(el.textContent)));
+    }
+
+    let searchTimer;
+    textInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        const q = textInput.value.trim();
+        if (!q) { closeSuggestions(); return; }
+        searchTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/tags/search?q=${encodeURIComponent(q)}`);
+                const names = res.ok ? await res.json() : [];
+                renderSuggestions(names.filter(n => !tags.includes(n)));
+            } catch { closeSuggestions(); }
+        }, 180);
+    });
+
+    textInput.addEventListener('keydown', e => {
+        const items = $$('.tag-suggestion-item', suggestionsEl);
+        if (e.key === 'ArrowDown' && items.length) {
+            e.preventDefault();
+            focusedIdx = (focusedIdx + 1) % items.length;
+            items.forEach(i => i.classList.remove('focused')); items[focusedIdx].classList.add('focused');
+        } else if (e.key === 'ArrowUp' && items.length) {
+            e.preventDefault();
+            focusedIdx = (focusedIdx - 1 + items.length) % items.length;
+            items.forEach(i => i.classList.remove('focused')); items[focusedIdx].classList.add('focused');
+        } else if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            if (focusedIdx >= 0 && items[focusedIdx]) addTag(items[focusedIdx].textContent);
+            else if (textInput.value.trim()) addTag(textInput.value);
+        } else if (e.key === 'Backspace' && !textInput.value && tags.length) {
+            tags.pop(); sync();
+        } else if (e.key === 'Escape') closeSuggestions();
+    });
+
+    document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeSuggestions(); });
+
+    return {
+        setTags(t) { tags = [...t]; sync(); },
+        getTags() { return [...tags]; },
+        reset() { tags = []; sync(); },
+        flushPending() { if (textInput.value.trim()) addTag(textInput.value); }
+    };}
