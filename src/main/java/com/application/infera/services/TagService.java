@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 import com.application.infera.models.Tag;
+import com.application.infera.models.User;
 import com.application.infera.repositories.TagRepository;
 import org.springframework.stereotype.Service;
 
@@ -49,4 +50,8 @@ public class TagService {
         if (query == null || query.isBlank()) return List.of();
         return tagRepository.findTop10ByNameContainingIgnoreCaseOrderByNameAsc(normalize(query));
     }
+    public long countTagsForUser(User user) {
+        return tagRepository.countDistinctTagsForUser(user);
+    }
+
 }
