@@ -227,7 +227,7 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon ws"><i class="bi bi-folder2-open"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${workspaceCount}"></span> this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${workspaceCount}"></span>&nbsp;this week</div>
                     </div>
                     <!-- th:text="${workspaceCount}" -->
                     <div th:text="${workspaceCount}" class="sc-value" th:data-count="${workspaceCount}"></div>
@@ -237,7 +237,7 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon notes"><i class="bi bi-journal-text"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+3 this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${notesCount}"></span>&nbsp;this week</div>
                     </div>
                     <!-- th:text="${noteCount}" -->
                     <div th:text="${notesCount}" class="sc-value" th:data-count="${notesCount}">0</div>
