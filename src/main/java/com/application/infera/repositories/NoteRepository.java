@@ -27,10 +27,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     // Total note count across all of a user's workspaces (for dashboard stat card)
     long countByWorkspace_User(User user);
 
-    // Efficient version: counts notes for EVERY workspace this user owns
-    // in a single query. Returns rows shaped like [workspaceId, count].
-    // Workspaces with ZERO notes won't appear in the results at all —
-    // the service layer fills those in as 0.
+
     @Query("SELECT n.workspace.id, COUNT(n) FROM Note n WHERE n.workspace.user = :user GROUP BY n.workspace.id")
     List<Object[]> countNotesGroupedByWorkspace(@Param("user") User user);
 }
