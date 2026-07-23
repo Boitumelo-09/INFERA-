@@ -104,7 +104,9 @@ function showToast(msg, type = 'success') {
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
-
+function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 /* ───────────────────────────────────────────────────────────────────
    VIEW NOTE MODAL — the default action when clicking a row
 ─────────────────────────────────────────────────────────────────── */
@@ -139,6 +141,8 @@ function openViewNoteModal(row) {
 
     const tagList = (row.dataset.tags || '').split(',').filter(Boolean);
     $('#viewNoteTags').innerHTML = tagList.map(t => `<span class="view-note-tag-pill">#${t}</span>`).join('');
+
+    renderResourcesForRow(row);
 
     viewNoteModal?.show();
 }
@@ -268,7 +272,105 @@ function openDeleteNoteModal(row) {
 
     deleteNoteModal?.show();
 }
+function getYoutubeEmbedUrl(url) {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+}
 
+function renderResourcesForRow(row) {
+    const container = $('#viewNoteResourcesList');
+    if (!container) return;
+
+    const items = $$('.resource-data-item', row);
+    if (!items.length) {
+        container.innerHTML = `<p class="vnr-empty">No resources linked yet.</p>`;
+        return;
+    }
+
+    container.innerHTML = items.map(item => {
+        const { id, title, url, description, category } = item.dataset;
+        let body;
+
+        if (category === 'VIDEO') {
+            const embed = getYoutubeEmbedUrl(url);
+            body = embed
+                ? `<iframe src="${embed}" class="vnr-video-embed" allowfullscreen></iframe>`
+                : `<a href="${url}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
+        } else if (category === 'IMAGE') {
+            body = `<img src="${url}" class="vnr-image" alt="${escapeHtml(title)}" onerror="this.src='';this.alt='Image failed to load — check if the link is publicly viewable.';" />`;
+        } else {
+            body = `<a href="${url}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
+        }
+
+        return `
+        <div class="vnr-card" data-resource-id="${id}" data-title="${escapeHtml(title)}" data-url="${escapeHtml(url)}" data-description="${escapeHtml(description || '')}" data-category="${category}">
+            <div class="vnr-card-top">
+                <span class="vnr-category-tag ${category.toLowerCase()}">${category}</span>
+                <div class="ws-tile-menu">
+                    <button class="ws-menu-btn vnr-menu-btn" aria-label="Resource options"><i class="bi bi-three-dots-vertical"></i></button>
+                    <div class="ws-menu-dropdown">
+                        <button class="ws-menu-item resource-edit-trigger"><i class="bi bi-pencil"></i> Edit</button>
+                        <button class="ws-menu-item danger resource-delete-trigger"><i class="bi bi-trash"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+            <h5 class="vnr-title">${escapeHtml(title)}</h5>
+            ${description ? `<p class="vnr-description">${escapeHtml(description)}</p>` : ''}
+            ${body}
+        </div>`;
+    }).join('');
+
+    wireResourceCardMenus();
+}
+
+function wireResourceCardMenus() {
+    $$('.vnr-card').forEach(card => {
+        const menuWrap = card.querySelector('.ws-tile-menu');
+        menuWrap.querySelector('.vnr-menu-btn')?.addEventListener('click', e => {
+            e.stopPropagation();
+            $$('.ws-tile-menu.open').forEach(m => { if (m !== menuWrap) m.classList.remove('open'); });
+            menuWrap.classList.toggle('open');
+        });
+        card.querySelector('.resource-edit-trigger')?.addEventListener('click', e => {
+            e.stopPropagation(); menuWrap.classList.remove('open'); openEditResourceModal(card);
+        });
+        card.querySelector('.resource-delete-trigger')?.addEventListener('click', e => {
+            e.stopPropagation(); menuWrap.classList.remove('open'); openDeleteResourceModal(card);
+        });
+    });
+}
+
+const addResourceModalEl = $('#addResourceModal');
+const addResourceModal   = addResourceModalEl ? new bootstrap.Modal(addResourceModalEl) : null;
+
+$('#addResourceBtn')?.addEventListener('click', () => {
+    if (!currentlyViewedRow) return;
+    $('#addResourceNoteId').value = currentlyViewedRow.dataset.id;
+    addResourceModal?.show();
+});
+
+const editResourceModalEl = $('#editResourceModal');
+const editResourceModal   = editResourceModalEl ? new bootstrap.Modal(editResourceModalEl) : null;
+const editResourceForm    = $('#editResourceForm');
+
+function openEditResourceModal(card) {
+    editResourceForm.action = `/resources/${card.dataset.resourceId}/update`;
+    $('#editResourceTitle').value       = card.dataset.title;
+    $('#editResourceUrl').value         = card.dataset.url;
+    $('#editResourceDescription').value = card.dataset.description;
+    $('#editResourceCategory').value    = card.dataset.category;
+    editResourceModal?.show();
+}
+
+const deleteResourceModalEl = $('#deleteResourceModal');
+const deleteResourceModal   = deleteResourceModalEl ? new bootstrap.Modal(deleteResourceModalEl) : null;
+const deleteResourceForm    = $('#deleteResourceForm');
+
+function openDeleteResourceModal(card) {
+    deleteResourceForm.action = `/resources/${card.dataset.resourceId}/delete`;
+    $('#deleteResourceTitle').textContent = card.dataset.title;
+    deleteResourceModal?.show();
+}
 /* ───────────────────────────────────────────────────────────────────
    ROW WIRING — click row = View, three-dot menu = View/Edit/Delete
 ─────────────────────────────────────────────────────────────────── */

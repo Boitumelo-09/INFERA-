@@ -8,6 +8,7 @@ import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
 import com.application.infera.services.NoteService;
+import com.application.infera.services.ResourceService;
 import com.application.infera.services.WorkspaceService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -25,11 +26,13 @@ public class NoteController {
     private final NoteService noteService;
     private final WorkspaceService workspaceService;
     private final UserRepository userRepository;
+    private final ResourceService resourceService;
 
-    public NoteController(NoteService noteService, WorkspaceService workspaceService, UserRepository userRepository) {
+    public NoteController(NoteService noteService, WorkspaceService workspaceService, UserRepository userRepository, ResourceService resourceService) {
         this.noteService = noteService;
         this.workspaceService = workspaceService;
         this.userRepository = userRepository;
+        this.resourceService = resourceService;
     }
 
     // GET /notes — show all notes across all the user's workspaces
@@ -46,6 +49,7 @@ public class NoteController {
         model.addAttribute("noteCount", notes.size());
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+        model.addAttribute("resourcesByNote", resourceService.getResourcesGroupedByNote(user));
 
         return "notes";
     }
