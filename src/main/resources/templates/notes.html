@@ -252,6 +252,17 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="nri-resources-data" style="display:none;">
+                    <div class="resource-data-item"
+                         th:each="res : ${resourcesByNote.get(note.id) }"
+                         th:data-id="${res.id}"
+                         th:data-title="${res.title}"
+                         th:data-url="${res.url}"
+                         th:data-description="${res.description}"
+                         th:data-category="${res.category}">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -283,6 +294,16 @@
             <div class="modal-body">
                 <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>
                 <div class="view-note-tags" id="viewNoteTags"></div>
+
+                <div class="view-note-resources">
+                    <div class="vnr-header">
+                        <h4><i class="bi bi-link-45deg"></i> Resources</h4>
+                        <button type="button" class="btn-add-resource" id="addResourceBtn">
+                            <i class="bi bi-plus-lg"></i> Add resource
+                        </button>
+                    </div>
+                    <div class="vnr-list" id="viewNoteResourcesList"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
@@ -427,8 +448,117 @@
     </div>
 </div>
 
-<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
-    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+<div class="modal fade infera-modal" id="addResourceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Resource</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form th:action="@{/resources}" method="post" id="addResourceForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="noteId" id="addResourceNoteId" />
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="addResourceTitle">Title</label>
+                        <input type="text" id="addResourceTitle" name="title" class="form-input" required maxlength="150" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="addResourceCategory">Category</label>
+                        <select id="addResourceCategory" name="category" class="form-input form-select-custom" required>
+                            <option value="VIDEO">Video</option>
+                            <option value="ARTICLE">Article</option>
+                            <option value="DOCUMENTATION">Documentation</option>
+                            <option value="TUTORIAL">Tutorial</option>
+                            <option value="IMAGE">Image</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="addResourceUrl">URL</label>
+                        <input type="url" id="addResourceUrl" name="url" class="form-input" placeholder="https://..." required maxlength="500" />
+                        <small class="resource-url-hint">Link must be publicly viewable (e.g. YouTube, a public Drive/Photos share link, Imgur).</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-custom" for="addResourceDescription">Description <span class="optional-label">(optional)</span></label>
+                        <textarea id="addResourceDescription" name="description" class="form-input form-textarea" rows="3" maxlength="255"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-accent"><span class="btn-text"><i class="bi bi-floppy"></i> Save resource</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade infera-modal" id="editResourceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Resource</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form method="post" id="editResourceForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="editResourceTitle">Title</label>
+                        <input type="text" id="editResourceTitle" name="title" class="form-input" required maxlength="150" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="editResourceCategory">Category</label>
+                        <select id="editResourceCategory" name="category" class="form-input form-select-custom" required>
+                            <option value="VIDEO">Video</option>
+                            <option value="ARTICLE">Article</option>
+                            <option value="DOCUMENTATION">Documentation</option>
+                            <option value="TUTORIAL">Tutorial</option>
+                            <option value="IMAGE">Image</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label-custom" for="editResourceUrl">URL</label>
+                        <input type="url" id="editResourceUrl" name="url" class="form-input" required maxlength="500" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label-custom" for="editResourceDescription">Description <span class="optional-label">(optional)</span></label>
+                        <textarea id="editResourceDescription" name="description" class="form-input form-textarea" rows="3" maxlength="255"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-accent"><span class="btn-text">Save changes</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade infera-modal" id="deleteResourceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Resource</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <p>Delete <strong id="deleteResourceTitle">this resource</strong> permanently? This cannot be undone.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form method="post" id="deleteResourceForm" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-modal-danger"><i class="bi bi-trash"></i> Delete permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
     <span class="toast-msg" id="toastMsg">Done!</span>
 </div>
 
