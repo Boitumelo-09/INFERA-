@@ -68,6 +68,7 @@ public class ResourceService {
         resourceRepository.delete(resource);
     }
 
+
     public long countResourcesForUser(User user) {
         return resourceRepository.countByNote_Workspace_User(user);
     }

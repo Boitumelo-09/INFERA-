@@ -260,6 +260,7 @@
     opacity: 1;
     visibility: visible;
     transform: none;
+    z-index: 2;
 
 }
 .ws-menu-item {
@@ -321,14 +322,14 @@
 .view-note-body {
     font-size: 0.8rem;
     line-height: 1.85;
-    color: var(--text);
+    color: var(--muted);
     white-space: pre-wrap;
     word-wrap: break-word;
     max-height: 55vh;
     overflow-y: auto;
     padding-right: 6px;
     transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.3s;
-
+    font-family: "IBM Plex Sans", sans-serif;
     /* Firefox scrollbar theming — takes the note's workspace colour */
     scrollbar-width: thin;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
@@ -395,11 +396,29 @@
 }
 
 #viewNoteDialog.theater-mode {
-    max-width: 92vw;
-    width: 98vw;
-    height: 90vh;
-    margin: 5vh auto;
+    max-width: 97vw;
+    width: 97vw;
+    height: 96vh;
+    margin: 2vh auto;
+}
 
+#viewNoteDialog.theater-mode .modal-header {
+    padding: 10px 20px;
+}
+#viewNoteDialog.theater-mode .modal-title {
+    font-size: 1.1rem !important;
+    margin-top: 2px !important;
+}
+#viewNoteDialog.theater-mode .view-note-ws {
+    font-size: 0.62rem;
+    padding: 2px 9px;
+}
+#viewNoteDialog.theater-mode .view-note-date {
+    font-size: 0.68rem;
+    margin-top: 3px;
+}
+#viewNoteDialog.theater-mode .modal-footer {
+    padding: 8px 20px;
 }
 #viewNoteDialog.theater-mode .modal-content {
     height: 100%;
@@ -414,7 +433,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 20px 15px;
 
     /* Scroll now happens here instead of .view-note-body — needs its own theming */
     scrollbar-width: thin;
@@ -439,6 +458,7 @@
     line-height: 2;
 }
 #viewNoteDialog.theater-mode .view-note-content .modal-title {
+
     font-size: 1.6rem;
 }
 
@@ -600,6 +620,7 @@
 #viewNoteDialog.theater-mode .view-note-body {
     min-width: 280px;
     flex-shrink: 1;
+
 }
 .vnr-list-wrap::-webkit-scrollbar { width: 6px; }
 .vnr-list-wrap::-webkit-scrollbar-track { background: transparent; }
