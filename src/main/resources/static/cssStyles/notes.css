@@ -319,7 +319,7 @@
 }
 
 .view-note-body {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     line-height: 1.85;
     color: var(--text);
     white-space: pre-wrap;
@@ -435,7 +435,7 @@
     max-width: 760px;
     width: 100%;
     max-height: none;
-    font-size: 1.08rem;
+    font-size: 0.95rem;
     line-height: 2;
 }
 #viewNoteDialog.theater-mode .view-note-content .modal-title {
@@ -570,17 +570,59 @@
 /* ─── Resource Supporter ─── */
 .view-note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .view-note-resources { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
-.vnr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.vnr-header h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.vnr-header h4 i { color: var(--accent); }
+.vnr-summary {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; list-style: none; margin-bottom: 10px;
+}
+.vnr-summary::-webkit-details-marker { display: none; }
+.vnr-summary h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.vnr-summary h4 i { color: var(--accent); }
+.vnr-chevron { color: var(--muted); transition: transform 0.2s; }
+.vnr-details[open] .vnr-chevron { transform: rotate(180deg); }
+.vnr-body { padding-top: 4px; }
+
+.vnr-list-wrap {
+    max-height: 320px;
+    max-width: 640px;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-top: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color) transparent;
+    resize: both;
+    direction: rtl;
+}
+
+.vnr-list {
+    direction: ltr;
+}
+
+#viewNoteDialog.theater-mode .view-note-body {
+    min-width: 280px;
+    flex-shrink: 1;
+}
+.vnr-list-wrap::-webkit-scrollbar { width: 6px; }
+.vnr-list-wrap::-webkit-scrollbar-track { background: transparent; }
+.vnr-list-wrap::-webkit-scrollbar-thumb { background: var(--ws-color); border-radius: 99px; }
+
+/* Theater mode gets more room to breathe */
+#viewNoteDialog.theater-mode .vnr-list-wrap { max-height: 420px; }
+
 .btn-add-resource {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(234,88,12,0.1); color: #fb923c;
-    border: 1px solid rgba(234,88,12,0.3); border-radius: 8px;
-    padding: 6px 14px; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ws-color, var(--accent));
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
     transition: background 0.2s;
 }
-.btn-add-resource:hover { background: rgba(234,88,12,0.18); }
+.btn-add-resource:hover { background: color-mix(in srgb, var(--ws-color, var(--accent)) 20%, transparent); }
 .vnr-empty { color: var(--muted); font-size: 0.84rem; font-style: italic; text-align: center; padding: 16px 0; }
 .vnr-list { display: flex; flex-direction: column; gap: 12px; }
 .vnr-card { background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; }
