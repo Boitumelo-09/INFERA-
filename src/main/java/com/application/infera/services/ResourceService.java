@@ -10,6 +10,7 @@ import com.application.infera.models.User;
 import com.application.infera.repositories.ResourceRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class ResourceService {
         resource.setNote(note);
 
         resourceRepository.save(resource);
+        noteService.touchNote(note);
     }
 
     // All resources for one note (used to populate the View Note modal)
@@ -45,7 +47,14 @@ public class ResourceService {
         Note note = noteService.getNoteForUser(noteId, user);
         return resourceRepository.findByNoteOrderByCreatedAtDesc(note);
     }
-
+    public Map<Long, Long> getResourceCountsByWorkspace(User user) {
+        List<Object[]> rows = resourceRepository.countResourcesGroupedByWorkspace(user);
+        Map<Long, Long> counts = new HashMap<>();
+        for (Object[] row : rows) {
+            counts.put((Long) row[0], (Long) row[1]);
+        }
+        return counts;
+    }
     // Ownership-scoped single lookup, used before update/delete
     public Resource getResourceForUser(Long id, User user) {
         return resourceRepository.findByIdAndNote_Workspace_User(id, user)
@@ -61,11 +70,14 @@ public class ResourceService {
         resource.setCategory(ResourceCategory.valueOf(request.getCategory().toUpperCase()));
 
         resourceRepository.save(resource);
+        noteService.touchNote(resource.getNote());
     }
 
     public void deleteResource(Long id, User user) {
         Resource resource = getResourceForUser(id, user);
+        Note note = resource.getNote();
         resourceRepository.delete(resource);
+        noteService.touchNote(note);
     }
 
 
