@@ -429,23 +429,49 @@
 
 #viewNoteDialog.theater-mode .modal-body {
     flex: 1;
-    overflow-y: auto;
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
     justify-content: center;
-    padding: 20px 15px;
+    gap: 28px;
+    padding: 32px 24px;
+    overflow: hidden;
+}
 
-    /* Scroll now happens here instead of .view-note-body — needs its own theming */
+#viewNoteDialog.theater-mode .view-note-body {
+    overflow-y: auto;
+    max-height: 100%;
+    padding-right: 12px;
+
     scrollbar-width: thin;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
-#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar { width: 6px; }
-#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-track { background: transparent; }
-#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-thumb {
+#viewNoteDialog.theater-mode .view-note-resources {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    flex-shrink: 0;
+    width: 300px;
+    min-width: 220px;
+    max-width: 640px;
+    max-height: 100%;
+    overflow: auto;
+    direction: rtl;
+    resize: horizontal;
+    margin-top: 0;
+    border-top: none;
+    padding-left: 24px;
+    border-left: 1px solid var(--border);
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
+}
+#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar { width: 3px; }
+#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-track { background: transparent; }
+#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb {
     background: var(--ws-color, var(--accent));
     border-radius: 99px;
 }
-#viewNoteDialog.theater-mode .modal-body::-webkit-scrollbar-thumb:hover {
+#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb:hover {
     filter: brightness(1.15);
 }
 
@@ -453,8 +479,10 @@
 #viewNoteDialog.theater-mode .view-note-body {
     max-width: 760px;
     width: 100%;
-    max-height: none;
-    font-size: 0.95rem;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    font-size: 1.08rem;
     line-height: 2;
 }
 #viewNoteDialog.theater-mode .view-note-content .modal-title {
@@ -594,7 +622,14 @@
 }
 /* ─── Resource Supporter ─── */
 .view-note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.view-note-resources { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+.view-note-resources {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+
+}
+
 .vnr-summary {
     display: flex; align-items: center; justify-content: space-between;
     cursor: pointer; list-style: none; margin-bottom: 10px;
@@ -608,13 +643,12 @@
 
 .vnr-list-wrap {
     max-height: 320px;
-    max-width: 640px;
     overflow-y: auto;
     padding-right: 6px;
     margin-top: 10px;
     scrollbar-width: thin;
-    scrollbar-color: var(--ws-color) transparent;
-    resize: both;
+    scrollbar-color: var(--ws-color,var(--accent)) transparent;
+    resize: vertical;
     direction: rtl;
 }
 
@@ -625,7 +659,7 @@
 #viewNoteDialog.theater-mode .view-note-body {
     min-width: 280px;
     flex-shrink: 1;
-
+    resize: horizontal;
 }
 .vnr-list-wrap::-webkit-scrollbar { width: 6px; }
 .vnr-list-wrap::-webkit-scrollbar-track { background: transparent; }
@@ -681,11 +715,13 @@
 
 .view-note-body h1 {
     font-size: 1.5rem;
-    letter-spacing: .5rem;
-    border-bottom: 2px solid var(--ws-color, var(--accent));
+    letter-spacing: .2rem;
+    border-bottom: 1px solid var(--ws-color, var(--accent));
     color: transparent;
     -webkit-text-stroke: 0.5px var(--ws-color, var(--accent));
     padding-bottom: 6px;
+    font-family: "Cursive",serif;
+    text-align: right;
 }
 
 .view-note-body h2 { font-size: 1.25rem; color: var(--ws-color, var(--accent)); }
@@ -705,8 +741,8 @@
 .view-note-body code {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85em;
-    background: rgba(234,88,12,0.12);
-    color: #fb923c;
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    color: var(--ws-color, var(--accent));
     padding: 2px 6px;
     border-radius: 4px;
 }
@@ -741,3 +777,46 @@
     transition: background 0.15s, color 0.15s;
 }
 .editor-toolbar button:hover { background: rgba(234,88,12,0.12); color: #fb923c; border-color: rgba(234,88,12,0.3); }
+
+.view-note-body::-webkit-scrollbar-thumb,
+.vnr-list-wrap::-webkit-scrollbar-thumb,
+#viewNoteDialog.theater-mode .view-note-resources::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+.view-note-body:hover::-webkit-scrollbar-thumb,
+.vnr-list-wrap:hover::-webkit-scrollbar-thumb,
+#viewNoteDialog.theater-mode .view-note-resources:hover::-webkit-scrollbar-thumb {
+    background: var(--ws-color, var(--accent));
+}
+.view-note-body::-webkit-scrollbar-thumb,
+.vnr-list-wrap::-webkit-scrollbar-thumb,
+#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+.view-note-body:hover::-webkit-scrollbar-thumb,
+.vnr-list-wrap:hover::-webkit-scrollbar-thumb,
+#viewNoteDialog.theater-mode .view-note-body:hover::-webkit-scrollbar-thumb {
+    background: var(--ws-color, var(--accent));
+}
+
+
+.view-note-body,
+.vnr-list-wrap,
+#viewNoteDialog.theater-mode .view-note-resources {
+    scrollbar-color: transparent transparent;
+}
+.view-note-body:hover,
+.vnr-list-wrap:hover,
+#viewNoteDialog.theater-mode .view-note-resources:hover {
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
+}
+.view-note-body,
+.vnr-list-wrap,
+#viewNoteDialog.theater-mode .view-note-body {
+    scrollbar-color: transparent transparent;
+}
+.view-note-body:hover,
+.vnr-list-wrap:hover,
+#viewNoteDialog.theater-mode .view-note-body:hover {
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
+}
