@@ -8,6 +8,7 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,5 +105,10 @@ public class NoteService {
     }
     public Long countAllNotes(){
         return noteRepository.count();
+    }
+
+    public void touchNote(Note note) {
+        note.setUpdatedAt(LocalDateTime.now());
+        noteRepository.save(note);   // @PreUpdate on Note bumps updatedAt automatically
     }
 }

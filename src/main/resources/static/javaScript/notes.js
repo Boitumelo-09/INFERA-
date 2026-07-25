@@ -609,6 +609,7 @@ function insertAtLineStart(textarea, prefix) {
 }
 
 const TOOLBAR_ACTIONS = {
+    h1:        t => insertAtLineStart(t, '# '),
     h2:        t => insertAtLineStart(t, '## '),
     bold:      t => wrapSelection(t, '**', '**', 'bold text'),
     italic:    t => wrapSelection(t, '*', '*', 'italic text'),
