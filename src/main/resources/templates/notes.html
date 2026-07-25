@@ -11,8 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
           rel="stylesheet"/>
-    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" href="dashboard.css"/>
-    <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" href="notes.css"/>
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 </head>
 <body>
@@ -349,6 +351,16 @@
                         </select>
                     </div>
                     <div class="form-group mb-3">
+                        <div class="editor-toolbar" data-target="noteContent">
+                            <button type="button" data-action="h2" title="Heading"><i class="bi bi-type-h2"></i></button>
+                            <button type="button" data-action="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+                            <button type="button" data-action="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+                            <button type="button" data-action="list" title="Bullet list"><i class="bi bi-list-ul"></i></button>
+                            <button type="button" data-action="code" title="Inline code"><i class="bi bi-code"></i></button>
+                            <button type="button" data-action="codeblock" title="Code block"><i class="bi bi-code-square"></i></button>
+                            <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
+                            <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
+                        </div>
                         <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="8" placeholder="Start writing..."></textarea>
                     </div>
                     <div class="form-group">
@@ -400,9 +412,21 @@
                             </option>
                         </select>
                     </div>
-                    <div class="form-group mb-3">
+
+                    <div class="form-group">
+                        <div class="editor-toolbar" data-target="editNoteContent">
+                            <button type="button" data-action="h2" title="Heading"><i class="bi bi-type-h2"></i></button>
+                            <button type="button" data-action="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+                            <button type="button" data-action="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+                            <button type="button" data-action="list" title="Bullet list"><i class="bi bi-list-ul"></i></button>
+                            <button type="button" data-action="code" title="Inline code"><i class="bi bi-code"></i></button>
+                            <button type="button" data-action="codeblock" title="Code block"><i class="bi bi-code-square"></i></button>
+                            <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
+                            <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
+                        </div>
                         <textarea id="editNoteContent" name="content" class="form-input form-textarea note-content-input" rows="8"></textarea>
                     </div>
+
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
                         <div class="tag-input-wrap" id="editNoteTagWrap">
@@ -580,7 +604,12 @@
         showToast('[[${errorMessage}]]', 'error');
     });
 </script>
-<script th:src="@{/javaScript/notes.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+<script th:src="@{/javaScript/notes.js}" ></script>
 
 </body>
 </html>
