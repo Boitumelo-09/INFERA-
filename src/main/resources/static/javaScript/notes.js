@@ -134,15 +134,13 @@ function openViewNoteModal(row) {
     $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
     $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
 
-    const bodyEl = $('#viewNoteContent');
-    const cleanContent = content === 'null' ? '' : content;
-    bodyEl.textContent = cleanContent;
-    bodyEl.classList.toggle('is-empty', !cleanContent.trim());
+    renderNoteContent(content);
+    renderResourcesForRow(row);
 
     const tagList = (row.dataset.tags || '').split(',').filter(Boolean);
     $('#viewNoteTags').innerHTML = tagList.map(t => `<span class="view-note-tag-pill">#${t}</span>`).join('');
 
-    renderResourcesForRow(row);
+   // renderResourcesForRow(row);
 
     viewNoteModal?.show();
 }
@@ -569,3 +567,62 @@ function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInp
         reset() { tags = []; sync(); },
         flushPending() { if (textInput.value.trim()) addTag(textInput.value); }
     };}
+//
+// -- NOTE RENDERING
+//
+function renderNoteContent(raw) {
+    const bodyEl = $('#viewNoteContent');
+    const clean = raw === 'null' || !raw ? '' : raw;
+
+    bodyEl.classList.toggle('is-empty', !clean.trim());
+    if (!clean.trim()) { bodyEl.innerHTML = ''; return; }
+
+    const html = marked.parse(clean, { breaks: true });
+    bodyEl.innerHTML = DOMPurify.sanitize(html);
+
+    $$('pre code', bodyEl).forEach(block => hljs.highlightElement(block));
+
+    renderMathInElement(bodyEl, {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+    });
+}
+function wrapSelection(textarea, before, after, placeholder) {
+    const start = textarea.selectionStart, end = textarea.selectionEnd;
+    const selected = textarea.value.slice(start, end) || placeholder;
+    const newText = textarea.value.slice(0, start) + before + selected + after + textarea.value.slice(end);
+    textarea.value = newText;
+    const cursorPos = start + before.length;
+    textarea.focus();
+    textarea.setSelectionRange(cursorPos, cursorPos + selected.length);
+}
+
+function insertAtLineStart(textarea, prefix) {
+    const start = textarea.selectionStart;
+    const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
+    textarea.value = textarea.value.slice(0, lineStart) + prefix + textarea.value.slice(lineStart);
+    textarea.focus();
+    textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+}
+
+const TOOLBAR_ACTIONS = {
+    h2:        t => insertAtLineStart(t, '## '),
+    bold:      t => wrapSelection(t, '**', '**', 'bold text'),
+    italic:    t => wrapSelection(t, '*', '*', 'italic text'),
+    list:      t => insertAtLineStart(t, '- '),
+    code:      t => wrapSelection(t, '`', '`', 'code'),
+    codeblock: t => wrapSelection(t, '```\n', '\n```', 'your code here'),
+    math:      t => wrapSelection(t, '$', '$', 'E = mc^2'),
+    quote:     t => insertAtLineStart(t, '> ')
+};
+
+$$('.editor-toolbar').forEach(toolbar => {
+    const textarea = $(`#${toolbar.dataset.target}`);
+    if (!textarea) return;
+    toolbar.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => TOOLBAR_ACTIONS[btn.dataset.action]?.(textarea));
+    });
+});
