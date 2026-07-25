@@ -78,8 +78,8 @@
                 <a href="#" class="nav-item" data-page="resources">
                     <i class="bi bi-link-45deg"></i>
                     <span>Resources</span>
-                    <!-- th:text="${resourceCount}" -->
-                    <span class="nav-badge" id="navResourcesBadge">11</span>
+                    <!--  -->
+                    <span th:text="${resourceCount}" class="nav-badge" id="navResourcesBadge">0</span>
                 </a>
             </li>
         </ul>
@@ -317,8 +317,7 @@
                                     <div th:text="${ws.name}"  class="ws-card-name"></div>
 
                                     <!-- th:text="${ws.noteCount} + ' notes'" -->
-                                    <div  class="ws-card-count"> <span th:text="${wsNoteCount.get(ws.id) ?: 0} + ' notes'"></span> · 0 resources</div>
-                                </div>
+                                    <div  class="ws-card-count"> <span th:text="${wsNoteCount.get(ws.id) ?: 0} + ' notes'"></span> · <span th:text="${workspaceResourceCount.get(ws.id) ?: 0} + ' resources'"></span></div>                                </div>
                                 <i class="bi bi-chevron-right ws-card-arrow"></i>
                             </div>
                         </div>
