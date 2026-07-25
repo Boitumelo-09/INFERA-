@@ -582,10 +582,15 @@
 
 /* ─── TAG PILLS ─── */
 .nri-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+
 .nri-tag-pill, .view-note-tag-pill {
-    font-size: 0.68rem; font-weight: 600; color: var(--muted);
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-    border-radius: 99px; padding: 2px 9px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);;
+    border-radius: 99px;
+    padding: 2px 9px;
 }
 /* ─── Resource Supporter ─── */
 .view-note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
@@ -596,7 +601,7 @@
 }
 .vnr-summary::-webkit-details-marker { display: none; }
 .vnr-summary h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.vnr-summary h4 i { color: var(--accent); }
+.vnr-summary h4 i { color: var(--ws-color,var(--accent)); }
 .vnr-chevron { color: var(--muted); transition: transform 0.2s; }
 .vnr-details[open] .vnr-chevron { transform: rotate(180deg); }
 .vnr-body { padding-top: 4px; }
@@ -628,7 +633,7 @@
 
 /* Theater mode gets more room to breathe */
 #viewNoteDialog.theater-mode .vnr-list-wrap {
-    max-height: 420px;
+    max-height: 80vh;
 }
 
 .btn-add-resource {
@@ -673,7 +678,16 @@
     margin: 20px 0 10px;
     line-height: 1.3;
 }
-.view-note-body h1 { font-size: 1.5rem; border-bottom: 2px solid var(--ws-color, var(--accent)); padding-bottom: 6px; }
+
+.view-note-body h1 {
+    font-size: 1.5rem;
+    letter-spacing: .5rem;
+    border-bottom: 2px solid var(--ws-color, var(--accent));
+    color: transparent;
+    -webkit-text-stroke: 0.5px var(--ws-color, var(--accent));
+    padding-bottom: 6px;
+}
+
 .view-note-body h2 { font-size: 1.25rem; color: var(--ws-color, var(--accent)); }
 .view-note-body h3 { font-size: 1.05rem; }
 .view-note-body p { margin-bottom: 12px; }
