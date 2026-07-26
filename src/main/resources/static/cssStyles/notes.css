@@ -724,8 +724,21 @@
     text-align: right;
 }
 
-.view-note-body h2 { font-size: 1.25rem; color: var(--ws-color, var(--accent)); }
-.view-note-body h3 { font-size: 1.05rem; }
+.view-note-body h2 {
+    font-size: 1.25rem;
+    color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, transparent);
+    font-family: "Inter", sans-serif;
+}
+
+.view-note-body h3 {
+    font-size: 1.05rem;
+    color: var(--muted, var(--accent));
+    border-bottom: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    padding-bottom: 4px;
+    text-align: center;
+    font-family: "Cursive",serif;
+    max-width: 50%;
+}
 .view-note-body p { margin-bottom: 12px; }
 .view-note-body ul, .view-note-body ol { margin: 0 0 12px 22px; }
 .view-note-body li { margin-bottom: 4px; }
