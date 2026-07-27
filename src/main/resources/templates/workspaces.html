@@ -65,9 +65,11 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="resources">
+                <a th:href="@{/resources}" class="nav-item" data-page="resources">
                     <i class="bi bi-link-45deg"></i>
                     <span>Resources</span>
+                    <!--  -->
+                    <span th:text="${resourceCount}" class="nav-badge" id="navResourcesBadge">0</span>
                 </a>
             </li>
         </ul>
