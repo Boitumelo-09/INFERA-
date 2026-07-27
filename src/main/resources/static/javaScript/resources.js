@@ -6,8 +6,19 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 const dot = $('#cursorDot'), ring = $('#cursorRing');
 let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
 if (dot && ring) {
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; dot.style.left = mouseX+'px'; dot.style.top = mouseY+'px'; });
-    (function animateRing(){ ringX += (mouseX-ringX)*0.14; ringY += (mouseY-ringY)*0.14; ring.style.left=ringX+'px'; ring.style.top=ringY+'px'; requestAnimationFrame(animateRing); })();
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+    });
+    (function animateRing() {
+        ringX += (mouseX - ringX) * 0.14;
+        ringY += (mouseY - ringY) * 0.14;
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+        requestAnimationFrame(animateRing);
+    })();
 }
 const sidebar = $('#sidebar'), sidebarToggle = $('#sidebarToggle'), sidebarClose = $('#sidebarClose'), sidebarOverlay = $('#sidebarOverlay');
 sidebarToggle?.addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('active'); });
