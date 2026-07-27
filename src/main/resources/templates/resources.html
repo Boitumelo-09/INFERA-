@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle}">Resources — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" href="dashboard.css" />
+    <link rel="stylesheet" th:href="@{/cssStyles/resources.css}" href="resources.css" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <a th:href="@{/home}" class="logo-link d-flex align-items-center gap-2">
+            <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
+            <span class="logo-text">INFERA</span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0"><i class="bi bi-search"></i><span>Search...</span><kbd>⌘K</kbd></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <ul class="nav-list">
+            <li><a th:href="@{/dashboard}" class="nav-item"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a></li>
+            <li><a th:href="@{/workspaces}" class="nav-item"><i class="bi bi-folder2-open"></i><span>Workspaces</span><span class="nav-badge" th:text="${workspaceCount}">0</span></a></li>
+            <li><a th:href="@{/notes}" class="nav-item"><i class="bi bi-journal-text"></i><span>Notes</span><span class="nav-badge" th:text="${noteCount}">0</span></a></li>
+            <li><a th:href="@{/resources}" class="nav-item active"><i class="bi bi-link-45deg"></i><span>Resources</span><span class="nav-badge" th:text="${resourceCount}">0</span></a></li>
+        </ul>
+        <div class="nav-section-label mt-3">Account</div>
+        <ul class="nav-list">
+            <li><a href="#" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
+            <li><a href="#" class="nav-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
+            <li><a href="#" class="nav-item"><i class="bi bi-sliders"></i><span>Settings</span></a></li>
+        </ul>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+        <div class="user-info">
+            <div class="user-name" th:text="${user.firstName + ' ' + user.lastName}">Name</div>
+            <div class="user-email" th:text="${user.email}">email</div>
+        </div>
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="logout-btn" title="Sign out"><i class="bi bi-box-arrow-right"></i></button>
+        </form>
+    </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="main-wrapper" id="mainWrapper">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <nav aria-label="breadcrumb" class="d-none d-sm-flex">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><span class="bc-root" th:text="${user.firstName}+'\'s'">User's</span></li>
+                    <li class="breadcrumb-item active">Resources</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <a th:href="@{/notes}" class="btn-topbar-accent"><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline">Add resource</span></a>
+            <div class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+        </div>
+    </header>
+
+    <main class="page-content">
+
+        <div class="res-page-header">
+            <div>
+                <h1 class="res-page-title">Your Resources</h1>
+                <p class="res-page-sub"><span th:text="${resourceCount}">0</span> saved link<span th:if="${resourceCount != 1}">s</span>, organized by category.</p>
+            </div>
+            <div class="res-search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" id="resSearchInput" placeholder="Filter resources..." autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="res-empty-all" th:if="${resourceCount == 0}">
+            <div class="res-empty-icon"><i class="bi bi-link-45deg"></i></div>
+            <h3>No resources yet</h3>
+            <p>Attach documentation, articles, tutorials, videos, or images to any note.</p>
+            <a th:href="@{/notes}" class="btn-topbar-accent mt-2"><i class="bi bi-plus-lg"></i> Go add one</a>
+        </div>
+
+        <div class="res-shelves" th:if="${resourceCount > 0}">
+            <section class="res-shelf" th:each="entry : ${resourcesByCategory}" th:if="${!entry.value.isEmpty()}" th:data-category="${entry.key}"
+                     th:style="'--cat-color:' + (${entry.key.name() == 'VIDEO'} ? '#f87171' : (${entry.key.name() == 'IMAGE'} ? '#34d399' : '#818cf8'))">                <div class="shelf-header">
+                    <h2><i class="bi" th:classappend="${entry.key.name() == 'VIDEO'} ? 'bi-camera-reels' : (${entry.key.name() == 'IMAGE'} ? 'bi-image' : 'bi-file-earmark-text')"></i>
+                        <span th:text="${#strings.capitalize(#strings.toLowerCase(entry.key.name())) + 's'}">Category</span>
+                        <span class="shelf-count" th:text="${entry.value.size()}">0</span>
+                    </h2>
+                    <div class="shelf-nav">
+                        <button class="shelf-arrow" data-dir="-1"><i class="bi bi-chevron-left"></i></button>
+                        <button class="shelf-arrow" data-dir="1"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="shelf-track">
+                    <div class="res-card"
+                         th:each="res : ${entry.value}"
+                         th:data-title="${res.title}" th:data-url="${res.url}"
+                         th:data-description="${res.description}" th:data-category="${res.category}"
+                         th:data-note="${res.note.title}" th:data-note-id="${res.note.id}">
+                        <div class="rc-media">
+                            <i class="bi" th:classappend="${entry.key.name() == 'VIDEO'} ? 'bi-play-circle-fill' : (${entry.key.name() == 'IMAGE'} ? 'bi-image' : 'bi-box-arrow-up-right')"></i>
+                        </div>
+                        <div class="rc-body">
+                            <div class="rc-title" th:text="${res.title}">Title</div>
+                            <div class="rc-note"><i class="bi bi-journal-text"></i> <span th:text="${res.note.title}">Note</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="res-no-match" id="resNoMatch" hidden>
+            <i class="bi bi-search"></i>
+            <p>No resources match your search.</p>
+        </div>
+
+    </main>
+</div>
+
+<div class="modal fade infera-modal" id="resPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <span class="res-preview-cat" id="resPreviewCat">Video</span>
+                    <h5 class="modal-title mt-2" id="resPreviewTitle">Title</h5>
+                    <span class="res-preview-note" id="resPreviewNote"><i class="bi bi-journal-text"></i> Note</span>
+                </div>
+                <button type="button" class="modal-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body" id="resPreviewBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
+                <a href="#" target="_blank" rel="noopener" class="btn-modal-accent" id="resPreviewOpenBtn"><i class="bi bi-box-arrow-up-right"></i> Open link</a>
+                <a th:href="@{/notes}"  class="btn-modal-accent" id="resPreviewNotesBtn" style="background:#6366f1;"><i class="bi bi-journal-text"></i> Open in Notes</a>            </div>
+        </div>
+    </div>
+</div>
+
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+    <span class="toast-msg" id="toastMsg">Done!</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/javaScript/resources.js}"></script>
+</body>
+</html>
