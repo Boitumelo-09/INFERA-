@@ -126,7 +126,13 @@
 }
 .res-preview-note { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
 .res-preview-media-video { width: 100%; aspect-ratio: 16/9; border: none; border-radius: 10px; }
-.res-preview-media-image { width: 100%; max-height: 420px; object-fit: cover; border-radius: 10px; }
+
+.res-preview-media-image {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 10px;
+}
 .res-preview-link-block { display: flex; align-items: center; gap: 10px; background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--accent); word-break: break-all; }
 .res-preview-desc { color: var(--muted); font-size: 0.88rem; margin-top: 14px; line-height: 1.6; }
 

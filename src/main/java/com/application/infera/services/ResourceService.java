@@ -10,10 +10,7 @@ import com.application.infera.models.User;
 import com.application.infera.repositories.ResourceRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,8 +89,12 @@ public class ResourceService {
     public Map<ResourceCategory, List<Resource>> getResourcesGroupedByCategory(User user) {
         List<Resource> resources = resourceRepository.findByNote_Workspace_UserOrderByUpdatedAtDesc(user);
         Map<ResourceCategory, List<Resource>> grouped = new EnumMap<>(ResourceCategory.class);
-        for (ResourceCategory cat : ResourceCategory.values()) grouped.put(cat, new java.util.ArrayList<>());
-        for (Resource r : resources) grouped.get(r.getCategory()).add(r);
+        for (ResourceCategory cat : ResourceCategory.values()) {
+            grouped.put(cat, new ArrayList<>());
+        }
+        for (Resource r : resources) {
+            grouped.get(r.getCategory()).add(r);
+        }
         return grouped;
     }
 }
