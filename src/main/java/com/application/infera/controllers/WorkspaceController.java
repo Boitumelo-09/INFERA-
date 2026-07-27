@@ -9,6 +9,7 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
 import com.application.infera.services.NoteService;
+import com.application.infera.services.ResourceService;
 import com.application.infera.services.WorkspaceService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,11 +27,13 @@ public class WorkspaceController {
     private final WorkspaceService workspaceService;
     private final UserRepository userRepository;
     private final NoteService noteService;
+    private final ResourceService resourceService;
 
-    public WorkspaceController(WorkspaceService workspaceService, UserRepository userRepository, NoteService noteService) {
+    public WorkspaceController(WorkspaceService workspaceService, UserRepository userRepository, NoteService noteService, ResourceService resourceService) {
         this.workspaceService = workspaceService;
         this.userRepository = userRepository;
         this.noteService = noteService;
+        this.resourceService = resourceService;
     }
 
     // GET /workspaces — show all workspaces for the logged-in user
@@ -47,6 +50,7 @@ public class WorkspaceController {
         model.addAttribute("workspaceCount", workspaces.size());
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("wsNoteCount",noteService.getNoteCountsByWorkspace(user));
+        model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         return "workspaces";
     }
 

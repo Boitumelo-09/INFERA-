@@ -27,4 +27,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
             "WHERE r.note.workspace.user = :user " +
             "GROUP BY r.note.workspace.id")
     List<Object[]> countResourcesGroupedByWorkspace(@Param("user") User user);
+    
+    List<Resource> findByNote_Workspace_UserOrderByUpdatedAtDesc(User user);
 }

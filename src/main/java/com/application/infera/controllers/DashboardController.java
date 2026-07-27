@@ -14,6 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 @Controller
 public class DashboardController {
 
@@ -45,6 +49,8 @@ public class DashboardController {
         System.out.println("LOGGED IN USER    : "+ "\u001B[32m" + user.getFirstName() + " " + user.getLastName() + "\u001B[0m");
         System.out.println("Localed Session ID: "+ "\u001B[32m" + user.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
+        System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
+
         System.out.println(".".repeat(50));
         model.addAttribute("pageTitle","Dashboard — INFERA");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
