@@ -50,7 +50,7 @@ public class NoteController {
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("resourcesByNote", resourceService.getResourcesGroupedByNote(user));
-
+        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
         return "notes";
     }
 
