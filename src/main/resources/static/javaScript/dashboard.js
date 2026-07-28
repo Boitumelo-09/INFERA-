@@ -162,14 +162,14 @@ function initGreeting() {
             const day  = now.toLocaleDateString('en-ZA', { weekday: 'long' });
             const date = now.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
             const time = now.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            dateEl.innerHTML = `${day}<br>${date}<br><span style="color:var(--accent);font-weight:600;">${time}</span>`;
+            dateEl.innerHTML = `${day}<br>${date}<br><span font-weight:600;">${time}</span>`;
         }
         updateDate();
         setInterval(updateDate, 1000);
     }
 }
-let k = document.getElementById("greetingText");
-if (k) k.style.color = "var(--accent)";
+// let k = document.getElementById("greetingText");
+// if (k) k.style.color = "var(--accent)";
 
 /* ───────────────────────────────────────────────────────────────────
    STAT COUNTER ANIMATION
