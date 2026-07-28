@@ -11,7 +11,16 @@
 }
 
 .res-page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-.res-page-title { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 1.75rem); font-weight: 800; color: var(--accent); }
+
+.res-page-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-optical-sizing: auto;
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 0.5px var(--text);
+}
+
 .res-page-sub { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
 
 .res-search-wrap { position: relative; min-width: 260px; }
@@ -73,7 +82,7 @@
     cursor: grab;
     scroll-snap-type: x proximity;
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--cat-color, var(--accent)) 55%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--cat-color, var(--accent)) 10%, transparent) transparent;
     scroll-behavior: smooth;
     ;
 }
