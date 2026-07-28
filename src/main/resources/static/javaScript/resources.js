@@ -103,6 +103,9 @@ renderCardThumbnails();
 const previewModalEl = $('#resPreviewModal');
 const previewModal = previewModalEl ? new bootstrap.Modal(previewModalEl) : null;
 
+previewModalEl?.addEventListener('hidden.bs.modal', () => {
+    $('#resPreviewBody').innerHTML = '';
+});
 $$('.res-card').forEach(card => {
     card.addEventListener('click', () => {
         const { title, url, description, category, note } = card.dataset;
