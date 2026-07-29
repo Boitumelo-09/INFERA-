@@ -228,7 +228,7 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon ws"><i class="bi bi-folder2-open"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${workspaceCount}"></span>&nbsp;this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyWorkspaces}"></span>&nbsp;this week</div>
                     </div>
                     <!-- th:text="${workspaceCount}" -->
                     <div th:text="${workspaceCount}" class="sc-value" th:data-count="${workspaceCount}"></div>
@@ -238,7 +238,7 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon notes"><i class="bi bi-journal-text"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${notesCount}"></span>&nbsp;this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyNotes}"></span>&nbsp;this week</div>
                     </div>
                     <!-- th:text="${noteCount}" -->
                     <div th:text="${notesCount}" class="sc-value" th:data-count="${notesCount}">0</div>
@@ -248,7 +248,7 @@
                 <div class="stat-card">
                     <div class="sc-top">
                         <div class="sc-icon resources"><i class="bi bi-link-45deg"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+0 this week</div>
+                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyResources}"></span>&nbsp;this week</div>
                     </div>
                     <!--  -->
                     <div th:text="${resourceCount}" class="sc-value" th:data-count="${resourceCount}">0</div>
@@ -330,21 +330,21 @@
                             <h2 class="panel-title"><i class="bi bi-bar-chart-line"></i> Activity This Week</h2>
                         </div>
                         <div class="panel-body">
-                            <div class="activity-bars" id="activityBars" aria-label="Notes created per day this week">
-                                <!-- Filled by JS with th:data-* values in real app -->
-                                <!-- th:each: data-day and data-value attributes per bar -->
+                            <div class="activity-chart-wrap" id="activityChartWrap" aria-label="Activity this week" th:data-values="${dailyActivityCounts}">
+                                <svg id="activityChartSvg" viewBox="0 0 700 160" preserveAspectRatio="none"></svg>
+                                <div class="chart-tooltip" id="chartTooltip"></div>
                             </div>
                             <div class="activity-legend">
                                 <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                             </div>
                             <div class="activity-summary mt-3">
                   <span class="as-item"><i class="bi bi-journal-plus"></i>
-                      <!-- th:text="${weeklyNotes} + ' notes this week'" -->
-                    8 notes this week
+                      <span  th:text="${weeklyNotes} + ' notes this week'"></span>
+
                   </span>
                                 <span class="as-item"><i class="bi bi-link"></i>
-                                    <!-- th:text="${weeklyResources} + ' resources'" -->
-                    3 resources
+                                   <span th:text="${weeklyResources} + ' resources'"></span>
+
                   </span>
                             </div>
                         </div>
@@ -359,53 +359,21 @@
                     <h2 class="panel-title"><i class="bi bi-clock-history"></i> Recent Activity</h2>
                     <button class="panel-action" data-page="activity">View all</button>
                 </div>
-                <div class="panel-body activity-feed">
+                <div class="panel-body activity-feed activity-feed-scroll">
                     <!-- th:each="act : ${recentActivities}" -->
-                    <div class="activity-item">
-                        <div class="act-icon created"><i class="bi bi-journal-plus"></i></div>
-                        <div class="act-body">
-                            <!-- th:text="'Created note: ' + ${act.targetName}" -->
-                            <div class="act-text">Created note <strong>Spring Security Config</strong></div>
-                            <!-- th:text="${#temporals.format(act.createdAt, 'dd MMM yyyy, HH:mm')}" -->
-                            <div class="act-time">Today at 09:14</div>
-                        </div>
-                        <span class="act-workspace" style="--ws-color:#ea580c;">Java Backend</span>
+                    <div th:if="${#lists.isEmpty(recentActivities)}" class="text-center py-4 text-muted" style="color: #ea580c;">
+                        <i class="bi bi-clock-history fs-3"></i>
+                        <p class="mt-2 mb-0">No activity yet.</p>
                     </div>
-
-                    <div class="activity-item">
-                        <div class="act-icon updated"><i class="bi bi-pencil-square"></i></div>
-                        <div class="act-body">
-                            <div class="act-text">Updated note <strong>Thesis Literature Review</strong></div>
-                            <div class="act-time">Yesterday at 22:41</div>
+                    <div class="activity-item" th:each="activity : ${recentActivities}">
+                        <div class="act-icon" th:classappend="${activity.type.cssClass}">
+                            <i class="bi" th:classappend="${activity.type.icon}"></i>
                         </div>
-                        <span class="act-workspace" style="--ws-color:#6366f1;">Research</span>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="act-icon resource"><i class="bi bi-link-45deg"></i></div>
                         <div class="act-body">
-                            <div class="act-text">Saved resource <strong>docs.spring.io/security</strong></div>
-                            <div class="act-time">Yesterday at 18:05</div>
+                            <div class="act-text" th:text="${activity.type.label} + ' '"><strong th:text="${activity.targetName}">Name</strong></div>
+                            <div class="act-time" th:data-datetime="${activity.createdAt}" th:text="${#temporals.format(activity.createdAt, 'dd MMM yyyy, HH:mm')}">Today</div>
                         </div>
-                        <span class="act-workspace" style="--ws-color:#ea580c;">Java Backend</span>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="act-icon ws-created"><i class="bi bi-folder-plus"></i></div>
-                        <div class="act-body">
-                            <div class="act-text">Created workspace <strong>Music</strong></div>
-                            <div class="act-time">Mon, 23 Jun · 11:30</div>
-                        </div>
-                        <span class="act-workspace" style="--ws-color:#f59e0b;">Music</span>
-                    </div>
-
-                    <div class="activity-item">
-                        <div class="act-icon created"><i class="bi bi-journal-plus"></i></div>
-                        <div class="act-body">
-                            <div class="act-text">Created note <strong>Interview Prep — Java Q&amp;A</strong></div>
-                            <div class="act-time">Mon, 23 Jun · 09:00</div>
-                        </div>
-                        <span class="act-workspace" style="--ws-color:#10b981;">Career</span>
+                        <span class="act-workspace" th:if="${activity.workspace != null}" th:style="'--ws-color:' + ${activity.workspace.color}" th:text="${activity.workspace.name}">Workspace</span>
                     </div>
                 </div>
             </div>

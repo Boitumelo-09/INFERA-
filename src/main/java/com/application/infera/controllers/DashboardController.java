@@ -3,10 +3,7 @@ package com.application.infera.controllers;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
-import com.application.infera.services.NoteService;
-import com.application.infera.services.ResourceService;
-import com.application.infera.services.TagService;
-import com.application.infera.services.WorkspaceService;
+import com.application.infera.services.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -26,12 +23,15 @@ public class DashboardController {
     private final NoteService noteService;
     private final TagService tagService;
     private final ResourceService resourceService;
-    public DashboardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService, TagService tagService, ResourceService resourceService) {
+    private final ActivityService activityService;
+
+    public DashboardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService, TagService tagService, ResourceService resourceService, ActivityService activityService) {
         this.userRepository = userRepository;
         this.workspaceService = workspaceService;
         this.noteService = noteService;
         this.tagService = tagService;
         this.resourceService = resourceService;
+        this.activityService = activityService;
     }
 
     @GetMapping("/dashboard")
@@ -61,6 +61,11 @@ public class DashboardController {
         model.addAttribute("tagCount",tagService.countTagsForUser(user));
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceResourceCount",resourceService.getResourceCountsByWorkspace(user));
+        model.addAttribute("weeklyNotes", activityService.countWeeklyByPrefix(user, "NOTE_"));
+        model.addAttribute("weeklyResources", activityService.countWeeklyByPrefix(user, "RESOURCE_"));
+        model.addAttribute("weeklyWorkspaces", activityService.countWeeklyByPrefix(user, "WORKSPACE_"));
+        model.addAttribute("dailyActivityCounts", activityService.getWeeklyDailyCounts(user));
+        model.addAttribute("recentActivities", activityService.getRecentActivities(user, 10));
         return "dashboard";
     }
 

@@ -210,45 +210,92 @@ function animateCounters() {
    carries a JSON string like "[0,3,1,4,2,0,1]"
 ─────────────────────────────────────────────────────────────────── */
 function buildActivityBars() {
-    const container = $('#activityBars');
-    if (!container) return;
+    const wrap = $('#activityChartWrap');
+    const svg  = $('#activityChartSvg');
+    const tooltip = $('#chartTooltip');
+    if (!wrap || !svg) return;
 
-    /* Demo data — replace with th:data-values in Thymeleaf */
-    const raw = container.dataset.values;
-    const values = raw
-        ? JSON.parse(raw)
-        : [1, 3, 0, 4, 2, 1, 3];   /* Mon–Sun demo counts */
-
+    const raw = wrap.dataset.values;
+    const values = raw ? JSON.parse(raw) : [1, 3, 0, 4, 2, 1, 3];
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const max  = Math.max(...values, 1);
 
-    container.innerHTML = '';
+    const W = 700, H = 160, padTop = 20, padBottom = 24;
+    const chartH = H - padTop - padBottom;
+    const max = Math.max(...values, 1);
+    const stepX = (W - 40) / (values.length - 1);
 
-    values.forEach((val, i) => {
-        const heightPct = val === 0 ? 6 : Math.max(10, (val / max) * 100);
+    const points = values.map((v, i) => ({
+        x: 20 + i * stepX,
+        y: padTop + chartH - (v / max) * chartH,
+        v, day: days[i]
+    }));
 
-        const wrap = document.createElement('div');
-        wrap.className = 'act-bar-wrap';
-        wrap.setAttribute('title', `${days[i]}: ${val} note${val !== 1 ? 's' : ''}`);
+    // Catmull-Rom → smooth bezier path
+    function smoothPath(pts) {
+        if (pts.length < 2) return '';
+        let d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[i - 1] || pts[i];
+            const p1 = pts[i];
+            const p2 = pts[i + 1];
+            const p3 = pts[i + 2] || p2;
+            const cp1x = p1.x + (p2.x - p0.x) / 6;
+            const cp1y = p1.y + (p2.y - p0.y) / 6;
+            const cp2x = p2.x - (p3.x - p1.x) / 6;
+            const cp2y = p2.y - (p3.y - p1.y) / 6;
+            d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+        }
+        return d;
+    }
 
-        const bar = document.createElement('div');
-        bar.className = 'act-bar' + (val > 0 ? ' has-data' : '');
-        /* Animate in on load */
-        bar.style.height   = '0%';
-        bar.style.transition = `height 0.6s cubic-bezier(0.34,1.2,0.64,1) ${i * 60}ms`;
+    const linePath = smoothPath(points);
+    const areaPath = `${linePath} L ${points[points.length - 1].x} ${H - padBottom} L ${points[0].x} ${H - padBottom} Z`;
 
-        wrap.appendChild(bar);
-        container.appendChild(wrap);
+    const gridLines = [0.25, 0.5, 0.75].map(f =>
+        `<line class="chart-grid-line" x1="20" x2="${W - 20}" y1="${padTop + chartH * f}" y2="${padTop + chartH * f}" />`
+    ).join('');
 
-        /* Trigger after paint */
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                bar.style.height = heightPct + '%';
-            });
-        });
+    svg.innerHTML = `
+        <defs>
+            <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
+            </linearGradient>
+        </defs>
+        ${gridLines}
+        <path class="chart-area" d="${areaPath}" fill="url(#chartFill)" stroke="none" />
+        <path class="chart-line" id="chartLinePath" d="${linePath}" />
+        ${points.map((p, i) => `<circle class="chart-point" data-idx="${i}" cx="${p.x}" cy="${p.y}" r="4"></circle>`).join('')}
+    `;
+
+    // Animate the line drawing in
+    const linePathEl = $('#chartLinePath');
+    const length = linePathEl.getTotalLength();
+    linePathEl.style.strokeDasharray = length;
+    linePathEl.style.strokeDashoffset = length;
+    requestAnimationFrame(() => {
+        linePathEl.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)';
+        linePathEl.style.strokeDashoffset = 0;
     });
-}
 
+    // Hover tooltip
+    $$('.chart-point', svg).forEach(circle => {
+        circle.addEventListener('mouseenter', () => {
+            const p = points[circle.dataset.idx];
+            tooltip.innerHTML = `<span class="tt-day">${p.day}</span> · ${p.v} ${p.v === 1 ? 'event' : 'events'}`;
+
+            const wrapWidth = wrap.getBoundingClientRect().width;
+            const pxPosition = (p.x / W) * wrapWidth;
+            const tooltipWidth = tooltip.offsetWidth || 90;
+            const halfTooltip = tooltipWidth / 2;
+
+            const clampedPx = Math.min(Math.max(pxPosition, halfTooltip), wrapWidth - halfTooltip);
+            tooltip.style.left = clampedPx + 'px';
+            tooltip.style.transform = `translate(-50%, -100%)`;
+            tooltip.classList.add('show');
+        });
+        circle.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+    });}
 /* ───────────────────────────────────────────────────────────────────
    SEARCH MODAL
 ─────────────────────────────────────────────────────────────────── */
@@ -716,7 +763,7 @@ function formatRelativeDate(dateStr) {
     return `${day}, ${time}`;
 }
 function applyRelativeDates() {
-    $$('.note-row-date[data-datetime]').forEach(el => {
+    $$('[data-datetime]').forEach(el => {
         const formatted = formatRelativeDate(el.dataset.datetime);
         if (formatted) el.textContent = formatted;
     });
