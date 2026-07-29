@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 import com.application.infera.dtos.requests.NoteRequest;
+import com.application.infera.enums.ActivityType;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
@@ -19,11 +20,13 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final WorkspaceService workspaceService;
     private final TagService tagService;
+    private final ActivityService activityService;
 
-    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService) {
+    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService, ActivityService activityService) {
         this.noteRepository = noteRepository;
         this.workspaceService = workspaceService;
         this.tagService = tagService;
+        this.activityService = activityService;
     }
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
@@ -36,9 +39,11 @@ public class NoteService {
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
         note.setWorkspace(workspace);
-        note.setTags(tagService.resolveTags(request.getTags()));
+        note.setTags(tagService.resolveTags(request.getTags(),user));
 
         noteRepository.save(note);
+        activityService.log(user, ActivityType.NOTE_CREATED, note.getTitle(), workspace);
+
     }
 
     // All notes across every workspace this user owns
@@ -93,15 +98,20 @@ public class NoteService {
 
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
-        note.setTags(tagService.resolveTags(request.getTags()));
-
+        note.setTags(tagService.resolveTags(request.getTags(),user));
         noteRepository.save(note);
+        activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
+
+
     }
 
     // Delete — ownership confirmed via getNoteForUser before anything is removed
     public void deleteNote(Long id, User user) {
         Note note = getNoteForUser(id, user);
+        String title = note.getTitle();
+        Workspace ws = note.getWorkspace();
         noteRepository.delete(note);
+        activityService.log(user, ActivityType.NOTE_DELETED, title, ws);
     }
     public Long countAllNotes(){
         return noteRepository.count();
@@ -109,6 +119,7 @@ public class NoteService {
 
     public void touchNote(Note note) {
         note.setUpdatedAt(LocalDateTime.now());
-        noteRepository.save(note);   // @PreUpdate on Note bumps updatedAt automatically
+        noteRepository.save(note);// @PreUpdate on Note bumps updatedAt automatically
+
     }
 }

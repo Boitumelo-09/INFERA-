@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 import com.application.infera.dtos.requests.ResourceRequest;
+import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.ResourceCategory;
 import com.application.infera.exception.ResourceNotFoundException;
 import com.application.infera.models.Note;
@@ -18,10 +19,12 @@ public class ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final NoteService noteService;
+    private final ActivityService activityService;
 
-    public ResourceService(ResourceRepository resourceRepository, NoteService noteService) {
+    public ResourceService(ResourceRepository resourceRepository, NoteService noteService, ActivityService activityService) {
         this.resourceRepository = resourceRepository;
         this.noteService = noteService;
+        this.activityService = activityService;
     }
 
     // Create — note ownership is verified BEFORE the resource is built,
@@ -38,6 +41,8 @@ public class ResourceService {
 
         resourceRepository.save(resource);
         noteService.touchNote(note);
+        activityService.log(user, ActivityType.RESOURCE_ADDED, resource.getTitle(), note.getWorkspace());
+
     }
 
     // All resources for one note (used to populate the View Note modal)
@@ -69,6 +74,7 @@ public class ResourceService {
 
         resourceRepository.save(resource);
         noteService.touchNote(resource.getNote());
+        activityService.log(user, ActivityType.RESOURCE_UPDATED, resource.getTitle(), resource.getNote().getWorkspace());
     }
 
     public void deleteResource(Long id, User user) {
@@ -76,6 +82,7 @@ public class ResourceService {
         Note note = resource.getNote();
         resourceRepository.delete(resource);
         noteService.touchNote(note);
+        activityService.log(user, ActivityType.RESOURCE_DELETED, resource.getTitle(), note.getWorkspace());
     }
 
 
