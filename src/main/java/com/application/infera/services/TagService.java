@@ -1,5 +1,6 @@
 package com.application.infera.services;
 
+import com.application.infera.enums.ActivityType;
 import com.application.infera.models.Tag;
 import com.application.infera.models.User;
 import com.application.infera.repositories.TagRepository;
@@ -13,8 +14,9 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagService(TagRepository tagRepository) {
+    public TagService(TagRepository tagRepository, ActivityService activityService) {
         this.tagRepository = tagRepository;
+        this.activityService = activityService;
     }
 
     // Normalizes "#Spring" / " spring " / "SPRING" all down to "spring"
@@ -23,25 +25,27 @@ public class TagService {
     }
 
     // Reuses an existing tag by name, or creates it
-    public Tag findOrCreate(String rawName) {
+    private final ActivityService activityService;
+
+    public Tag findOrCreate(String rawName, com.application.infera.models.User user) {
         String name = normalize(rawName);
         return tagRepository.findByNameIgnoreCase(name)
                 .orElseGet(() -> {
                     Tag tag = new Tag();
                     tag.setName(name);
-                    return tagRepository.save(tag);
+                    Tag saved = tagRepository.save(tag);
+                    activityService.log(user, ActivityType.TAG_CREATED, name, null);
+                    return saved;
                 });
     }
 
-    // Parses a raw comma-separated string ("spring, jpa, #security") into a Set<Tag>,
-    // deduplicated and blank-filtered
-    public Set<Tag> resolveTags(String rawCsv) {
+    public Set<Tag> resolveTags(String rawCsv, User user) {
         if (rawCsv == null || rawCsv.isBlank()) return new HashSet<>();
 
         return Arrays.stream(rawCsv.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isBlank())
-                .map(this::findOrCreate)
+                .map(name -> findOrCreate(name, user))
                 .collect(Collectors.toSet());
     }
 

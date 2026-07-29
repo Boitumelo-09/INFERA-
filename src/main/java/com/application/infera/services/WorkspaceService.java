@@ -1,6 +1,8 @@
 package com.application.infera.services;
 
+import ch.qos.logback.classic.Logger;
 import com.application.infera.dtos.requests.WorkspaceRequest;
+import com.application.infera.enums.ActivityType;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
 import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
@@ -15,9 +17,11 @@ import java.util.List;
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
+    private final ActivityService activityService;
 
-    public WorkspaceService(WorkspaceRepository workspaceRepository) {
+    public WorkspaceService(WorkspaceRepository workspaceRepository, ActivityService activityService) {
         this.workspaceRepository = workspaceRepository;
+        this.activityService = activityService;
     }
 
     // Create a new workspace linked to the logged-in user
@@ -36,6 +40,9 @@ public class WorkspaceService {
         workspace.setUser(user);  // link to the signed-in user
 
         workspaceRepository.save(workspace);
+
+        activityService.log(user, ActivityType.WORKSPACE_CREATED, workspace.getName(), workspace);
+
     }
 
     // Get all workspaces for a user
@@ -69,12 +76,14 @@ public class WorkspaceService {
         workspace.setColor(request.getColor() != null ? request.getColor() : workspace.getColor());
 
         workspaceRepository.save(workspace);
+        activityService.log(user, ActivityType.WORKSPACE_UPDATED, workspace.getName(), workspace);
     }
 
     // Delete a workspace — only if it belongs to this user
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = getWorkspaceForUser(id, user);
         workspaceRepository.delete(workspace);
+        activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }
     public long countAllWorkspaces(){
         return workspaceRepository.count();
