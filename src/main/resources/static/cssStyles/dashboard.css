@@ -172,10 +172,17 @@ button { font-family: var(--font-body); }
     text-align: left;
 }
 .nav-item i { font-size: 1rem; flex-shrink: 0; }
-.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+}
+
 .nav-item.active {
-    background: rgba(234,88,12,0.12);
-    color: #fb923c;
+    background: transparent;
+    /*color: #fb923c;*/
+    color: var(--text);
+    border: 1px solid var(--accent);
 }
 .nav-item.active::before {
     content: '';
@@ -502,7 +509,7 @@ button { font-family: var(--font-body); }
     font-family: var(--font-display), serif;
     font-size: 0.88rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--muted);
     display: flex; align-items: center; gap: 8px;
 }
 .panel-title i { color: var(--accent); font-size: 1rem; }
@@ -523,7 +530,7 @@ button { font-family: var(--font-body); }
 
 }
 .notes-scroll {
-    max-height: 460px;
+    max-height: 550px;
     overflow-y: auto;
 }
 
@@ -612,12 +619,17 @@ button { font-family: var(--font-body); }
 .activity-chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
 .chart-line {
     fill: none;
-    stroke: var(--accent);
+    stroke: var(--accent-hover);
     stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
+    filter: drop-shadow(0 2px 6px rgba(234,88,12,0.1));
+}
+.chart-line:hover{
+    stroke: var(--accent);
     filter: drop-shadow(0 2px 6px rgba(234,88,12,0.4));
 }
+
 .chart-area { opacity: 0.9; }
 .chart-point {
     fill: var(--bg);
@@ -628,7 +640,7 @@ button { font-family: var(--font-body); }
 }
 
 .chart-point:hover {
-    fill: var(--accent);
+    stroke: var(--muted);
     r: 6;
 }
 .chart-grid-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }

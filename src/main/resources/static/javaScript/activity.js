@@ -87,11 +87,12 @@ function buildTrendChart() {
         </defs>
         ${yAxis}
         ${xAxis}
-        <path d="${areaPath}" fill="url(#trendFill)" stroke="none" />
+       <path d="${areaPath}" fill="url(#trendFill)" stroke="none" />
         <path class="chart-line" id="trendLinePath" d="${linePath}" />
         ${points.filter((p, i) => i % 3 === 0 || i === points.length - 1).map(p =>
         `<circle class="chart-point" data-idx="${p.i}" cx="${p.x}" cy="${p.y}" r="3.5"></circle>`
     ).join('')}
+        ${points.map(p => `<circle class="chart-hit-area" data-idx="${p.i}" cx="${p.x}" cy="${p.y}" r="12"></circle>`).join('')}
     `;
 
     const lineEl = $('#trendLinePath');
@@ -103,22 +104,30 @@ function buildTrendChart() {
         lineEl.style.strokeDashoffset = 0;
     });
 
-    $$('.chart-point', svg).forEach(circle => {
+    $$('.chart-hit-area', svg).forEach(circle => {
         circle.addEventListener('mouseenter', () => {
             const p = points[circle.dataset.idx];
             const daysAgo = points.length - 1 - p.i;
             const label = daysAgo === 0 ? 'Today' : `${daysAgo}d ago`;
-            tooltip.innerHTML = `<span class="tt-day">${label}</span> · ${p.v} ${p.v === 1 ? 'event' : 'events'}`;
+            const countText = p.v === 0
+                ? 'No activities on this day'
+                : `${p.v} ${p.v === 1 ? 'activity' : 'activities'} on this day`;
+            tooltip.innerHTML = `<span class="tt-day">${label}</span> · ${countText}`;
+
             const wrapWidth = wrap.getBoundingClientRect().width;
-            const px = (p.x / W) * wrapWidth;
-            const tw = tooltip.offsetWidth || 90;
-            tooltip.style.left = Math.min(Math.max(px, tw / 2), wrapWidth - tw / 2) + 'px';
-            tooltip.style.transform = 'translate(-50%, -100%)';
+            const pxPosition = (p.x / W) * wrapWidth;
+            const tooltipWidth = tooltip.offsetWidth || 90;
+            const halfTooltip = tooltipWidth / 2;
+
+            const clampedPx = Math.min(Math.max(pxPosition, halfTooltip), wrapWidth - halfTooltip);
+            tooltip.style.left = clampedPx + 'px';
+            tooltip.style.transform = `translate(-50%, -100%)`;
             tooltip.classList.add('show');
         });
         circle.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
     });
-    
+
+    buildTrendDescription(values);
 }
 
 /* ─── DONUT BREAKDOWN ─── */
@@ -180,3 +189,27 @@ function buildDonutChart() {
 buildStreakRing();
 buildTrendChart();
 buildDonutChart();
+
+function buildTrendDescription(values) {
+    const el = $('#trendDesc');
+    if (!el) return;
+
+    const total = values.reduce((a, b) => a + b, 0);
+    const avg = (total / values.length).toFixed(1);
+    const last7 = values.slice(-7).reduce((a, b) => a + b, 0);
+    const prev7 = values.slice(-14, -7).reduce((a, b) => a + b, 0);
+
+    let trendPhrase;
+    if (prev7 === 0 && last7 > 0) {
+        trendPhrase = `you're picking up momentum after a quiet stretch`;
+    } else if (prev7 === 0 && last7 === 0) {
+        trendPhrase = `it's been quiet lately`;
+    } else {
+        const pctChange = Math.round(((last7 - prev7) / prev7) * 100);
+        if (pctChange > 0) trendPhrase = `up <strong>${pctChange}%</strong> versus the week before`;
+        else if (pctChange < 0) trendPhrase = `down <strong>${Math.abs(pctChange)}%</strong> versus the week before`;
+        else trendPhrase = `holding steady week over week`;
+    }
+
+    el.innerHTML = `<strong>${total}</strong> actions logged over the last 30 days — averaging <strong>${avg}</strong> per day, ${trendPhrase}.`;
+}

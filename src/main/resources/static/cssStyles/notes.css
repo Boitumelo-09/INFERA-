@@ -358,13 +358,14 @@
 /* "Edit this note" button — recolours to match the note's workspace
    instead of the app's default orange accent */
 .view-note-content .modal-footer .btn-modal-accent {
-    background: var(--ws-color, var(--accent));
+    background: transparent;
     border-color: var(--ws-color, var(--accent));
+    color: var(--ws-color, var(--accent));
+
 }
 .view-note-content .modal-footer .btn-modal-accent:hover {
-    background: var(--ws-color, var(--accent));
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
     filter: brightness(0.88);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--ws-color, var(--accent)) 40%, transparent);
 }
 
 /* ─── HEADER ACTIONS (expand + close) ───── */

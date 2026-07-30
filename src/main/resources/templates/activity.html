@@ -116,8 +116,10 @@
                 </div>
                 <div class="panel-body">
                     <div class="act-trend-wrap" id="trendChartWrap" th:data-values="${monthlyDailyCounts}">
-                        <svg id="trendChartSvg" viewBox="0 0 700 260" preserveAspectRatio="none"></svg>                        <div class="chart-tooltip" id="trendTooltip"></div>
+                        <svg id="trendChartSvg" viewBox="0 0 700 260" preserveAspectRatio="none"></svg>
+                        <div class="chart-tooltip" id="trendTooltip"></div>
                     </div>
+                    <p class="chart-desc" id="trendDesc"></p>
                 </div>
             </div>
 

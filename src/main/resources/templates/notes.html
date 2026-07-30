@@ -77,24 +77,24 @@
             </li>
         </ul>
 
-        <div class="nav-section-label mt-3">Workspaces</div>
-        <ul class="nav-list" id="workspaceList">
-            <li th:each="ws : ${workspaces}">
-                <a th:href="@{/notes(workspace=${ws.id})}" class="nav-item ws-item">
-                    <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
-                    <span th:text="${ws.name}">Workspace</span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/workspaces}" class="nav-item nav-item-btn" id="newWorkspaceBtn">
-                    <i class="bi bi-folder2-open"></i>
-                    <span>Workspaces</span>
-                </a>
-            </li>
-        </ul>
+<!--        <div class="nav-section-label mt-3">Workspaces</div>-->
+<!--        <ul class="nav-list" id="workspaceList">-->
+<!--&lt;!&ndash;            <li th:each="ws : ${workspaces}">&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{/notes(workspace=${ws.id})}" class="nav-item ws-item">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="ws-dot" th:style="'&#45;&#45;ws-color:' + ${ws.color}"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span th:text="${ws.name}">Workspace</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </a>&ndash;&gt;-->
+<!--&lt;!&ndash;            </li>&ndash;&gt;-->
+<!--&lt;!&ndash;            <li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{/workspaces}" class="nav-item nav-item-btn" id="newWorkspaceBtn">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <i class="bi bi-folder2-open"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span>Workspaces</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </a>&ndash;&gt;-->
+<!--&lt;!&ndash;            </li>&ndash;&gt;-->
+<!--        </ul>-->
         <div class="nav-section-label mt-3">Account</div>
         <ul class="nav-list">
-            <li><a href="#" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
+            <li><a th:href="@{/activity}" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
             <li><a href="#" class="nav-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
             <li><a href="#" class="nav-item"><i class="bi bi-sliders"></i><span>Settings</span></a></li>
         </ul>
