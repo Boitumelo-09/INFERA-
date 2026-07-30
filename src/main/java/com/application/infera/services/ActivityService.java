@@ -6,8 +6,10 @@ import com.application.infera.repositories.ActivityRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ActivityService {
@@ -52,5 +54,96 @@ public class ActivityService {
             counts[dayIdx]++;
         }
         return java.util.Arrays.asList(counts);
+    }
+
+    // add methods
+    public long getTotalActivityCount(User user) {
+        return activityRepository.countByUser(user);
+    }
+
+    // Category counts: NOTE / WORKSPACE / RESOURCE / TAG — collapses the 3 sub-types per entity into one bucket
+    public Map<String, Long> getCategoryBreakdown(User user) {
+        List<Activity> all = activityRepository.findByUserOrderByCreatedAtDesc(user);
+        Map<String, Long> counts = new LinkedHashMap<>();
+        counts.put("NOTE", 0L);
+        counts.put("WORKSPACE", 0L);
+        counts.put("RESOURCE", 0L);
+        counts.put("TAG", 0L);
+
+        for (Activity a : all) {
+            String prefix = a.getType().name().split("_")[0];
+            counts.merge(prefix, 1L, Long::sum);
+        }
+        return counts;
+    }
+
+    // Daily counts for the last 30 days, oldest first — powers the monthly trend chart
+    public List<Integer> getMonthlyDailyCounts(User user) {
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(29);
+
+        List<Activity> recent = activityRepository.findByUserAndCreatedAtAfterOrderByCreatedAtAsc(
+                user, start.atStartOfDay());
+
+        Map<LocalDate, Integer> byDate = new HashMap<>();
+        for (Activity a : recent) {
+            LocalDate d = a.getCreatedAt().toLocalDate();
+            byDate.merge(d, 1, Integer::sum);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            result.add(byDate.getOrDefault(start.plusDays(i), 0));
+        }
+        return result;
+    }
+
+    private List<LocalDate> getActiveDatesDesc(User user) {
+        return activityRepository.findDistinctActiveDates(user)
+                .stream().map(java.sql.Date::toLocalDate).collect(Collectors.toList());
+    }
+
+    // Consecutive days of activity counting backward from today (or yesterday, if nothing logged yet today)
+    public int getCurrentStreak(User user) {
+        List<LocalDate> dates = getActiveDatesDesc(user);
+        if (dates.isEmpty()) return 0;
+
+        LocalDate today = LocalDate.now();
+        LocalDate expected;
+
+        if (dates.get(0).equals(today)) expected = today;
+        else if (dates.get(0).equals(today.minusDays(1))) expected = today.minusDays(1);
+        else return 0;
+
+        int streak = 0;
+        for (LocalDate d : dates) {
+            if (d.equals(expected)) {
+                streak++;
+                expected = expected.minusDays(1);
+            } else {
+                break;
+            }
+        }
+        return streak;
+    }
+
+    // Longest consecutive-day run ever, not just the current one
+    public int getLongestStreak(User user) {
+        List<LocalDate> dates = getActiveDatesDesc(user);
+        if (dates.isEmpty()) return 0;
+
+        List<LocalDate> ascending = new ArrayList<>(dates);
+        Collections.reverse(ascending);
+
+        int longest = 1, current = 1;
+        for (int i = 1; i < ascending.size(); i++) {
+            if (ascending.get(i).equals(ascending.get(i - 1).plusDays(1))) {
+                current++;
+            } else {
+                current = 1;
+            }
+            longest = Math.max(longest, current);
+        }
+        return longest;
     }
 }
