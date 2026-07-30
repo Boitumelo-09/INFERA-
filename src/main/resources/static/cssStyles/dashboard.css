@@ -509,7 +509,7 @@ button { font-family: var(--font-body); }
     font-family: var(--font-display), serif;
     font-size: 0.88rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--muted);
     display: flex; align-items: center; gap: 8px;
 }
 .panel-title i { color: var(--accent); font-size: 1rem; }
@@ -530,7 +530,7 @@ button { font-family: var(--font-body); }
 
 }
 .notes-scroll {
-    max-height: 460px;
+    max-height: 550px;
     overflow-y: auto;
 }
 
