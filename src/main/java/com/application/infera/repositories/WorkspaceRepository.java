@@ -22,4 +22,6 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     // Fetch a single workspace, but ONLY if it belongs to this user
     // (prevents User A from editing/deleting User B's workspace by guessing an id)
     Optional<Workspace> findByIdAndUser(Long id, User user);
+
+    List<Workspace> findTop5ByUserAndNameContainingIgnoreCase(User user, String query);
 }
