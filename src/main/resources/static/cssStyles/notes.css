@@ -662,7 +662,7 @@
 #viewNoteDialog.theater-mode .view-note-body {
     min-width: 280px;
     flex-shrink: 1;
-    resize: horizontal;
+    
 }
 .vnr-list-wrap::-webkit-scrollbar { width: 6px; }
 .vnr-list-wrap::-webkit-scrollbar-track { background: transparent; }

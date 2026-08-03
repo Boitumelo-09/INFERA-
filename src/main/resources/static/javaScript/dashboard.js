@@ -303,33 +303,17 @@ function buildActivityBars() {
 /* Sample data — in a real Spring app this would be fetched via
    GET /api/search?q=... and return JSON. Replace searchLocal()
    with a fetch() call pointing to your Spring controller.        */
-const SEARCH_SAMPLE = [
-    { type: 'note',     title: 'Spring Security Config',      meta: 'Java Backend · #security',  id: 1  },
-    { type: 'note',     title: 'JPA Repository Patterns',     meta: 'Java Backend · #jpa',       id: 2  },
-    { type: 'note',     title: 'REST API Design Notes',       meta: 'Java Backend · #api',       id: 3  },
-    { type: 'note',     title: 'Thesis Literature Review',    meta: 'Research · #thesis',        id: 4  },
-    { type: 'note',     title: 'Interview Prep — Java Q&A',  meta: 'Career · #interview',       id: 5  },
-    { type: 'note',     title: 'Music Theory Basics',         meta: 'Music · #theory',           id: 6  },
-    { type: 'ws',       title: 'Java Backend',                meta: '12 notes · 4 resources',    id: 1  },
-    { type: 'ws',       title: 'Research',                    meta: '6 notes · 3 resources',     id: 2  },
-    { type: 'ws',       title: 'Career',                      meta: '4 notes · 2 resources',     id: 3  },
-    { type: 'resource', title: 'docs.spring.io/security',     meta: 'Java Backend · Documentation', id: 1 },
-    { type: 'resource', title: 'hibernate.org/orm/docs',      meta: 'Java Backend · Docs',       id: 2  },
-    { type: 'resource', title: 'Effective Java — summary',    meta: 'Research · Book',           id: 3  },
-];
+const ICON_MAP = { note: 'bi-journal-text', workspace: 'bi-folder2-open', resource: 'bi-link-45deg' };
+const TYPE_LABEL = { note: 'Note', workspace: 'Workspace', resource: 'Resource' };
 
-const ICON_MAP = { note: 'bi-journal-text', ws: 'bi-folder2-open', resource: 'bi-link-45deg' };
-const TYPE_LABEL = { note: 'Note', ws: 'Workspace', resource: 'Resource' };
-
-function searchLocal(query) {
-    const q = query.toLowerCase().trim();
-    if (!q) return [];
-    return SEARCH_SAMPLE
-        .filter(item =>
-            item.title.toLowerCase().includes(q) ||
-            item.meta.toLowerCase().includes(q)
-        )
-        .slice(0, 8);
+async function searchRemote(query) {
+    try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (!res.ok) return [];
+        return await res.json();
+    } catch {
+        return [];
+    }
 }
 
 const searchModal   = $('#searchModal');
@@ -396,12 +380,9 @@ function renderSearchResults(items) {
     });
 }
 
-function handleSearchSelect(type, id, title) {
-    /* In Thymeleaf app, redirect to the relevant controller route:
-       note      → /notes/{id}
-       ws        → /workspaces/{id}
-       resource  → /resources/{id}      */
-    showToast(`Opening ${title}`);
+function handleSearchSelect(type, id) {
+    if (type === 'note' || type === 'resource') window.location.href = `/notes?view=${id}`;
+    else if (type === 'workspace') window.location.href = `/workspaces`;
 }
 
 function moveFocus(direction) {
@@ -446,10 +427,8 @@ searchInput?.addEventListener('input', () => {
     clearTimeout(searchTimer);
     const q = searchInput.value.trim();
     if (!q) { renderSearchHint(); return; }
-    searchTimer = setTimeout(() => {
-        /* REAL APP: replace with fetch('/search?q=' + encodeURIComponent(q))
-           .then(r => r.json()).then(renderSearchResults)                    */
-        renderSearchResults(searchLocal(q));
+    searchTimer = setTimeout(async () => {
+        renderSearchResults(await searchRemote(q));
     }, 180);
 });
 

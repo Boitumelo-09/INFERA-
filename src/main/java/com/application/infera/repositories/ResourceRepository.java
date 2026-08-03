@@ -29,4 +29,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Object[]> countResourcesGroupedByWorkspace(@Param("user") User user);
     
     List<Resource> findByNote_Workspace_UserOrderByUpdatedAtDesc(User user);
+
+    List<Resource> findTop5ByNote_Workspace_UserAndTitleContainingIgnoreCase(User user, String query);
 }
