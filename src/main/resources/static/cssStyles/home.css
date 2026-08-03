@@ -168,8 +168,9 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; lin
 .btn-nav-ghost:hover { color: var(--text); border-color: var(--border); }
 
 .btn-nav-accent {
-    background: var(--accent);
-    color: #fff;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--accent);
     font-size: 0.88rem;
     font-weight: 600;
     padding: 8px 20px;
@@ -177,9 +178,8 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; lin
     transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .btn-nav-accent:hover {
-    background: var(--accent-hover);
+    border-color: color-mix(in srgb, var(--accent-hover), transparent 20%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(234,88,12,0.35);
     color: #fff;
 }
 
@@ -279,19 +279,19 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; lin
 
 /* CTA Buttons */
 .btn-primary-accent {
-    background: var(--accent);
-    color: #fff;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--accent);
     font-weight: 600;
     border-radius: 10px;
     padding: 13px 28px;
     font-size: 0.97rem;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    transition: background 0.2s, transform 0.15s;
     display: inline-flex; align-items: center; gap: 6px;
 }
 .btn-primary-accent:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(234,88,12,0.38);
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--accent-hover), transparent 20%);
     color: #fff;
 }
 .btn-ghost-outline {
