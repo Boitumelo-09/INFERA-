@@ -488,95 +488,95 @@ $$('.form-input').forEach(input => {
 /* ───────────────────────────────────────────────────────────────────
    SEARCH TRIGGER STUB
 ─────────────────────────────────────────────────────────────────── */
-const ICON_MAP = { note: 'bi-journal-text', workspace: 'bi-folder2-open', resource: 'bi-link-45deg' };
-const TYPE_LABEL = { note: 'Note', workspace: 'Workspace', resource: 'Resource' };
-
-async function searchRemote(query) {
-    try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        return res.ok ? await res.json() : [];
-    } catch { return []; }
-}
-
-const searchModal   = $('#searchModal');
-const searchInputEl = $('#searchInput');
-const searchResultsEl = $('#searchResults');
-let searchFocusedIdx = -1;
-
-function openSearch() {
-    searchModal?.removeAttribute('hidden');
-    searchInputEl?.focus();
-    searchFocusedIdx = -1;
-    renderSearchHint();
-}
-function closeSearch() {
-    searchModal?.setAttribute('hidden', '');
-    if (searchInputEl) searchInputEl.value = '';
-    renderSearchHint();
-}
-function renderSearchHint() {
-    if (searchResultsEl) searchResultsEl.innerHTML = `<div class="search-hint"><i class="bi bi-lightning-charge"></i> Type to search across all your workspaces</div>`;
-}
-function renderSearchResults(items) {
-    if (!searchResultsEl) return;
-    if (!items.length) {
-        searchResultsEl.innerHTML = `<div class="search-hint"><i class="bi bi-slash-circle"></i> No results found</div>`;
-        return;
-    }
-    searchResultsEl.innerHTML = items.map((item, i) => `
-        <div class="search-result-item" data-idx="${i}" data-type="${item.type}" data-id="${item.id}" role="option">
-            <div class="sri-icon ${item.type}"><i class="bi ${ICON_MAP[item.type]}"></i></div>
-            <div class="sri-body">
-                <div class="sri-title">${escapeHtml(item.title)}</div>
-                <div class="sri-meta">${escapeHtml(item.meta)}</div>
-            </div>
-            <span class="sri-type">${TYPE_LABEL[item.type]}</span>
-        </div>
-    `).join('');
-    $$('.search-result-item', searchResultsEl).forEach(el => {
-        el.addEventListener('click', () => handleSearchSelect(el.dataset.type, el.dataset.id));
-    });
-}
-function handleSearchSelect(type, id) {
-    if (type === 'note' || type === 'resource') window.location.href = `/notes?view=${id}`;
-    else if (type === 'workspace') window.location.href = `/workspaces`;
-}
-function moveSearchFocus(direction) {
-    const items = $$('.search-result-item', searchResultsEl);
-    if (!items.length) return;
-    items[searchFocusedIdx]?.classList.remove('focused');
-    searchFocusedIdx = (searchFocusedIdx + direction + items.length) % items.length;
-    items[searchFocusedIdx]?.classList.add('focused');
-    items[searchFocusedIdx]?.scrollIntoView({ block: 'nearest' });
-}
-
-$('#searchTrigger')?.addEventListener('click', openSearch);
-$('#topbarSearch')?.addEventListener('click', openSearch);
-$('#searchBackdrop')?.addEventListener('click', closeSearch);
-
-document.addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        searchModal?.hasAttribute('hidden') ? openSearch() : closeSearch();
-    }
-    if (!searchModal?.hasAttribute('hidden')) {
-        if (e.key === 'Escape') closeSearch();
-        if (e.key === 'ArrowDown') { e.preventDefault(); moveSearchFocus(1); }
-        if (e.key === 'ArrowUp')   { e.preventDefault(); moveSearchFocus(-1); }
-        if (e.key === 'Enter') $('.search-result-item.focused', searchResultsEl)?.click();
-    }
-});
-
-let searchDebounce;
-searchInputEl?.addEventListener('input', () => {
-    searchFocusedIdx = -1;
-    clearTimeout(searchDebounce);
-    const q = searchInputEl.value.trim();
-    if (!q) { renderSearchHint(); return; }
-    searchDebounce = setTimeout(async () => {
-        renderSearchResults(await searchRemote(q));
-    }, 180);
-});
+// const ICON_MAP = { note: 'bi-journal-text', workspace: 'bi-folder2-open', resource: 'bi-link-45deg' };
+// const TYPE_LABEL = { note: 'Note', workspace: 'Workspace', resource: 'Resource' };
+//
+// async function searchRemote(query) {
+//     try {
+//         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+//         return res.ok ? await res.json() : [];
+//     } catch { return []; }
+// }
+//
+// const searchModal   = $('#searchModal');
+// const searchInputEl = $('#searchInput');
+// const searchResultsEl = $('#searchResults');
+// let searchFocusedIdx = -1;
+//
+// function openSearch() {
+//     searchModal?.removeAttribute('hidden');
+//     searchInputEl?.focus();
+//     searchFocusedIdx = -1;
+//     renderSearchHint();
+// }
+// function closeSearch() {
+//     searchModal?.setAttribute('hidden', '');
+//     if (searchInputEl) searchInputEl.value = '';
+//     renderSearchHint();
+// }
+// function renderSearchHint() {
+//     if (searchResultsEl) searchResultsEl.innerHTML = `<div class="search-hint"><i class="bi bi-lightning-charge"></i> Type to search across all your workspaces</div>`;
+// }
+// function renderSearchResults(items) {
+//     if (!searchResultsEl) return;
+//     if (!items.length) {
+//         searchResultsEl.innerHTML = `<div class="search-hint"><i class="bi bi-slash-circle"></i> No results found</div>`;
+//         return;
+//     }
+//     searchResultsEl.innerHTML = items.map((item, i) => `
+//         <div class="search-result-item" data-idx="${i}" data-type="${item.type}" data-id="${item.id}" role="option">
+//             <div class="sri-icon ${item.type}"><i class="bi ${ICON_MAP[item.type]}"></i></div>
+//             <div class="sri-body">
+//                 <div class="sri-title">${escapeHtml(item.title)}</div>
+//                 <div class="sri-meta">${escapeHtml(item.meta)}</div>
+//             </div>
+//             <span class="sri-type">${TYPE_LABEL[item.type]}</span>
+//         </div>
+//     `).join('');
+//     $$('.search-result-item', searchResultsEl).forEach(el => {
+//         el.addEventListener('click', () => handleSearchSelect(el.dataset.type, el.dataset.id));
+//     });
+// }
+// function handleSearchSelect(type, id) {
+//     if (type === 'note' || type === 'resource') window.location.href = `/notes?view=${id}`;
+//     else if (type === 'workspace') window.location.href = `/workspaces`;
+// }
+// function moveSearchFocus(direction) {
+//     const items = $$('.search-result-item', searchResultsEl);
+//     if (!items.length) return;
+//     items[searchFocusedIdx]?.classList.remove('focused');
+//     searchFocusedIdx = (searchFocusedIdx + direction + items.length) % items.length;
+//     items[searchFocusedIdx]?.classList.add('focused');
+//     items[searchFocusedIdx]?.scrollIntoView({ block: 'nearest' });
+// }
+//
+// $('#searchTrigger')?.addEventListener('click', openSearch);
+// $('#topbarSearch')?.addEventListener('click', openSearch);
+// $('#searchBackdrop')?.addEventListener('click', closeSearch);
+//
+// document.addEventListener('keydown', e => {
+//     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+//         e.preventDefault();
+//         searchModal?.hasAttribute('hidden') ? openSearch() : closeSearch();
+//     }
+//     if (!searchModal?.hasAttribute('hidden')) {
+//         if (e.key === 'Escape') closeSearch();
+//         if (e.key === 'ArrowDown') { e.preventDefault(); moveSearchFocus(1); }
+//         if (e.key === 'ArrowUp')   { e.preventDefault(); moveSearchFocus(-1); }
+//         if (e.key === 'Enter') $('.search-result-item.focused', searchResultsEl)?.click();
+//     }
+// });
+//
+// let searchDebounce;
+// searchInputEl?.addEventListener('input', () => {
+//     searchFocusedIdx = -1;
+//     clearTimeout(searchDebounce);
+//     const q = searchInputEl.value.trim();
+//     if (!q) { renderSearchHint(); return; }
+//     searchDebounce = setTimeout(async () => {
+//         renderSearchResults(await searchRemote(q));
+//     }, 180);
+// });
 /* ───────────────────────────────────────────────────────────────────
    TAG TECHNOLOGY
 ─────────────────────────────────────────────────────────────────── */
