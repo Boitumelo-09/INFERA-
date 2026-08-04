@@ -150,7 +150,24 @@
         </div>
     </div>
 </div>
-
+<div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+    <div class="search-backdrop" id="searchBackdrop"></div>
+    <div class="search-box">
+        <div class="search-input-wrap">
+            <i class="bi bi-search search-input-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search notes, workspaces, resources..." autocomplete="off" />
+            <kbd class="search-esc">ESC</kbd>
+        </div>
+        <div class="search-results" id="searchResults">
+            <div class="search-hint"><i class="bi bi-lightning-charge"></i> Type to search across all your workspaces</div>
+        </div>
+        <div class="search-footer">
+            <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+            <span><kbd>↵</kbd> open</span>
+            <span><kbd>ESC</kbd> close</span>
+        </div>
+    </div>
+</div>
 <div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
     <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
     <span class="toast-msg" id="toastMsg">Done!</span>
@@ -158,5 +175,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javaScript/resources.js}"></script>
+<script th:src="@{/javaScript/search.js}"></script>
 </body>
 </html>

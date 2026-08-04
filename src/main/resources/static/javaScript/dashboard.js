@@ -303,134 +303,134 @@ function buildActivityBars() {
 /* Sample data — in a real Spring app this would be fetched via
    GET /api/search?q=... and return JSON. Replace searchLocal()
    with a fetch() call pointing to your Spring controller.        */
-const ICON_MAP = { note: 'bi-journal-text', workspace: 'bi-folder2-open', resource: 'bi-link-45deg' };
-const TYPE_LABEL = { note: 'Note', workspace: 'Workspace', resource: 'Resource' };
-
-async function searchRemote(query) {
-    try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        if (!res.ok) return [];
-        return await res.json();
-    } catch {
-        return [];
-    }
-}
-
-const searchModal   = $('#searchModal');
-const searchInput   = $('#searchInput');
-const searchResults = $('#searchResults');
-
-let focusedIdx = -1;
-
-function openSearch() {
-    if (!searchModal) return;
-    searchModal.removeAttribute('hidden');
-    searchInput?.focus();
-    focusedIdx = -1;
-    renderSearchHint();
-}
-
-function closeSearch() {
-    if (!searchModal) return;
-    searchModal.setAttribute('hidden', '');
-    if (searchInput) searchInput.value = '';
-    renderSearchHint();
-}
-
-function renderSearchHint() {
-    if (!searchResults) return;
-    searchResults.innerHTML = `
-    <div class="search-hint">
-      <i class="bi bi-lightning-charge"></i>
-      Type to search across all your workspaces
-    </div>`;
-}
-
-function renderSearchResults(items) {
-    if (!searchResults) return;
-    if (!items.length) {
-        searchResults.innerHTML = `
-      <div class="search-hint">
-        <i class="bi bi-slash-circle"></i> No results found
-      </div>`;
-        return;
-    }
-
-    searchResults.innerHTML = items.map((item, i) => `
-    <div class="search-result-item" data-idx="${i}" data-type="${item.type}" data-id="${item.id}" role="option">
-      <div class="sri-icon ${item.type}">
-        <i class="bi ${ICON_MAP[item.type]}"></i>
-      </div>
-      <div class="sri-body">
-        <div class="sri-title">${escapeHtml(item.title)}</div>
-        <div class="sri-meta">${escapeHtml(item.meta)}</div>
-      </div>
-      <span class="sri-type">${TYPE_LABEL[item.type]}</span>
-    </div>
-  `).join('');
-
-    /* Click on result */
-    $$('.search-result-item', searchResults).forEach(el => {
-        el.addEventListener('click', () => {
-            const type = el.dataset.type;
-            const id   = el.dataset.id;
-            closeSearch();
-            handleSearchSelect(type, id, el.querySelector('.sri-title')?.textContent);
-        });
-    });
-}
-
-function handleSearchSelect(type, id) {
-    if (type === 'note' || type === 'resource') window.location.href = `/notes?view=${id}`;
-    else if (type === 'workspace') window.location.href = `/workspaces`;
-}
-
-function moveFocus(direction) {
-    const items = $$('.search-result-item', searchResults);
-    if (!items.length) return;
-    items[focusedIdx]?.classList.remove('focused');
-    focusedIdx = (focusedIdx + direction + items.length) % items.length;
-    items[focusedIdx]?.classList.add('focused');
-    items[focusedIdx]?.scrollIntoView({ block: 'nearest' });
-}
-
-function escapeHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-/* Open triggers */
-$('#searchTrigger')?.addEventListener('click', openSearch);
-$('#topbarSearch')?.addEventListener('click', openSearch);
-$('#searchBackdrop')?.addEventListener('click', closeSearch);
-
-/* Keyboard shortcut ⌘K / Ctrl+K */
-document.addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        searchModal?.hasAttribute('hidden') ? openSearch() : closeSearch();
-    }
-    if (!searchModal?.hasAttribute('hidden')) {
-        if (e.key === 'Escape') closeSearch();
-        if (e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
-        if (e.key === 'ArrowUp')   { e.preventDefault(); moveFocus(-1); }
-        if (e.key === 'Enter') {
-            const focused = $('.search-result-item.focused', searchResults);
-            focused?.click();
-        }
-    }
-});
-
-/* Debounced search input */
-let searchTimer;
-searchInput?.addEventListener('input', () => {
-    focusedIdx = -1;
-    clearTimeout(searchTimer);
-    const q = searchInput.value.trim();
-    if (!q) { renderSearchHint(); return; }
-    searchTimer = setTimeout(async () => {
-        renderSearchResults(await searchRemote(q));
-    }, 180);
-});
+// const ICON_MAP = { note: 'bi-journal-text', workspace: 'bi-folder2-open', resource: 'bi-link-45deg' };
+// const TYPE_LABEL = { note: 'Note', workspace: 'Workspace', resource: 'Resource' };
+//
+// async function searchRemote(query) {
+//     try {
+//         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+//         if (!res.ok) return [];
+//         return await res.json();
+//     } catch {
+//         return [];
+//     }
+// }
+//
+// const searchModal   = $('#searchModal');
+// const searchInput   = $('#searchInput');
+// const searchResults = $('#searchResults');
+//
+// let focusedIdx = -1;
+//
+// function openSearch() {
+//     if (!searchModal) return;
+//     searchModal.removeAttribute('hidden');
+//     searchInput?.focus();
+//     focusedIdx = -1;
+//     renderSearchHint();
+// }
+//
+// function closeSearch() {
+//     if (!searchModal) return;
+//     searchModal.setAttribute('hidden', '');
+//     if (searchInput) searchInput.value = '';
+//     renderSearchHint();
+// }
+//
+// function renderSearchHint() {
+//     if (!searchResults) return;
+//     searchResults.innerHTML = `
+//     <div class="search-hint">
+//       <i class="bi bi-lightning-charge"></i>
+//       Type to search across all your workspaces
+//     </div>`;
+// }
+//
+// function renderSearchResults(items) {
+//     if (!searchResults) return;
+//     if (!items.length) {
+//         searchResults.innerHTML = `
+//       <div class="search-hint">
+//         <i class="bi bi-slash-circle"></i> No results found
+//       </div>`;
+//         return;
+//     }
+//
+//     searchResults.innerHTML = items.map((item, i) => `
+//     <div class="search-result-item" data-idx="${i}" data-type="${item.type}" data-id="${item.id}" role="option">
+//       <div class="sri-icon ${item.type}">
+//         <i class="bi ${ICON_MAP[item.type]}"></i>
+//       </div>
+//       <div class="sri-body">
+//         <div class="sri-title">${escapeHtml(item.title)}</div>
+//         <div class="sri-meta">${escapeHtml(item.meta)}</div>
+//       </div>
+//       <span class="sri-type">${TYPE_LABEL[item.type]}</span>
+//     </div>
+//   `).join('');
+//
+//     /* Click on result */
+//     $$('.search-result-item', searchResults).forEach(el => {
+//         el.addEventListener('click', () => {
+//             const type = el.dataset.type;
+//             const id   = el.dataset.id;
+//             closeSearch();
+//             handleSearchSelect(type, id, el.querySelector('.sri-title')?.textContent);
+//         });
+//     });
+// }
+//
+// function handleSearchSelect(type, id) {
+//     if (type === 'note' || type === 'resource') window.location.href = `/notes?view=${id}`;
+//     else if (type === 'workspace') window.location.href = `/workspaces`;
+// }
+//
+// function moveFocus(direction) {
+//     const items = $$('.search-result-item', searchResults);
+//     if (!items.length) return;
+//     items[focusedIdx]?.classList.remove('focused');
+//     focusedIdx = (focusedIdx + direction + items.length) % items.length;
+//     items[focusedIdx]?.classList.add('focused');
+//     items[focusedIdx]?.scrollIntoView({ block: 'nearest' });
+// }
+//
+// function escapeHtml(str) {
+//     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// }
+//
+// /* Open triggers */
+// $('#searchTrigger')?.addEventListener('click', openSearch);
+// $('#topbarSearch')?.addEventListener('click', openSearch);
+// $('#searchBackdrop')?.addEventListener('click', closeSearch);
+//
+// /* Keyboard shortcut ⌘K / Ctrl+K */
+// document.addEventListener('keydown', e => {
+//     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+//         e.preventDefault();
+//         searchModal?.hasAttribute('hidden') ? openSearch() : closeSearch();
+//     }
+//     if (!searchModal?.hasAttribute('hidden')) {
+//         if (e.key === 'Escape') closeSearch();
+//         if (e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
+//         if (e.key === 'ArrowUp')   { e.preventDefault(); moveFocus(-1); }
+//         if (e.key === 'Enter') {
+//             const focused = $('.search-result-item.focused', searchResults);
+//             focused?.click();
+//         }
+//     }
+// });
+//
+// /* Debounced search input */
+// let searchTimer;
+// searchInput?.addEventListener('input', () => {
+//     focusedIdx = -1;
+//     clearTimeout(searchTimer);
+//     const q = searchInput.value.trim();
+//     if (!q) { renderSearchHint(); return; }
+//     searchTimer = setTimeout(async () => {
+//         renderSearchResults(await searchRemote(q));
+//     }, 180);
+// });
 
 /* ───────────────────────────────────────────────────────────────────
    NEW WORKSPACE MODAL
