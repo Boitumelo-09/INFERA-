@@ -284,13 +284,3 @@ $$('.form-input').forEach(input => {
   input.addEventListener('input', () => { input.style.borderColor = ''; });
 });
 
-/* ───────────────────────────────────────────────────────────────────
-   SEARCH TRIGGER STUB (opens the same ⌘K modal pattern as dashboard,
-   left as a hook — wire to your real search modal if present on this page)
-─────────────────────────────────────────────────────────────────── */
-$('#searchTrigger')?.addEventListener('click', () => {
-  showToast('Search coming to this page soon');
-});
-$('#topbarSearch')?.addEventListener('click', () => {
-  showToast('Search coming to this page soon');
-});
