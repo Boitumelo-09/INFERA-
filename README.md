@@ -1,2 +1,2 @@
 # INFERA-
-Personal Knowledge &amp; Research Vault Web Application 
+Personal Knowledge &amp; Research Vault Web Application. 
