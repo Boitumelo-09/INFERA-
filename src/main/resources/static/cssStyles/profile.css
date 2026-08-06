@@ -1,14 +1,303 @@
 .prof-hero { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
 /*.prof-hero { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }*/
-.prof-hero-banner { height: 130px; background: linear-gradient(120deg, var(--accent), #7c3aed); position: relative; }
+.prof-hero-banner{
+    position:relative;
+    overflow:hidden;
+    height:70px;
+
+
+    background:
+            linear-gradient(
+                    -45deg,
+                    #ea580c,
+                    #7c3aed,
+                    #0ea5e9,
+                    #10b981,
+                    #ea580c
+            );
+
+    background-size:400% 400%;
+    animation:
+            gradientFlow 18s ease infinite;
+
+    isolation:isolate;
+}
+
+
+/* ==========================
+        Animated Aurora
+========================== */
+
+.prof-hero-banner::before{
+    content:"";
+    position:absolute;
+    inset:-40%;
+
+    background:
+            radial-gradient(circle at 20% 30%,
+            rgba(255,255,255,.18),
+            transparent 28%),
+
+            radial-gradient(circle at 80% 20%,
+            rgba(255,255,255,.10),
+            transparent 24%),
+
+            radial-gradient(circle at 60% 85%,
+            rgba(255,255,255,.12),
+            transparent 26%),
+
+            radial-gradient(circle at 10% 80%,
+            rgba(255,255,255,.10),
+            transparent 25%);
+
+    filter:blur(70px);
+
+    animation:
+            auroraMove 18s ease-in-out infinite alternate;
+
+    z-index:0;
+}
+
+
+/* ==========================
+      Moving Light Sweep
+========================== */
+
+.prof-hero-banner::after{
+
+    content:"";
+    position:absolute;
+    top:-40%;
+    left:-120%;
+
+    width:65%;
+    height:220%;
+
+    background:linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.18),
+            transparent
+    );
+
+    transform:rotate(18deg);
+
+    animation:
+            lightSweep 8s linear infinite;
+
+    mix-blend-mode:screen;
+
+    z-index:2;
+}
+
+
+/* ==========================
+       Floating Particles
+========================== */
+
+.prof-hero-banner .particles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+}
+
+.prof-hero-banner .particles span{
+
+    position:absolute;
+
+    width:6px;
+    height:6px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.35);
+
+    box-shadow:
+            0 0 12px rgba(255,255,255,.8);
+
+    animation:
+            particleFloat linear infinite;
+}
+
+
+/* Random particle positions */
+
+.prof-hero-banner .particles span:nth-child(1){
+    left:12%;
+    bottom:-10px;
+    animation-duration:9s;
+    animation-delay:-2s;
+}
+
+.prof-hero-banner .particles span:nth-child(2){
+    left:26%;
+    bottom:-15px;
+    animation-duration:12s;
+}
+
+.prof-hero-banner .particles span:nth-child(3){
+    left:38%;
+    bottom:-20px;
+    animation-duration:10s;
+    animation-delay:-4s;
+}
+
+.prof-hero-banner .particles span:nth-child(4){
+    left:52%;
+    bottom:-8px;
+    animation-duration:11s;
+}
+
+.prof-hero-banner .particles span:nth-child(5){
+    left:67%;
+    bottom:-12px;
+    animation-duration:13s;
+}
+
+.prof-hero-banner .particles span:nth-child(6){
+    left:82%;
+    bottom:-18px;
+    animation-duration:9s;
+}
+
+.prof-hero-banner .particles span:nth-child(7){
+    left:91%;
+    bottom:-16px;
+    animation-duration:14s;
+}
+
+
+/* ==========================
+      Animations
+========================== */
+
+@keyframes gradientFlow{
+
+    0%{
+        background-position:0% 50%;
+    }
+
+    50%{
+        background-position:100% 50%;
+    }
+
+    100%{
+        background-position:0% 50%;
+    }
+
+}
+
+
+@keyframes auroraMove{
+
+    0%{
+        transform:
+                rotate(0deg)
+                scale(1)
+                translate(-6%,-4%);
+    }
+
+    50%{
+
+        transform:
+                rotate(12deg)
+                scale(1.18)
+                translate(6%,4%);
+    }
+
+    100%{
+
+        transform:
+                rotate(-8deg)
+                scale(1.05)
+                translate(-3%,8%);
+    }
+
+}
+
+
+@keyframes lightSweep{
+
+    from{
+        left:-120%;
+    }
+
+    to{
+        left:180%;
+    }
+
+}
+
+
+@keyframes particleFloat{
+
+    0%{
+        transform:
+                translateY(0)
+                scale(.6);
+
+        opacity:0;
+    }
+
+    15%{
+        opacity:1;
+    }
+
+    80%{
+        opacity:.8;
+    }
+
+    100%{
+
+        transform:
+                translateY(-190px)
+                scale(1.4);
+
+        opacity:0;
+    }
+
+}
 .prof-hero-row { position: relative; padding: 24px 32px 28px; }
-.prof-avatar-wrap { position: absolute; top: -90px; left: 32px; width: 220px; height: 220px; border-radius: 50%; border: 6px solid var(--card); background: var(--secondary); cursor: pointer; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+
+.prof-avatar-wrap {
+    position: absolute;
+    top: -30px;
+    left: 32px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--secondary);
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: border-color, transform 0.2s;
+}
+
+.prof-avatar-wrap:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 12%, var(--secondary));
+
+}
 .prof-hero-info { margin-left: 250px; min-height: 90px; }
 .prof-avatar-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 3.7rem; }
-.prof-avatar-overlay { position: absolute; inset: 0; background: rgba(13,17,23,0.55); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.8rem; opacity: 0; transition: opacity 0.2s; }
+
+.prof-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 17, 23, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.8rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
 .prof-avatar-wrap:hover .prof-avatar-overlay { opacity: 1; }
 .prof-avatar-img { width: 100%; height: 100%; object-fit: contain; background: var(--secondary); display: block; }
-/*.prof-hero-info { display: flex; flex-direction: column; flex: 1; min-width: 260px; padding-bottom: 10px; }.prof-avatar-wrap { position: relative; width: 220px; height: 220px; border-radius: 50%; border: 6px solid var(--card); background: var(--secondary); cursor: pointer; flex-shrink: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }*/
 .prof-hero-top { margin-bottom: 6px; }
 
 .prof-name {
@@ -54,7 +343,12 @@
 .prof-about-item { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; background: var(--secondary); border: 1px solid var(--border); border-radius: 9px; }
 .prof-about-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .prof-about-label i { color: var(--accent); }
-.prof-about-value { font-size: 0.88rem; color: var(--text); font-weight: 600; }
+
+.prof-about-value {
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-weight: 400;
+}
 
 @media (max-width: 768px) { .prof-about-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 576px) {
@@ -65,6 +359,17 @@
 @media (max-width: 576px) {
     .prof-hero-banner { height: 100px; }
     .prof-avatar-wrap { position: static; margin: -60px 0 12px 32px; }
-    .prof-hero-info { margin-left: 0; padding: 0 32px; }
-    .prof-hero-stats { width: 100%; margin: 12px 32px 0; }
+
+    .prof-hero-info {
+
+        justify-content: center;
+        margin-left: 0;
+        padding: 0 32px;
+    }
+
+    .prof-hero-stats {
+        width: 100%;
+        margin: 10px auto 0;
+        justify-content: center;
+    }
 }

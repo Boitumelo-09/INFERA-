@@ -76,6 +76,15 @@
 
         <div class="prof-hero">
             <div class="prof-hero-banner">
+                <div class="particles">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
                 <div class="prof-hero-banner-pattern"></div>
             </div>
             <div class="prof-hero-row">
@@ -90,7 +99,7 @@
 
                     <span class="prof-badge"><i class="bi bi-patch-check-fill"></i> User</span>
                     <p class="prof-role" th:text="${user.lifeRole ?: 'Add your role'}">Role</p>
-                    <p class="prof-name" th:text="${user.firstName +' '+ user.lastName}">Bio</p>
+                    <p class="prof-name" th:text="${user.firstName +' '+ user.lastName}+'.'"></p>
                     <p class="prof-meta">
                         <span th:if="${user.location}"><i class="bi bi-geo-alt"></i> <span th:text="${user.location}">Location</span></span>
                         <span><i class="bi bi-calendar3"></i> Joined <span th:text="${#temporals.format(user.createdAt, 'MMM yyyy')}">date</span></span>
