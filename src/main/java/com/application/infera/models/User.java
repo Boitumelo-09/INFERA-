@@ -41,7 +41,16 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    private String avatarUrl;
 
+    @Column(length = 100)
+    private String lifeRole;
+
+    @Column(length = 100)
+    private String location;
+
+    @Column(length = 280)
+    private String bio;
     @PrePersist
     public void onCreate() {
 
