@@ -14,15 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const avatarToggle = document.getElementById('avatarToggle');
+    const canHover = window.matchMedia('(hover: hover)').matches;
     if (dropzone && menu) {
         let hideTimer;
         const showMenu = () => { clearTimeout(hideTimer); menu.classList.add('show'); };
         const hideMenu = () => { hideTimer = setTimeout(() => menu.classList.remove('show'), 150); };
-        dropzone.addEventListener('mouseenter', showMenu);
-        dropzone.addEventListener('mouseleave', hideMenu);
-        menu.addEventListener('mouseenter', showMenu);
-        menu.addEventListener('mouseleave', hideMenu);
-        dropzone.addEventListener('click', () => input.click());
+        if (canHover) {
+            dropzone.addEventListener('mouseenter', showMenu);
+            dropzone.addEventListener('mouseleave', hideMenu);
+            menu.addEventListener('mouseenter', showMenu);
+            menu.addEventListener('mouseleave', hideMenu);
+            dropzone.addEventListener('click', () => input.click());
+        }
 
         avatarToggle?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -85,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     renderAvatar(data.avatarUrl);
+                    const topbarImg = document.querySelector('.topbar-avatar-img');
+                    const topbarFallback = document.querySelector('.topbar-avatar');
+                    if (topbarImg) { topbarImg.src = data.avatarUrl; topbarImg.style.display = ''; if (topbarFallback) topbarFallback.style.display = 'none'; }
                     showToast('Profile picture updated');
                 } else {
                     showToast(data.message || 'Upload failed', true);

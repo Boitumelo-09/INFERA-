@@ -332,7 +332,7 @@
 }
 
 .prof-stat-chip:hover {
-    border-color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 12%, var(--secondary));
 
 }
 .prof-stat-num { display: block; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--text); }
