@@ -69,6 +69,7 @@
         </div>
         <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
             <div class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+
         </div>
     </header>
 
@@ -88,12 +89,16 @@
                 <div class="prof-hero-banner-pattern"></div>
             </div>
             <div class="prof-hero-row">
-                <div class="prof-avatar-wrap" id="avatarDropzone" title="Drag & drop or click to change">
-                    <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="prof-avatar-img" id="avatarImg" />
+                <div class="prof-avatar-wrap" id="avatarDropzone" title="Drag & drop or click to change" th:data-initials="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">                    <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="prof-avatar-img" id="avatarImg" />
                     <div th:unless="${user.avatarUrl}" class="prof-avatar-fallback" id="avatarFallback"
                          th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
-                    <div class="prof-avatar-overlay"><i class="bi bi-camera"></i></div>
+                    <div class="prof-avatar-overlay" id="avatarOverlay"><i class="bi bi-camera"></i></div>
                     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/webp" hidden />
+                </div>
+                <button type="button" class="prof-avatar-toggle" id="avatarToggle"><i class="bi bi-pencil"></i></button>
+                <div class="prof-avatar-menu" id="avatarMenu">
+                    <button type="button" id="avatarMenuUpdate"><i class="bi bi-upload"></i> Update picture</button>
+                    <button type="button" id="avatarMenuDelete" class="danger"><i class="bi bi-trash3"></i> Delete picture</button>
                 </div>
                 <div class="prof-hero-info">
 

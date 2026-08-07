@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const dropzone = document.getElementById('avatarDropzone');
     const input = document.getElementById('avatarInput');
+    const menu = document.getElementById('avatarMenu');
+    const menuUpdate = document.getElementById('avatarMenuUpdate');
+    const menuDelete = document.getElementById('avatarMenuDelete');
     const bio = document.getElementById('bioInput');
     const bioCount = document.getElementById('bioCount');
 
@@ -10,30 +13,72 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCount();
     }
 
-    if (!dropzone) return;
+    const avatarToggle = document.getElementById('avatarToggle');
+    if (dropzone && menu) {
+        let hideTimer;
+        const showMenu = () => { clearTimeout(hideTimer); menu.classList.add('show'); };
+        const hideMenu = () => { hideTimer = setTimeout(() => menu.classList.remove('show'), 150); };
+        dropzone.addEventListener('mouseenter', showMenu);
+        dropzone.addEventListener('mouseleave', hideMenu);
+        menu.addEventListener('mouseenter', showMenu);
+        menu.addEventListener('mouseleave', hideMenu);
+        dropzone.addEventListener('click', () => input.click());
 
-    dropzone.addEventListener('click', () => input.click());
-    ['dragenter', 'dragover'].forEach(evt =>
-        dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('drag-over'); })
-    );
-    ['dragleave', 'drop'].forEach(evt =>
-        dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove('drag-over'); })
-    );
-    dropzone.addEventListener('drop', e => {
-        const file = e.dataTransfer.files[0];
-        if (file) uploadAvatar(file);
-    });
-    input.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (file) uploadAvatar(file);
-    });
+        avatarToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && e.target !== avatarToggle) menu.classList.remove('show');
+        });
+
+        menuUpdate.addEventListener('click', () => { input.click(); menu.classList.remove('show'); });
+        menuDelete.addEventListener('click', () => {
+            menu.classList.remove('show');
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            const formData = new FormData();
+            formData.append('_csrf', csrfToken);
+            fetch('/profile/avatar/delete', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const img = document.getElementById('avatarImg');
+                        if (img) {
+                            const fallback = document.createElement('div');
+                            fallback.id = 'avatarFallback';
+                            fallback.className = 'prof-avatar-fallback';
+                            fallback.textContent = dropzone.dataset.initials || '';
+                            img.replaceWith(fallback);
+                        }
+                        showToast('Profile picture removed');
+                    } else {
+                        showToast(data.message || 'Delete failed', true);
+                    }
+                })
+                .catch(() => showToast('Delete failed', true));
+        });
+
+        ['dragenter', 'dragover'].forEach(evt =>
+            dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('drag-over'); })
+        );
+        ['dragleave', 'drop'].forEach(evt =>
+            dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove('drag-over'); })
+        );
+        dropzone.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (file) uploadAvatar(file);
+        });
+        input.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) uploadAvatar(file);
+        });
+    }
 
     function uploadAvatar(file) {
         const csrfToken = document.querySelector('input[name="_csrf"]').value;
-        const csrfHeader = '_csrf';
         const formData = new FormData();
         formData.append('file', file);
-        formData.append(csrfHeader, csrfToken);
+        formData.append('_csrf', csrfToken);
 
         fetch('/profile/avatar', { method: 'POST', body: formData })
             .then(res => res.json())

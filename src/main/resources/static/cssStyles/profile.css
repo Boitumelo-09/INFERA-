@@ -320,7 +320,21 @@
 .prof-meta i { color: rgba(148,163,184,0.6); margin-right: 4px; }
 
 .prof-hero-stats { display: flex; gap: 10px; padding-bottom: 6px; }
-.prof-stat-chip { background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; text-align: center; min-width: 84px; }
+
+.prof-stat-chip {
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 84px;
+    transition: border-color 0.2s;
+}
+
+.prof-stat-chip:hover {
+    border-color: var(--accent);
+
+}
 .prof-stat-num { display: block; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--text); }
 .prof-stat-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
 
@@ -349,7 +363,43 @@
     color: var(--muted);
     font-weight: 400;
 }
-
+.prof-avatar-toggle {
+    display: none;
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 4;
+}
+.prof-avatar-menu {
+    position: absolute;
+    top: 20px; left: 236px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    overflow: hidden;
+    z-index: 5;
+    display: none;
+    min-width: 180px;
+}
+.prof-avatar-menu.show { display: block; }
+.prof-avatar-menu button {
+    width: 100%; text-align: left;
+    background: none; border: none;
+    padding: 10px 14px;
+    font-size: 0.82rem; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; transition: background 0.15s;
+}
+.prof-avatar-menu button:hover { background: rgba(255,255,255,0.05); }
+.prof-avatar-menu button.danger { color: #f87171; }
+.prof-avatar-menu button.danger:hover { background: rgba(239,68,68,0.08); }
 @media (max-width: 768px) { .prof-about-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 576px) {
     .prof-hero-row { flex-direction: column; align-items: flex-start; margin-top: -50px; }
@@ -372,4 +422,8 @@
         margin: 10px auto 0;
         justify-content: center;
     }
+}
+@media (hover: none) {
+    .prof-avatar-toggle { display: flex; }
+    .prof-avatar-menu { top: auto; bottom: 0; left: 236px; }
 }
