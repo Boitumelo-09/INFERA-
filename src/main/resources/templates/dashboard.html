@@ -15,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/dashboard.css" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" href="/static/cssStyles/notes.css" th:href="@{/cssStyles/notes.css}" />
+    <link rel="stylesheet" href="/static/cssStyles/app.css" th:href="@{/cssStyles/app.css}" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 
 </head>
@@ -128,9 +129,10 @@
 
     <!-- User chip at bottom -->
     <div class="sidebar-user">
-        <div th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" class="user-avatar" id="sidebarAvatar">
-            <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
-            SN
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
         </div>
         <div class="user-info">
             <!-- th:text="${user.firstName + ' ' + user.lastName}" -->
@@ -196,9 +198,10 @@
             </button>
 
             <!-- Avatar -->
-            <div class="topbar-avatar" id="topbarAvatar" role="button" tabindex="0" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">
-                <!-- th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}" -->
-                SN
+            <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+                <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
             </div>
         </div>
     </header>
@@ -531,7 +534,7 @@
     });
 </script>
 <script src="/static/javaScript/dashboard.js" th:src="@{/javaScript/dashboard.js}"></script>
-<script src="/static/javaScript/search.js" th:src="@{/javaScript/search.js}"></script>
+<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
 
 </body>
 </html>

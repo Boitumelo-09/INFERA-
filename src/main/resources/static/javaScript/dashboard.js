@@ -41,14 +41,7 @@ function showToast(msg, type = 'success') {
     toast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
 
-function setLoading(btn, isLoading) {
-    const txt  = btn.querySelector('.btn-text, .btn-submit-text');
-    const spin = btn.querySelector('.btn-spin, .btn-submit-spinner');
-    if (!txt || !spin) return;
-    btn.disabled = isLoading;
-    txt.classList.toggle('d-none', isLoading);
-    spin.classList.toggle('d-none', !isLoading);
-}
+
 // ─── CUSTOM CURSOR ───────────────────────
 const dot  = document.getElementById('cursorDot');
 const ring = document.getElementById('cursorRing');
@@ -618,13 +611,9 @@ $$('.ws-card[data-workspace]').forEach(card => {
 /* ───────────────────────────────────────────────────────────────────
    TOPBAR AVATAR  — stub for future dropdown
 ─────────────────────────────────────────────────────────────────── */
-$('#topbarAvatar')?.addEventListener('click', () => {
-    /* Real app: open profile dropdown / navigate to /profile */
-    showToast('Profile settings coming soon');
-});
 
 $('#notifBtn')?.addEventListener('click', () => {
-    showToast('No new notifications');
+    showToast('Belmire - INFERA v2.0.0 Coming Soon...');
     /* Remove dot after first click */
     $('.notif-dot')?.remove();
 });

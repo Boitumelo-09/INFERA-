@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <!-- Reuses sidebar / topbar / modal / form styles already defined for the dashboard -->
-    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" href="dashboard.css" />
-    <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}" href="workspaces.css" />
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}"  />
+    <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}"/>
+    <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
 </head>
 <body>
@@ -100,8 +101,11 @@
     </nav>
 
     <div class="sidebar-user">
-        <div class="user-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
-        <div class="user-info">
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+        </div>          <div class="user-info">
             <div class="user-name" th:text="${user.firstName + ' ' + user.lastName}">Sipho Ndlovu</div>
             <div class="user-email" th:text="${user.email}">sipho@example.com</div>
         </div>
@@ -145,7 +149,11 @@
                 <i class="bi bi-plus-lg"></i>
                 <span class="d-none d-sm-inline">New workspace</span>
             </button>
-            <div class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+            <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div th:class="${user.avatarUrl} ? 'topbar-avatar' : 'topbar-avatar'"
+                 th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'"
+                 th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
         </div>
     </header>
 
@@ -393,7 +401,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javaScript/workspaces.js}" ></script>
-<script src="/static/javaScript/search.js" th:src="@{/javaScript/search.js}"></script>
+<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
 
 </body>
 </html>

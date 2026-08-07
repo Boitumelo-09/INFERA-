@@ -13,6 +13,7 @@
           rel="stylesheet"/>
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
@@ -102,8 +103,10 @@
     </nav>
 
     <div class="sidebar-user">
-        <div class="user-avatar"
-             th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN
+        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+            <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
         </div>
         <div class="user-info">
             <div class="user-name" th:text="${user.firstName + ' ' + user.lastName}">Sipho Ndlovu</div>
@@ -149,8 +152,10 @@
                 <i class="bi bi-plus-lg"></i>
                 <span class="d-none d-sm-inline">New note</span>
             </button>
-            <div class="topbar-avatar"
-                 th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN
+            <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
+                <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
             </div>
         </div>
     </header>
@@ -635,7 +640,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
 <script th:src="@{/javaScript/notes.js}" ></script>
-<script src="/static/javaScript/search.js" th:src="@{/javaScript/search.js}"></script>
+<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
 
 
 </body>
