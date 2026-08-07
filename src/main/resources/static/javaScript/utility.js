@@ -95,3 +95,14 @@
         debounceTimer = setTimeout(async () => renderResults(await searchRemote(q)), 180);
     });
 })();
+
+
+void function (){
+    const buttons = document.querySelectorAll('.topbar-avatar,.topbar-avatar-img');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            window.location.href = '/profile';
+
+        });
+    })
+}();
