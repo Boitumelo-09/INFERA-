@@ -4,12 +4,12 @@
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--border);
     transition: border-color 0.2s;
 }
 
 .topbar-avatar-img:hover {
-    border-color: var(--border);
+    border-color: var(--accent-hover);
 
 }
 .topbar-avatar {
