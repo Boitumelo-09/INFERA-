@@ -73,7 +73,7 @@ public class DashboardController {
     private User resolveUser(Object principal) {
         if (principal instanceof CustomUserDetails userDetails) {
             // Form login — principal is your CustomUserDetails
-            return userDetails.getUser();
+            return userRepository.findById(userDetails.getUser().getId()).orElse(null);
         }
 
         if (principal instanceof OAuth2User oAuth2User) {
