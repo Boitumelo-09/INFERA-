@@ -112,7 +112,7 @@ public class NoteController {
     // Resolves the logged-in user regardless of login method
     private User resolveUser(Object principal) {
         if (principal instanceof CustomUserDetails ud) {
-            return ud.getUser();
+            return userRepository.findById(ud.getUser().getId()).orElse(null);
         }
         if (principal instanceof OAuth2User ou) {
             String email = ou.getAttribute("email");
