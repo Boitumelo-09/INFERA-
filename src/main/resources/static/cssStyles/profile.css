@@ -320,7 +320,21 @@
 .prof-meta i { color: rgba(148,163,184,0.6); margin-right: 4px; }
 
 .prof-hero-stats { display: flex; gap: 10px; padding-bottom: 6px; }
-.prof-stat-chip { background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; text-align: center; min-width: 84px; }
+
+.prof-stat-chip {
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 84px;
+    transition: border-color 0.2s;
+}
+
+.prof-stat-chip:hover {
+    border-color: var(--accent);
+
+}
 .prof-stat-num { display: block; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--text); }
 .prof-stat-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
 

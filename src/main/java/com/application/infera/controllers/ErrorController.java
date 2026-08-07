@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/error")
 public class ErrorController {
     @GetMapping
-    public String error404(@ModelAttribute Model model) {
+    public String error404(Model model) {
           model.addAttribute("pageTitle", "Error");
         return "error";
     }
