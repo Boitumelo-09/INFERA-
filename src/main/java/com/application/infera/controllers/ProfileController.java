@@ -104,4 +104,20 @@ public class ProfileController {
         }
         return null;
     }
+    @PostMapping("/avatar/delete")
+    @ResponseBody
+    public Map<String, Object> deleteAvatar(@AuthenticationPrincipal Object principal) {
+        User user = resolveUser(principal);
+        if (user == null) return Map.of("success", false, "message", "Not authenticated");
+
+        if (user.getAvatarUrl() != null) {
+            try {
+                Path path = Paths.get(uploadDir, Paths.get(user.getAvatarUrl()).getFileName().toString());
+                Files.deleteIfExists(path);
+            } catch (IOException ignored) {}
+            user.setAvatarUrl(null);
+            userRepository.save(user);
+        }
+        return Map.of("success", true);
+    }
 }
