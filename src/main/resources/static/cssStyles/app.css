@@ -10,10 +10,11 @@
 
 .topbar-avatar-img:hover {
     border-color: var(--border);
-    
+
 }
 .topbar-avatar {
-    width: 34px; height: 34px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent), #7c3aed);
     display: flex; align-items: center; justify-content: center;
