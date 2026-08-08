@@ -51,6 +51,10 @@ public class User {
 
     @Column(length = 280)
     private String bio;
+   
+
+    @Column(length = 20)
+    private String themePreference = "default";
     @PrePersist
     public void onCreate() {
 
