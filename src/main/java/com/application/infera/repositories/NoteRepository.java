@@ -33,4 +33,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     List<Note> findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndContentContainingIgnoreCase(
             User user1, String titleQuery, User user2, String contentQuery);
+
+    List<Note> findByWorkspace_User(User user);
+
 }
