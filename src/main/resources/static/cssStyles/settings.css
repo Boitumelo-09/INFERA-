@@ -6,17 +6,61 @@
 .settings-oauth-note { font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 6px; padding: 16px 20px; }
 
 .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 20px; }
-.theme-option { border: 2px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: border-color 0.2s; }
+
+.theme-option {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    
+}
+
 .theme-option.active { border-color: var(--accent); }
 .theme-preview { height: 56px; border-radius: 6px; margin-bottom: 8px; }
 .theme-preview.default { background: linear-gradient(135deg, #0d1117 50%, #ea580c 50%); }
 .theme-preview.dark { background: linear-gradient(135deg, #050608 50%, #6366f1 50%); }
 .theme-preview.light { background: linear-gradient(135deg, #f8fafc 50%, #ea580c 50%); }
-.theme-option-name { font-size: 0.8rem; font-weight: 600; color: var(--text); text-align: center; }
 
+.theme-option-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    /*color: var(--text);*/
+    text-align: center;
+}
+
+[data-theme="dark"] .theme-option-name:nth-child(-n+1) {
+    color: var(--text);
+}
+
+[data-theme="light"] .theme-option-name:nth-child(-n+1) {
+    color: white;
+
+}
+.theme-option:hover{
+    border: 2px solid var(--accent);
+    transform: translateY(-2px);
+}
+
+[data-theme="light"] .theme-option:hover {
+    border: 2px solid var(--accent);
+}
 .danger-panel { border: 1px solid rgba(239,68,68,0.3); }
 .danger-panel .panel-title i { color: #f87171; }
 .btn-danger-outline { background: transparent; border: 1px solid #f87171; color: #f87171; border-radius: 8px; padding: 8px 18px; font-size: 0.84rem; font-weight: 600; cursor: pointer; }
 .btn-danger-outline:hover { background: rgba(239,68,68,0.08); }
 .btn-danger-solid { background: #ef4444; border: 1px solid #ef4444; color: #fff; border-radius: 8px; padding: 9px 22px; font-size: 0.86rem; font-weight: 600; cursor: pointer; }
 .btn-danger-solid:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.res-page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+
+.res-page-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-optical-sizing: auto;
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 0.5px var(--text);
+}
+
+.res-page-sub { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
