@@ -255,11 +255,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 
-<script th:src="@{/javaScript/profile.js}"></script>
-<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
 <script th:if="${toast}" th:inline="javascript">
     document.addEventListener('DOMContentLoaded', () => showToast([[${toast}]]));
 </script>
-
+<script th:src="@{/javaScript/profile.js}"></script>
+<script th:src="@{/javaScript/utility.js}"></script>
 </body>
 </html>
