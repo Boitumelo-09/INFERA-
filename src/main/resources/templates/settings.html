@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}"><head>
+    <meta charset="UTF-8" />
+    <title th:text="${pageTitle}">Settings — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/settings.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
+</head>
+<body>
+<!-- sidebar/topbar: copy exact block from profile.html, breadcrumb "Settings", nav-item active on Settings link -->
+
+<main class="page-content">
+
+    <div class="dash-panel settings-section">
+        <div class="panel-header"><h2 class="panel-title"><i class="bi bi-palette"></i> Theme</h2></div>
+        <div class="theme-grid">
+            <div class="theme-option" th:classappend="${user.themePreference == 'default'} ? 'active'" data-theme="default">
+                <div class="theme-preview default"></div><div class="theme-option-name">Default</div>
+            </div>
+            <div class="theme-option" th:classappend="${user.themePreference == 'dark'} ? 'active'" data-theme="dark">
+                <div class="theme-preview dark"></div><div class="theme-option-name">Dark</div>
+            </div>
+            <div class="theme-option" th:classappend="${user.themePreference == 'light'} ? 'active'" data-theme="light">
+                <div class="theme-preview light"></div><div class="theme-option-name">Light</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-panel settings-section">
+        <div class="panel-header"><h2 class="panel-title"><i class="bi bi-shield-lock"></i> Security</h2></div>
+        <div th:if="${isOAuthUser}" class="settings-oauth-note"><i class="bi bi-info-circle"></i> Password is managed by your OAuth provider.</div>
+        <div th:unless="${isOAuthUser}" class="settings-row">
+            <div><div class="settings-row-label">Password</div><div class="settings-row-sub">Last changed unknown</div></div>
+            <button class="panel-action" data-bs-toggle="modal" data-bs-target="#passwordModal"><i class="bi bi-key"></i> Change</button>
+        </div>
+    </div>
+
+    <div class="dash-panel danger-panel settings-section">
+        <div class="panel-header"><h2 class="panel-title"><i class="bi bi-exclamation-triangle"></i> Danger Zone</h2></div>
+        <div class="settings-row">
+            <div><div class="settings-row-label">Delete account</div><div class="settings-row-sub">Permanently deletes all your data — cannot be undone</div></div>
+            <button class="btn-danger-outline" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+        </div>
+    </div>
+</main>
+
+<!-- Password modal -->
+<div class="modal fade infera-modal" id="passwordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="modal-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button></div>
+        <form th:action="@{/settings/password}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div class="modal-body">
+                <label class="form-label-custom">Current password</label>
+                <input type="password" name="currentPassword" class="form-input" required style="padding-left:14px; margin-bottom:14px;" />
+                <label class="form-label-custom">New password</label>
+                <input type="password" name="newPassword" class="form-input" required minlength="8" style="padding-left:14px; margin-bottom:14px;" />
+                <label class="form-label-custom">Confirm new password</label>
+                <input type="password" name="confirmPassword" class="form-input" required minlength="8" style="padding-left:14px;" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn-modal-accent">Update Password</button>
+            </div>
+        </form>
+    </div></div>
+</div>
+
+<!-- Delete account modal -->
+<div class="modal fade infera-modal" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Delete Account</h5><button class="modal-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button></div>
+        <form th:action="@{/settings/delete-account}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div class="modal-body">
+                <p style="color: var(--muted); font-size: 0.86rem;">This permanently deletes your workspaces, notes, resources, and activity. Type <strong>DELETE</strong> to confirm.</p>
+                <input type="text" name="confirmText" id="deleteConfirmInput" class="form-input" style="padding-left:14px;" autocomplete="off" required />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn-danger-solid" id="deleteConfirmBtn" disabled>Delete Forever</button>
+            </div>
+        </form>
+    </div></div>
+</div>
+
+<div class="infera-toast" id="inferaToast"><i class="bi bi-check-circle-fill toast-icon" id="toastIcon"></i><span id="toastMessage">Saved</span></div>
+<script th:if="${toast}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toast}]]));</script>
+<script th:if="${toastError}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toastError}]], true));</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/javaScript/settings.js}"></script>
+<script  th:src="@{/javaScript/app.js}"></script>
+</body>
+</html>
