@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -118,7 +117,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="settings">
+                <a th:href="@{/settings}" class="nav-item" data-page="settings">
                     <i class="bi bi-sliders"></i>
                     <span>Settings</span>
                 </a>
@@ -186,10 +185,10 @@
             </button>
 
             <!-- New note quick button -->
-            <button class="btn-topbar-accent" id="quickNoteBtn">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-sm-inline">New note</span>
-            </button>
+            <a th:href="@{/notes}" class="btn-topbar-accent" id="quickNoteBtn">
+                <i class="bi bi-journal-text"></i>
+                <span class="d-none d-sm-inline">Notes</span>
+            </a>
 
             <!-- Notifications -->
             <button class="topbar-icon-btn position-relative" id="notifBtn" aria-label="Notifications">

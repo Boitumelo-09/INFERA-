@@ -4,7 +4,7 @@
    Font: Sora (display) · Inter (body)
 ───────────────────────────────────────── */
 
-:root {
+:root, [data-theme="default"] {
     --bg:           #0d1117;
     --secondary:    #161b22;
     --card:         #1c2128;
@@ -19,6 +19,28 @@
     --font-display: 'Sora', sans-serif;
     --font-body:    'Inter', sans-serif;
     --font-mono:    'JetBrains Mono', monospace;
+}
+
+[data-theme="dark"] {
+    --bg:           #050608;
+    --secondary:    #0f1115;
+    --card:         #16181d;
+    --accent:       #6366f1;
+    --accent-hover: #4f46e5;
+    --text:         #f1f5f9;
+    --muted:        #8b93a1;
+    --border:       rgba(255,255,255,0.06);
+}
+
+[data-theme="light"] {
+    --bg: rgb(248 250 252 / 0.42);
+    --secondary:    #ffffff;
+    --card:         #ffffff;
+    --accent:       #ea580c;
+    --accent-hover: #c2410c;
+    --text:         #0f172a;
+    --muted:        #64748b;
+    --border:       rgba(15,23,42,0.09);
 }
 
 /* ─── RESET ─────────────────────────── */
@@ -354,7 +376,7 @@ button { font-family: var(--font-body); }
 .btn-topbar-accent {
     display: flex; align-items: center; gap: 6px;
     background: transparent;
-    color: #fff;
+    color: var(--muted);
     border: 1px solid var(--accent);
     border-radius: 8px;
     padding: 8px 16px;
