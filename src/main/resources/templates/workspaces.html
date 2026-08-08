@@ -74,27 +74,11 @@
             </li>
         </ul>
 
-<!--        <div class="nav-section-label mt-3">Workspaces</div>-->
-<!--        <ul class="nav-list" id="workspaceList">-->
-<!--            <li th:each="ws : ${workspaces}">-->
-<!--                <a th:href="@{/notes(workspace=${ws.id})}" class="nav-item ws-item">-->
-<!--                    <span class="ws-dot" th:style="'&#45;&#45;ws-color:' + ${ws.color}"></span>-->
-<!--                    <span th:text="${ws.name}">Workspace</span>-->
-<!--                </a>-->
-<!--            </li>-->
-<!--            <li>-->
-<!--                <button class="nav-item nav-item-btn" id="newWorkspaceBtn">-->
-<!--                    <i class="bi bi-folder-plus"></i>-->
-<!--                    <span>Add workspace</span>-->
-<!--                </button>-->
-<!--            </li>-->
-<!--        </ul>-->
-
         <div class="nav-section-label mt-3">Account</div>
         <ul class="nav-list">
             <li><a th:href="@{/activity}" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
             <li><a th:href="@{/profile}" class="nav-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
-            <li><a href="#" class="nav-item"><i class="bi bi-sliders"></i><span>Settings</span></a></li>
+            <li><a th:href="@{/settings}" class="nav-item"><i class="bi bi-sliders"></i><span>Settings</span></a></li>
         </ul>
 
     </nav>
@@ -157,16 +141,6 @@
     </header>
 
     <main class="page-content" id="pageContent">
-
-        <!-- Flash messages from redirect -->
-<!--        <div class="flash-alert success" th:if="${successMessage}">-->
-<!--            <i class="bi bi-check2-circle"></i>-->
-<!--            <span th:text="${successMessage}">Success</span>-->
-<!--        </div>-->
-<!--        <div class="flash-alert error" th:if="${errorMessage}">-->
-<!--            <i class="bi bi-exclamation-circle"></i>-->
-<!--            <span th:text="${errorMessage}">Error</span>-->
-<!--        </div>-->
 
         <!-- Page header -->
         <div class="ws-page-header">
@@ -400,7 +374,7 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javaScript/workspaces.js}" ></script>
-<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
+<script th:src="@{/javaScript/utility.js}"></script>
 
 </body>
 </html>
