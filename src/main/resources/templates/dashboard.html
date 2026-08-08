@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -118,7 +117,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-item" data-page="settings">
+                <a th:href="@{/settings}" class="nav-item" data-page="settings">
                     <i class="bi bi-sliders"></i>
                     <span>Settings</span>
                 </a>
