@@ -3,6 +3,9 @@ package com.application.infera.controllers;
 import com.application.infera.models.User;
 import com.application.infera.repositories.*;
 import com.application.infera.security.CustomUserDetails;
+import com.application.infera.services.NoteService;
+import com.application.infera.services.ResourceService;
+import com.application.infera.services.WorkspaceService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +30,10 @@ public class SettingsController {
     private final ResourceRepository resourceRepository;
     private final ActivityRepository activityRepository;
     private final WorkspaceRepository workspaceRepository;
-
+    private final WorkspaceService workspaceService;
+    private final NoteService noteService;
+    private final ResourceService resourceService;
+    
     @GetMapping
     public String settingsPage(@AuthenticationPrincipal Object principal, Model model) {
         User user = resolveUser(principal);
@@ -37,6 +43,9 @@ public class SettingsController {
         model.addAttribute("user", user);
         model.addAttribute("pageTitle", "Settings — INFERA");
         model.addAttribute("isOAuthUser", isOAuthUser);
+       model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
+        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+        model.addAttribute("notesCount", noteService.countNotesForUser(user));
         return "settings";
     }
 
