@@ -186,10 +186,10 @@
             </button>
 
             <!-- New note quick button -->
-            <button class="btn-topbar-accent" id="quickNoteBtn">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-sm-inline">New note</span>
-            </button>
+            <a th:href="@{/notes}" class="btn-topbar-accent" id="quickNoteBtn">
+                <i class="bi bi-journal-text"></i>
+                <span class="d-none d-sm-inline">Notes</span>
+            </a>
 
             <!-- Notifications -->
             <button class="topbar-icon-btn position-relative" id="notifBtn" aria-label="Notifications">

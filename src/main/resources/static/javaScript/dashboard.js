@@ -484,61 +484,6 @@ function addWorkspaceToSidebar(name, color) {
 }
 
 /* ───────────────────────────────────────────────────────────────────
-   QUICK NOTE MODAL
-─────────────────────────────────────────────────────────────────── */
-const quickNoteModal = new bootstrap.Modal('#quickNoteModal', { backdrop: true });
-const quickNoteForm  = $('#quickNoteForm');
-
-$('#quickNoteBtn')?.addEventListener('click', () => {
-    quickNoteTagWidget?.reset();
-    quickNoteModal.show();
-    setTimeout(() => $('#noteTitle')?.focus(), 300);
-})
-quickNoteForm?.addEventListener('submit', e => {
-    quickNoteTagWidget?.flushPending();
-
-    const title = $('#noteTitle')?.value.trim();
-    if (!title) {
-        e.preventDefault();
-        $('#noteTitle')?.focus();
-        return;
-    }
-    // no preventDefault — native submit, server redirects to /dashboard with fresh data + toast
-});
-function prependNoteRow(title) {
-    const list = $('.panel-body', $('.dash-panel'));   /* first panel = recent notes */
-    if (!list) return;
-
-    const row = document.createElement('div');
-    row.className = 'note-row';
-    row.style.cssText = 'opacity:0; transform:translateY(-8px); transition: opacity 0.35s, transform 0.35s;';
-    row.innerHTML = `
-    <div class="note-row-left">
-      <div class="note-ws-dot" style="--ws-color:var(--accent);"></div>
-      <div>
-        <div class="note-row-title">${escapeHtml(title)}</div>
-        <div class="note-row-meta">Just now</div>
-      </div>
-    </div>
-    <div class="note-row-date">now</div>`;
-
-    list.prepend(row);
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            row.style.opacity   = '1';
-            row.style.transform = 'none';
-        });
-    });
-
-    /* Remove last row if list gets too long (keeps it to 5) */
-    const rows = $$('.note-row', list);
-    if (rows.length > 5) rows[rows.length - 1].remove();
-}
-const quickNoteTagWidget = createTagInput({
-    wrapId: 'quickNoteTagWrap', chipsId: 'quickNoteTagChips',
-    textInputId: 'quickNoteTagsInput', suggestionsId: 'quickNoteTagSuggestions', hiddenInputId: 'quickNoteTags'
-});
-/* ───────────────────────────────────────────────────────────────────
    BADGE COUNT HELPERS
 ─────────────────────────────────────────────────────────────────── */
 function updateBadgeCount(badgeId, delta) {

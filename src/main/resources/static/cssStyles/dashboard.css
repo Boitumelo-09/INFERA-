@@ -354,7 +354,7 @@ button { font-family: var(--font-body); }
 .btn-topbar-accent {
     display: flex; align-items: center; gap: 6px;
     background: transparent;
-    color: #fff;
+    color: var(--muted);
     border: 1px solid var(--accent);
     border-radius: 8px;
     padding: 8px 16px;
