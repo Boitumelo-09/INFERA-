@@ -62,6 +62,12 @@ body {
     overflow-x: hidden;
     cursor: none;
 }
+
+
+
+
+
+
 a { text-decoration: none; color: inherit; }
 button { font-family: var(--font-body); }
 
@@ -1081,4 +1087,802 @@ button { font-family: var(--font-body); }
 .activity-feed-scroll {
     max-height: 360px;
     overflow-y: auto;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   INFERA — LIGHT MODE
+   ULTRA GLASS / FLOATING PENTAGON ATMOSPHERE
+   Everything below applies ONLY to light mode.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────────
+   LIGHT MODE FOUNDATION
+   ───────────────────────────────────────────────────────────── */
+
+[data-theme="light"] {
+    --bg:           #d8d2c7;
+    --secondary:    rgba(238, 234, 226, 0.62);
+    --card:         rgba(248, 245, 239, 0.48);
+
+    --accent:       #351812;
+    --accent-hover: #68250e;
+
+    --text:         #100d0a;
+    --muted:        #403831;
+
+    --border:       rgba(30, 23, 18, 0.20);
+
+    --glass-white:  rgba(255, 252, 246, 0.48);
+    --glass-dark:   rgba(47, 35, 27, 0.055);
+
+    --glass-shadow:
+            0 20px 60px rgba(48, 35, 25, 0.12),
+            0 3px 12px rgba(48, 35, 25, 0.07);
+
+    --glass-highlight:
+            inset 0 1px 0 rgba(255,255,255,0.72),
+            inset 0 -1px 0 rgba(35,24,18,0.05);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   BODY — SOFT ATMOSPHERIC CANVAS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] body {
+
+    background:
+
+        /* warm upper light */
+            radial-gradient(
+                    circle at 12% 8%,
+                    rgba(255, 250, 239, 0.75),
+                    transparent 27%
+            ),
+
+                /* deep lower atmosphere */
+            radial-gradient(
+                    circle at 88% 92%,
+                    rgba(76, 37, 21, 0.16),
+                    transparent 30%
+            ),
+
+                /* subtle center glow */
+            radial-gradient(
+                    ellipse at 50% 45%,
+                    rgba(255,255,255,0.34),
+                    transparent 62%
+            ),
+
+            linear-gradient(
+                    135deg,
+                    #d8d2c7 0%,
+                    #cbc3b7 48%,
+                    #bdb4a6 100%
+            );
+
+    background-attachment: fixed;
+
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   FLOATING PENTAGON ATMOSPHERE
+   Two real pentagon shapes cut with clip-path, heavily blurred
+   and gradient-filled so they read as ambient light rather than
+   hard UI shapes.
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] body::before {
+
+    content: "";
+
+    position: fixed;
+
+    width: 60vw;
+    height: 60vw;
+
+    top: -18%;
+    left: -14%;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    opacity: 0.5;
+
+    clip-path: polygon(
+            50% 0%,
+            100% 38%,
+            82% 100%,
+            18% 100%,
+            0% 38%
+    );
+
+    background: radial-gradient(
+            circle at 35% 30%,
+            rgba(255,255,255,0.55),
+            rgba(255,250,239,0.22) 45%,
+            transparent 75%
+    );
+
+    filter: blur(38px);
+
+    animation:
+            inferaAtmosphereFloat 32s ease-in-out infinite alternate;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   SECOND ATMOSPHERIC LAYER — larger, warmer, opposite corner
+   ───────────────────────────────────────────────────────────── */
+
+[data-theme="light"] body::after {
+
+    content: "";
+
+    position: fixed;
+
+    width: 70vw;
+    height: 70vw;
+
+    bottom: -22%;
+    right: -16%;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    opacity: 0.35;
+
+    clip-path: polygon(
+            50% 0%,
+            100% 38%,
+            82% 100%,
+            18% 100%,
+            0% 38%
+    );
+
+    background: radial-gradient(
+            circle at 65% 65%,
+            rgba(76, 37, 21, 0.22),
+            rgba(76,37,21,0.08) 50%,
+            transparent 78%
+    );
+
+    filter: blur(46px);
+
+    animation:
+            inferaPentagonDrift 40s ease-in-out infinite alternate;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SOFT ATMOSPHERIC MOTION
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes inferaAtmosphereFloat {
+
+    0% {
+        transform: translate3d(-2%, -1%, 0) rotate(-1deg) scale(1);
+    }
+
+    50% {
+        transform: translate3d(2%, 1.5%, 0) rotate(1.2deg) scale(1.04);
+    }
+
+    100% {
+        transform: translate3d(-1%, 2.5%, 0) rotate(-0.6deg) scale(1.07);
+    }
+}
+
+
+@keyframes inferaPentagonDrift {
+
+    0% {
+        transform: translate3d(1.5%, 0, 0) rotate(0.8deg) scale(1);
+    }
+
+    50% {
+        transform: translate3d(-1.5%, -1.8%, 0) rotate(-1deg) scale(1.05);
+    }
+
+    100% {
+        transform: translate3d(0.8%, 1.5%, 0) rotate(0.5deg) scale(1.02);
+    }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .card,
+[data-theme="light"] .panel,
+[data-theme="light"] .dash-panel,
+[data-theme="light"] .stat-card {
+
+    background:
+
+            linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.38),
+                    rgba(255,255,255,0.10)
+            ),
+
+            var(--card);
+
+    backdrop-filter: blur(30px) saturate(118%);
+    -webkit-backdrop-filter: blur(30px) saturate(118%);
+
+    border: 1px solid rgba(38, 29, 22, 0.14);
+
+    box-shadow:
+            var(--glass-highlight),
+            var(--glass-shadow);
+
+    position: relative;
+
+    isolation: isolate;
+
+    transition:
+            transform 600ms cubic-bezier(0.19, 1, 0.22, 1),
+            box-shadow 600ms cubic-bezier(0.19, 1, 0.22, 1),
+            border-color 450ms ease,
+            background 550ms ease;
+}
+
+
+/* Glass highlight */
+
+[data-theme="light"] .card::before,
+[data-theme="light"] .panel::before,
+[data-theme="light"] .dash-panel::before,
+[data-theme="light"] .stat-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    border-radius: inherit;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.34),
+                    transparent 34%,
+                    transparent 72%,
+                    rgba(54,31,20,0.035)
+            );
+
+    opacity: 0.9;
+
+    z-index: -1;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ULTRA-SOFT HOVER
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .card:hover,
+[data-theme="light"] .panel:hover,
+[data-theme="light"] .dash-panel:hover,
+[data-theme="light"] .stat-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(53,24,18,0.28);
+
+    box-shadow:
+
+            inset 0 1px 0 rgba(255,255,255,0.80),
+
+            0 30px 74px rgba(47,34,24,0.13),
+
+            0 6px 18px rgba(47,34,24,0.07);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .sidebar {
+
+    background:
+            linear-gradient(
+                    145deg,
+                    rgba(244,240,233,0.62),
+                    rgba(222,216,206,0.42)
+            );
+
+    backdrop-filter: blur(32px) saturate(115%);
+    -webkit-backdrop-filter: blur(32px) saturate(115%);
+
+    border-right: 1px solid rgba(35,27,21,0.14);
+
+    box-shadow:
+            8px 0 40px rgba(43,31,22,0.06);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR — FLOATING GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .topbar {
+
+    background:
+            rgba(235,230,221,0.58);
+
+    backdrop-filter: blur(32px) saturate(125%);
+    -webkit-backdrop-filter: blur(32px) saturate(125%);
+
+    border-bottom:
+            1px solid rgba(30,23,18,0.13);
+
+    box-shadow:
+            0 8px 30px rgba(44,32,23,0.05);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV ITEMS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .nav-item {
+
+    color: var(--muted);
+
+    transition:
+            background 450ms ease,
+            color 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="light"] .nav-item:hover {
+
+    background:
+            rgba(255,255,255,0.32);
+
+    color: var(--text);
+
+    transform: translateX(3px);
+}
+
+
+[data-theme="light"] .nav-item.active {
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.42),
+                    rgba(255,255,255,0.12)
+            );
+
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(53,24,18,0.20);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.65),
+            0 8px 20px rgba(45,30,20,0.06);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   USER CHIP — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .sidebar-user {
+
+    background:
+            rgba(255,255,255,0.27);
+
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+    border:
+            1px solid rgba(30,23,18,0.13);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.55),
+            0 10px 28px rgba(40,28,20,0.06);
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            box-shadow 500ms ease;
+}
+
+
+[data-theme="light"] .sidebar-user:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.72),
+            0 16px 36px rgba(40,28,20,0.09);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .sidebar-search {
+
+    background:
+            rgba(255,255,255,0.28);
+
+    backdrop-filter: blur(20px);
+
+    border:
+            1px solid rgba(30,23,18,0.14);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.58);
+
+    transition:
+            background 450ms ease,
+            border-color 450ms ease,
+            box-shadow 450ms ease;
+}
+
+
+[data-theme="light"] .sidebar-search:hover {
+
+    background:
+            rgba(255,255,255,0.42);
+
+    border-color:
+            rgba(53,24,18,0.24);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.78),
+            0 8px 24px rgba(45,30,20,0.07);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NOTE ROWS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .note-row {
+
+    transition:
+            background 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="light"] .note-row:hover {
+
+    background:
+            rgba(255,255,255,0.26);
+
+    transform: translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   WORKSPACE CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .ws-card {
+
+    transition:
+            background 450ms ease,
+            transform 500ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="light"] .ws-card:hover {
+
+    background:
+            rgba(255,255,255,0.28);
+
+    transform: translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUTS — FROSTED GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select,
+[data-theme="light"] .form-input {
+
+    background:
+            rgba(255,255,255,0.30);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border:
+            1px solid rgba(29,22,17,0.17);
+
+    color:
+            var(--text);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.60),
+            inset 0 -1px 2px rgba(40,28,20,0.04);
+
+    transition:
+            background 450ms ease,
+            border-color 450ms ease,
+            box-shadow 450ms ease;
+}
+
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] .form-input:focus {
+
+    background:
+            rgba(255,255,255,0.46);
+
+    border-color:
+            rgba(53,24,18,0.38);
+
+    box-shadow:
+
+            inset 0 1px 0 rgba(255,255,255,0.75),
+
+            0 0 0 4px rgba(53,24,18,0.06),
+
+            0 12px 30px rgba(42,29,21,0.07);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR BUTTONS — SOFT GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .topbar-icon-btn {
+
+    background:
+            rgba(255,255,255,0.28);
+
+    backdrop-filter: blur(18px);
+
+    border:
+            1px solid rgba(30,23,18,0.14);
+
+    color:
+            var(--muted);
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            background 450ms ease,
+            box-shadow 450ms ease;
+}
+
+
+[data-theme="light"] .topbar-icon-btn:hover {
+
+    background:
+            rgba(255,255,255,0.44);
+
+    transform:
+            translateY(-2px);
+
+    box-shadow:
+            0 10px 25px rgba(43,30,21,0.08);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MODALS — DEEP GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .infera-modal .modal-content,
+[data-theme="light"] .search-box {
+
+    background:
+            linear-gradient(
+                    145deg,
+                    rgba(250,247,241,0.72),
+                    rgba(224,217,207,0.56)
+            );
+
+    backdrop-filter:
+            blur(38px) saturate(120%);
+
+    -webkit-backdrop-filter:
+            blur(38px) saturate(120%);
+
+    border:
+            1px solid rgba(30,23,18,0.17);
+
+    box-shadow:
+
+            inset 0 1px 0 rgba(255,255,255,0.72),
+
+            0 42px 104px rgba(35,25,18,0.18),
+
+            0 10px 30px rgba(35,25,18,0.09);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVITY / FEEDS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .activity-item {
+
+    transition:
+            background 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="light"] .activity-item:hover {
+
+    background:
+            rgba(255,255,255,0.24);
+
+    transform:
+            translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS — SOFT PHYSICAL FEEL
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] button,
+[data-theme="light"] .btn {
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            box-shadow 500ms ease,
+            background 450ms ease,
+            border-color 450ms ease;
+}
+
+
+[data-theme="light"] button:hover,
+[data-theme="light"] .btn:hover {
+
+    transform:
+            translateY(-2px);
+
+    box-shadow:
+            0 12px 28px rgba(42,29,21,0.09);
+}
+
+
+[data-theme="light"] button:active,
+[data-theme="light"] .btn:active {
+
+    transform:
+            translateY(0)
+            scale(0.985);
+
+    transition-duration: 150ms;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(53,24,18,0.48),
+                    rgba(53,24,18,0.20)
+            );
+
+    border:
+            2px solid transparent;
+
+    background-clip:
+            padding-box;
+
+    border-radius:
+            999px;
+}
+
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+
+    background:
+            var(--accent);
+
+    background-clip:
+            padding-box;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    [data-theme="light"] body::before,
+    [data-theme="light"] body::after {
+
+        animation: none !important;
+    }
+
+    [data-theme="light"] .card:hover,
+    [data-theme="light"] .panel:hover,
+    [data-theme="light"] .dash-panel:hover,
+    [data-theme="light"] .stat-card:hover,
+    [data-theme="light"] .nav-item:hover,
+    [data-theme="light"] .note-row:hover,
+    [data-theme="light"] .ws-card:hover,
+    [data-theme="light"] .activity-item:hover,
+    [data-theme="light"] button:hover {
+
+        transform: none !important;
+    }
+}
+[data-theme="light"] body {
+    background:
+            radial-gradient(
+                    circle at 15% 10%,
+                    rgba(143, 45, 2, 0.07),
+                    transparent 28%
+            ),
+            radial-gradient(
+                    circle at 85% 80%,
+                    rgba(35, 22, 18, 0.06),
+                    transparent 30%
+            ),
+
+            repeating-linear-gradient(
+                    45deg,
+                    #ded9cf 0px,
+                    #ded9cf 42px,
+                    #cec7ba 43px,
+                    #cec7ba 44px
+            );
+
+    background-size:
+            100% 100%,
+            100% 100%,
+            200px 190px,
+            180px 180px;
+
+    background-attachment: fixed;
+
+    animation: inferaLightDrift 95s linear infinite;
+}
+
+@keyframes inferaLightDrift {
+    from {
+        background-position:
+                0 0,
+                0 0,
+                0 0,
+                0 0;
+    }
+
+    to {
+        background-position:
+                0 0,
+                0 0,
+                400px -300px,
+                180px 180px;
+    }
 }

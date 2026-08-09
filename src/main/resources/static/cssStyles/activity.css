@@ -21,14 +21,15 @@
 
 .act-stat-card {
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 3px solid var(--border);
     border-radius: var(--radius);
     padding: 22px;
     text-align: center;
+    transition: border-color 0.25s;
 }
 
 .act-stat-card:hover {
-    border-color: rgba(234, 88, 12, 0.2);
+    border-color: var(--accent);
 }
 .asc-icon {
     width: 42px;
@@ -52,7 +53,10 @@
     color: transparent;
     -webkit-text-stroke: 0.5px var(--text);
 }
-
+[data-theme="light"] .asc-value{
+    color: var(--text);
+    -webkit-text-stroke: 0;
+}
 .asc-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
 
 .streak-card { display: flex; flex-direction: column; align-items: center; }
@@ -89,6 +93,11 @@
     color: transparent;
     -webkit-text-stroke: 0.5px var(--text);
 }
+[data-theme="light"] .streak-num{
+    color: var(--text);
+    -webkit-text-stroke: 0;
+}
+
 
 .streak-label { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 .streak-caption { font-size: 0.82rem; color: var(--muted); margin-top: 14px; display: flex; align-items: center; gap: 6px; }
