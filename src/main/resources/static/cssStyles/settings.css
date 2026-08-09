@@ -25,16 +25,19 @@
 .theme-option-name {
     font-size: 0.8rem;
     font-weight: 600;
-    /*color: var(--text);*/
+     font-style: oblique;
     text-align: center;
+    color: var(--muted);
+    font-family: var(--font-mono), serif;
 }
 
 [data-theme="dark"] .theme-option-name:nth-child(-n+1) {
-    color: var(--text);
+    color: var(--muted);
+
 }
 
 [data-theme="light"] .theme-option-name:nth-child(-n+1) {
-    color: white;
+    color: var(--muted);
 
 }
 .theme-option:hover{

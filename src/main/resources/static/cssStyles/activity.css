@@ -68,7 +68,14 @@
     transform: rotate(-90deg);
 }
 
-.ring-track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+.ring-track {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.06);
+    stroke-width: 8;
+}
+[data-theme="light"] .ring-track{
+    stroke: var(--border);
+}
 
 .ring-fill {
     fill: none;
