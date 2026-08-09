@@ -589,12 +589,12 @@ button { font-family: var(--font-body); }
 }
 .notes-scroll {
     max-height: 550px;
-    overflow-y: auto;
+    overflow-y: clip;
 }
 
 .ws-scroll {
     max-height: 260px;
-    overflow-y: auto;
+    overflow-y: clip;
 }
 /* ─── NOTE ROWS ─────────────────────── */
 .note-row {
@@ -707,8 +707,14 @@ button { font-family: var(--font-body); }
     stroke: var(--muted);
     r: 6;
 }
-.chart-grid-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
 
+.chart-grid-line {
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 1;
+}
+[data-theme="light"] .chart-grid-line, [data-theme="light"] .chart-grid-line-v{
+    stroke: var(--bg);
+}
 .chart-tooltip {
     position: absolute;
     top: -6px;
@@ -857,7 +863,7 @@ button { font-family: var(--font-body); }
 }
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover,
-.search-result-item.focused { background: rgba(234,88,12,0.07); }
+.search-result-item.focused { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .sri-icon {
     width: 32px; height: 32px; border-radius: 7px;
     display: flex; align-items: center; justify-content: center;
@@ -865,7 +871,7 @@ button { font-family: var(--font-body); }
 }
 
 .sri-icon.note {
-    background: rgba(234,88,12,0.12);
+    background: var(--accent-hover);
     color: var(--accent);
 }
 
@@ -1086,7 +1092,7 @@ button { font-family: var(--font-body); }
 .act-icon.danger { background: rgba(239,68,68,0.12); color: #f87171; }
 .activity-feed-scroll {
     max-height: 360px;
-    overflow-y: auto;
+    overflow-y: clip;
 }
 
 
@@ -1177,7 +1183,19 @@ button { font-family: var(--font-body); }
    and gradient-filled so they read as ambient light rather than
    hard UI shapes.
    ═══════════════════════════════════════════════════════════════ */
+/* html needs its own background — data-theme lives here, not on body,
+   and rubber-band overscroll exposes html's canvas beyond body's edges */
 
+html[data-theme="light"] {
+    background: #050608;
+}
+
+/* also stops the rubber-band bounce from revealing white at all */
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+    overscroll-behavior-y: none;
+}
 [data-theme="light"] body::before {
 
     content: "";
@@ -1390,6 +1408,7 @@ button { font-family: var(--font-body); }
             0 30px 74px rgba(47,34,24,0.13),
 
             0 6px 18px rgba(47,34,24,0.07);
+
 }
 
 
@@ -1605,26 +1624,13 @@ button { font-family: var(--font-body); }
 [data-theme="light"] select,
 [data-theme="light"] .form-input {
 
-    background:
-            rgba(255,255,255,0.30);
+    background: transparent;
 
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    color: var(--text);
 
-    border:
-            1px solid rgba(29,22,17,0.17);
-
-    color:
-            var(--text);
-
-    box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.60),
-            inset 0 -1px 2px rgba(40,28,20,0.04);
-
-    transition:
-            background 450ms ease,
-            border-color 450ms ease,
-            box-shadow 450ms ease;
+    transition: background 450ms ease,
+    border-color 450ms ease,
+    box-shadow 450ms ease;
 }
 
 
@@ -1633,19 +1639,10 @@ button { font-family: var(--font-body); }
 [data-theme="light"] select:focus,
 [data-theme="light"] .form-input:focus {
 
-    background:
-            rgba(255,255,255,0.46);
 
-    border-color:
-            rgba(53,24,18,0.38);
+    border-bottom-color: rgba(53, 24, 18, 0.38);
 
-    box-shadow:
 
-            inset 0 1px 0 rgba(255,255,255,0.75),
-
-            0 0 0 4px rgba(53,24,18,0.06),
-
-            0 12px 30px rgba(42,29,21,0.07);
 }
 
 
@@ -1885,4 +1882,659 @@ button { font-family: var(--font-body); }
                 400px -300px,
                 180px 180px;
     }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   INFERA — DARK MODE
+   STARFIELD / SOFT INDIGO GLASS
+   Everything below applies ONLY to dark mode.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE FOUNDATION
+   ───────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] {
+    --bg:           #050608;
+    --secondary:    #0f1115;
+    --card:         #16181d;
+
+    --accent:       #6366f1;
+    --accent-hover: #4f46e5;
+
+    --text:         #f1f5f9;
+    --muted:        #8b93a1;
+
+    --border:       rgba(255,255,255,0.06);
+
+    --glass-white:  rgba(255,255,255,0.04);
+    --glass-dark:   rgba(0,0,0,0.35);
+
+    --glass-shadow:
+            0 24px 70px rgba(0,0,0,0.55),
+            0 4px 16px rgba(0,0,0,0.35);
+
+    --glass-highlight:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            inset 0 -1px 0 rgba(0,0,0,0.30);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   BODY — NIGHT SKY CANVAS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] body {
+
+    background:
+
+        /* soft indigo glow, upper-left */
+            radial-gradient(
+                    circle at 18% 12%,
+                    rgba(99, 102, 241, 0.10),
+                    transparent 32%
+            ),
+
+                /* faint warm ember, lower-right */
+            radial-gradient(
+                    circle at 85% 88%,
+                    rgba(99, 60, 41, 0.06),
+                    transparent 34%
+            ),
+
+                /* star layer — small dots */
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Ccircle cx='20' cy='30' r='1.1' fill='white' opacity='0.55'/%3E%3Ccircle cx='80' cy='12' r='0.8' fill='white' opacity='0.35'/%3E%3Ccircle cx='140' cy='55' r='1.4' fill='white' opacity='0.65'/%3E%3Ccircle cx='200' cy='20' r='0.9' fill='white' opacity='0.4'/%3E%3Ccircle cx='45' cy='95' r='0.7' fill='white' opacity='0.3'/%3E%3Ccircle cx='110' cy='120' r='1.2' fill='white' opacity='0.55'/%3E%3Ccircle cx='175' cy='105' r='0.8' fill='white' opacity='0.4'/%3E%3Ccircle cx='225' cy='140' r='1.1' fill='white' opacity='0.5'/%3E%3Ccircle cx='15' cy='160' r='0.9' fill='white' opacity='0.35'/%3E%3Ccircle cx='70' cy='185' r='1.3' fill='white' opacity='0.6'/%3E%3Ccircle cx='130' cy='200' r='0.7' fill='white' opacity='0.3'/%3E%3Ccircle cx='190' cy='215' r='1.0' fill='white' opacity='0.45'/%3E%3Ccircle cx='230' cy='195' r='0.8' fill='white' opacity='0.35'/%3E%3Ccircle cx='95' cy='60' r='0.6' fill='white' opacity='0.25'/%3E%3Ccircle cx='160' cy='170' r='0.9' fill='white' opacity='0.4'/%3E%3C/svg%3E"),
+
+                /* base */
+            linear-gradient(
+                    160deg,
+                    #050608 0%,
+                    #0a0b0e 55%,
+                    #0f1115 100%
+            );
+
+    background-size:
+            100% 100%,
+            100% 100%,
+            240px 240px,
+            100% 100%;
+
+    background-attachment: fixed;
+
+    animation: inferaStarDrift 220s linear infinite;
+
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+/* second, larger/sparser star layer drifting the opposite way,
+   for parallax depth */
+
+[data-theme="dark"] body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    opacity: 0.6;
+
+    background:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'%3E%3Ccircle cx='30' cy='40' r='1.6' fill='%236366f1' opacity='0.5'/%3E%3Ccircle cx='120' cy='90' r='1.0' fill='white' opacity='0.4'/%3E%3Ccircle cx='210' cy='30' r='1.3' fill='white' opacity='0.45'/%3E%3Ccircle cx='300' cy='110' r='1.7' fill='%236366f1' opacity='0.4'/%3E%3Ccircle cx='60' cy='190' r='1.1' fill='white' opacity='0.35'/%3E%3Ccircle cx='170' cy='240' r='1.4' fill='white' opacity='0.5'/%3E%3Ccircle cx='260' cy='200' r='1.0' fill='white' opacity='0.3'/%3E%3Ccircle cx='330' cy='270' r='1.5' fill='%236366f1' opacity='0.35'/%3E%3Ccircle cx='90' cy='320' r='1.2' fill='white' opacity='0.4'/%3E%3Ccircle cx='250' cy='330' r='1.0' fill='white' opacity='0.3'/%3E%3C/svg%3E");
+
+    background-size: 360px 360px;
+
+    animation: inferaStarDriftReverse 300s linear infinite;
+}
+
+
+/* gentle twinkle pulse over the whole starfield */
+
+[data-theme="dark"] body::after {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    background: radial-gradient(
+            ellipse at 50% 40%,
+            rgba(99,102,241,0.05),
+            transparent 60%
+    );
+
+    animation: inferaTwinkle 8s ease-in-out infinite alternate;
+}
+
+
+@keyframes inferaStarDrift {
+    from {
+        background-position:
+                0 0,
+                0 0,
+                0 0,
+                0 0;
+    }
+    to {
+        background-position:
+                0 0,
+                0 0,
+                240px 240px,
+                0 0;
+    }
+}
+
+
+@keyframes inferaStarDriftReverse {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -360px 200px;
+    }
+}
+
+
+@keyframes inferaTwinkle {
+    0% {
+        opacity: 0.55;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .panel,
+[data-theme="dark"] .dash-panel,
+[data-theme="dark"] .stat-card {
+
+    background:
+            linear-gradient(
+                    150deg,
+                    rgba(255,255,255,0.035),
+                    rgba(255,255,255,0.01)
+            ),
+            var(--card);
+
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+            var(--glass-highlight),
+            var(--glass-shadow);
+
+    position: relative;
+    isolation: isolate;
+
+    transition:
+            transform 600ms cubic-bezier(0.19, 1, 0.22, 1),
+            box-shadow 600ms cubic-bezier(0.19, 1, 0.22, 1),
+            border-color 450ms ease,
+            background 550ms ease;
+}
+
+
+[data-theme="dark"] .card::before,
+[data-theme="dark"] .panel::before,
+[data-theme="dark"] .dash-panel::before,
+[data-theme="dark"] .stat-card::before {
+
+    content: "";
+
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(99,102,241,0.06),
+                    transparent 40%,
+                    transparent 75%,
+                    rgba(0,0,0,0.25)
+            );
+
+    opacity: 0.9;
+    z-index: -1;
+}
+
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .panel:hover,
+[data-theme="dark"] .dash-panel:hover,
+[data-theme="dark"] .stat-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(99,102,241,0.35);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            0 32px 80px rgba(0,0,0,0.60),
+            0 0 0 1px rgba(99,102,241,0.08),
+            0 8px 24px rgba(99,102,241,0.10);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .sidebar {
+
+    background:
+            linear-gradient(
+                    165deg,
+                    rgba(22,24,29,0.75),
+                    rgba(10,11,14,0.55)
+            );
+
+    backdrop-filter: blur(30px) saturate(130%);
+    -webkit-backdrop-filter: blur(30px) saturate(130%);
+
+    border-right: 1px solid var(--border);
+
+    box-shadow:
+            8px 0 40px rgba(0,0,0,0.35);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR — FLOATING GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .topbar {
+
+    background: rgba(15,17,21,0.62);
+
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+
+    border-bottom: 1px solid var(--border);
+
+    box-shadow:
+            0 8px 30px rgba(0,0,0,0.30);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV ITEMS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .nav-item {
+
+    color: var(--muted);
+
+    transition:
+            background 450ms ease,
+            color 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="dark"] .nav-item:hover {
+
+    background: rgba(255,255,255,0.035);
+    color: var(--text);
+    transform: translateX(3px);
+}
+
+
+[data-theme="dark"] .nav-item.active {
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(99,102,241,0.16),
+                    rgba(99,102,241,0.04)
+            );
+
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(99,102,241,0.30);
+
+    
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   USER CHIP — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .sidebar-user {
+
+    background: rgba(255,255,255,0.03);
+
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 10px 28px rgba(0,0,0,0.30);
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            box-shadow 500ms ease;
+}
+
+
+[data-theme="dark"] .sidebar-user:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            0 16px 36px rgba(99,102,241,0.14);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH — GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .sidebar-search {
+
+    background: rgba(255,255,255,0.03);
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid var(--border);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04);
+
+    transition:
+            background 450ms ease,
+            border-color 450ms ease,
+            box-shadow 450ms ease;
+}
+
+
+[data-theme="dark"] .sidebar-search:hover {
+
+    background: rgba(255,255,255,0.05);
+
+    border-color: rgba(99,102,241,0.35);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 8px 24px rgba(99,102,241,0.10);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NOTE ROWS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .note-row {
+
+    transition:
+            background 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="dark"] .note-row:hover {
+
+    background: rgba(255,255,255,0.03);
+    transform: translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   WORKSPACE CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .ws-card {
+
+    transition:
+            background 450ms ease,
+            transform 500ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="dark"] .ws-card:hover {
+
+    background: rgba(255,255,255,0.03);
+    transform: translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUTS — FROSTED GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] .form-input {
+
+    background: transparent;
+
+    color: var(--text);
+
+    transition: background 450ms ease,
+    border-color 450ms ease,
+    box-shadow 450ms ease;
+}
+
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] .form-input:focus {
+
+
+    border-bottom-color: rgba(53, 24, 18, 0.38);
+
+
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR BUTTONS — SOFT GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .topbar-icon-btn {
+
+    background: rgba(255,255,255,0.03);
+
+    backdrop-filter: blur(18px);
+
+    border: 1px solid var(--border);
+
+    color: var(--muted);
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            background 450ms ease,
+            box-shadow 450ms ease;
+}
+
+
+[data-theme="dark"] .topbar-icon-btn:hover {
+
+    background: rgba(99,102,241,0.10);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 10px 25px rgba(99,102,241,0.16);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MODALS — DEEP GLASS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .infera-modal .modal-content,
+[data-theme="dark"] .search-box {
+
+    background:
+            linear-gradient(
+                    165deg,
+                    rgba(22,24,29,0.88),
+                    rgba(8,9,12,0.80)
+            );
+
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+
+    border: 1px solid rgba(99,102,241,0.18);
+
+    box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 44px 110px rgba(0,0,0,0.65),
+            0 10px 30px rgba(0,0,0,0.40);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVITY / FEEDS
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .activity-item {
+
+    transition:
+            background 450ms ease,
+            transform 450ms cubic-bezier(0.19,1,0.22,1);
+}
+
+
+[data-theme="dark"] .activity-item:hover {
+
+    background: rgba(255,255,255,0.03);
+    transform: translateX(3px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS — SOFT PHYSICAL FEEL
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] button,
+[data-theme="dark"] .btn {
+
+    transition:
+            transform 500ms cubic-bezier(0.19,1,0.22,1),
+            box-shadow 500ms ease,
+            background 450ms ease,
+            border-color 450ms ease;
+}
+
+
+[data-theme="dark"] button:hover,
+[data-theme="dark"] .btn:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 12px 28px rgba(99,102,241,0.18);
+}
+
+
+[data-theme="dark"] button:active,
+[data-theme="dark"] .btn:active {
+
+    transform: translateY(0) scale(0.985);
+    transition-duration: 150ms;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(99,102,241,0.55),
+                    rgba(99,102,241,0.20)
+            );
+
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+}
+
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+
+    background: var(--accent);
+    background-clip: padding-box;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: transparent;
+    border: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    [data-theme="dark"] body,
+    [data-theme="dark"] body::before,
+    [data-theme="dark"] body::after {
+
+        animation: none !important;
+    }
+
+    [data-theme="dark"] .card:hover,
+    [data-theme="dark"] .panel:hover,
+    [data-theme="dark"] .dash-panel:hover,
+    [data-theme="dark"] .stat-card:hover,
+    [data-theme="dark"] .nav-item:hover,
+    [data-theme="dark"] .note-row:hover,
+    [data-theme="dark"] .ws-card:hover,
+    [data-theme="dark"] .activity-item:hover,
+    [data-theme="dark"] button:hover {
+
+        transform: none !important;
+    }
+}
+
+
+/* html needs its own background — data-theme lives here, not on body,
+   and rubber-band overscroll exposes html's canvas beyond body's edges */
+
+html[data-theme="dark"] {
+    background: #050608;
+}
+
+/* also stops the rubber-band bounce from revealing white at all */
+
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+    overscroll-behavior-y: none;
 }
