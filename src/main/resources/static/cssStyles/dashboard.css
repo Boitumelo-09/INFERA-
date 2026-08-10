@@ -119,7 +119,7 @@ button { font-family: var(--font-body); }
 
 .cursor-ring {
     width: 32px; height: 32px;
-    border: 1.5px solid var(--accent-hover);
+    border: 1.5px solid var(--accent);
     transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
     box-shadow: 0 0 0 1.5px var(--accent);
 }
@@ -589,13 +589,20 @@ button { font-family: var(--font-body); }
 }
 .notes-scroll {
     max-height: 550px;
-    overflow-y: clip;
+    overflow-y: auto;
 }
 
 .ws-scroll {
     max-height: 260px;
-    overflow-y: clip;
+    overflow-y: auto;
 }
+
+[data-theme="dark"] .notes-scroll, [data-theme="dark"] .ws-scroll, [data-theme="dark"] .activity-feed-scroll {
+    overflow-x: clip;
+}[data-theme="light"] .notes-scroll, [data-theme="light"] .ws-scroll, [data-theme="light"] .activity-feed-scroll {
+    overflow-x: clip;
+}
+
 /* ─── NOTE ROWS ─────────────────────── */
 .note-row {
     display: flex;
@@ -1092,7 +1099,7 @@ button { font-family: var(--font-body); }
 .act-icon.danger { background: rgba(239,68,68,0.12); color: #f87171; }
 .activity-feed-scroll {
     max-height: 360px;
-    overflow-y: clip;
+    overflow-y: auto;
 }
 
 
@@ -1187,7 +1194,7 @@ button { font-family: var(--font-body); }
    and rubber-band overscroll exposes html's canvas beyond body's edges */
 
 html[data-theme="light"] {
-    background: #050608;
+    background: var(--bg);
 }
 
 /* also stops the rubber-band bounce from revealing white at all */
@@ -1325,15 +1332,8 @@ html[data-theme="light"] body {
 [data-theme="light"] .dash-panel,
 [data-theme="light"] .stat-card {
 
-    background:
+    background: linear-gradient(135deg, rgba(255,255,255,0.38), rgba(255,255,255,0.10));
 
-            linear-gradient(
-                    135deg,
-                    rgba(255,255,255,0.38),
-                    rgba(255,255,255,0.10)
-            ),
-
-            var(--card);
 
     backdrop-filter: blur(30px) saturate(118%);
     -webkit-backdrop-filter: blur(30px) saturate(118%);
@@ -1400,7 +1400,6 @@ html[data-theme="light"] body {
     transform: translateY(-3px);
 
     border-color: rgba(53,24,18,0.28);
-
     box-shadow:
 
             inset 0 1px 0 rgba(255,255,255,0.80),
@@ -2216,7 +2215,7 @@ html[data-theme="light"] body {
 
     border: 1px solid rgba(99,102,241,0.30);
 
-    
+
 }
 
 
@@ -2529,7 +2528,7 @@ html[data-theme="light"] body {
    and rubber-band overscroll exposes html's canvas beyond body's edges */
 
 html[data-theme="dark"] {
-    background: #050608;
+    background: var(--bg);
 }
 
 /* also stops the rubber-band bounce from revealing white at all */
