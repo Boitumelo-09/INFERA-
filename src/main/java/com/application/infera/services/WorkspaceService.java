@@ -1,6 +1,6 @@
 package com.application.infera.services;
 
-import ch.qos.logback.classic.Logger;
+
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
@@ -8,6 +8,9 @@ import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
+import com.application.infera.repositories.ActivityRepository;
+import com.application.infera.repositories.NoteRepository;
+import com.application.infera.repositories.ResourceRepository;
 import com.application.infera.repositories.WorkspaceRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,16 @@ public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
     private final ActivityService activityService;
+    private final NoteRepository noteRepository;
+    private final ResourceRepository resourceRepository;
+    private final ActivityRepository activityRepository;
 
-    public WorkspaceService(WorkspaceRepository workspaceRepository, ActivityService activityService) {
+    public WorkspaceService(WorkspaceRepository workspaceRepository, ActivityService activityService, NoteRepository noteRepository, ResourceRepository resourceRepository, ActivityRepository activityRepository) {
         this.workspaceRepository = workspaceRepository;
         this.activityService = activityService;
+        this.noteRepository = noteRepository;
+        this.resourceRepository = resourceRepository;
+        this.activityRepository = activityRepository;
     }
 
     // Create a new workspace linked to the logged-in user
@@ -29,9 +38,9 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
-      if(countWorkspacesForUser(user) > 8){
-          throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
-      }
+        if (countWorkspacesForUser(user) > 8) {
+            throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
+        }
 
         Workspace workspace = new Workspace();
         workspace.setName(request.getName());
@@ -82,10 +91,22 @@ public class WorkspaceService {
     // Delete a workspace — only if it belongs to this user
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = getWorkspaceForUser(id, user);
+        var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
+
+        for (var note : wsNotes) {
+            resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
+            note.getTags().clear();
+        }
+        noteRepository.saveAll(wsNotes);
+        noteRepository.deleteAll(wsNotes);
+
+        activityRepository.deleteAll(activityRepository.findByWorkspace(workspace));
+
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }
-    public long countAllWorkspaces(){
+
+    public long countAllWorkspaces() {
         return workspaceRepository.count();
     }
 }
