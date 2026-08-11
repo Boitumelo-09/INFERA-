@@ -7,6 +7,7 @@ import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
+import com.application.infera.repositories.ResourceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,12 +22,14 @@ public class NoteService {
     private final WorkspaceService workspaceService;
     private final TagService tagService;
     private final ActivityService activityService;
+    private final ResourceRepository resourceRepository;
 
-    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService, ActivityService activityService) {
+    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService, ActivityService activityService, ResourceRepository resourceRepository) {
         this.noteRepository = noteRepository;
         this.workspaceService = workspaceService;
         this.tagService = tagService;
         this.activityService = activityService;
+        this.resourceRepository = resourceRepository;
     }
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
@@ -110,6 +113,10 @@ public class NoteService {
         Note note = getNoteForUser(id, user);
         String title = note.getTitle();
         Workspace ws = note.getWorkspace();
+
+        resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
+        note.getTags().clear();
+        noteRepository.save(note);
         noteRepository.delete(note);
         activityService.log(user, ActivityType.NOTE_DELETED, title, ws);
     }

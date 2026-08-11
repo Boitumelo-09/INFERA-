@@ -54,6 +54,7 @@ public class TagService {
         if (query == null || query.isBlank()) return List.of();
         return tagRepository.findTop10ByNameContainingIgnoreCaseOrderByNameAsc(normalize(query));
     }
+
     public long countTagsForUser(User user) {
         return tagRepository.countDistinctTagsForUser(user);
     }

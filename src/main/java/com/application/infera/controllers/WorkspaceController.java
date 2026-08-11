@@ -7,12 +7,12 @@ import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.repositories.UserRepository;
-import com.application.infera.security.CustomUserDetails;
+import com.application.infera.services.CurrentUserService;
 import com.application.infera.services.NoteService;
 import com.application.infera.services.ResourceService;
 import com.application.infera.services.WorkspaceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,35 +22,32 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/workspaces")
+@RequiredArgsConstructor
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
     private final UserRepository userRepository;
     private final NoteService noteService;
     private final ResourceService resourceService;
+    private final CurrentUserService currentUserService;
 
-    public WorkspaceController(WorkspaceService workspaceService, UserRepository userRepository, NoteService noteService, ResourceService resourceService) {
-        this.workspaceService = workspaceService;
-        this.userRepository = userRepository;
-        this.noteService = noteService;
-        this.resourceService = resourceService;
-    }
 
     // GET /workspaces — show all workspaces for the logged-in user
     @GetMapping
     public String listWorkspaces(@AuthenticationPrincipal Object principal, Model model) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
+
         if (user == null) return "redirect:/signin";
 
         List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
-        model.addAttribute("pageTitle","Workspaces — INFERA");
+        model.addAttribute("pageTitle", "Workspaces — INFERA");
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
         model.addAttribute("workspaceCount", workspaces.size());
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
-        model.addAttribute("wsNoteCount",noteService.getNoteCountsByWorkspace(user));
-        model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
+        model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
+        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
         return "workspaces";
     }
 
@@ -59,7 +56,8 @@ public class WorkspaceController {
     public String createWorkspace(@AuthenticationPrincipal Object principal,
                                   @ModelAttribute WorkspaceRequest workspaceRequest,
                                   RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
+
         if (user == null) return "redirect:/signin";
 
         try {
@@ -78,7 +76,8 @@ public class WorkspaceController {
                                   @PathVariable Long id,
                                   @ModelAttribute WorkspaceRequest workspaceRequest,
                                   RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
+
         if (user == null) return "redirect:/signin";
 
         try {
@@ -96,7 +95,7 @@ public class WorkspaceController {
     public String deleteWorkspace(@AuthenticationPrincipal Object principal,
                                   @PathVariable Long id,
                                   RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         try {
@@ -109,16 +108,5 @@ public class WorkspaceController {
         return "redirect:/workspaces";
     }
 
-    // Resolves the logged-in user regardless of login method
-    private User resolveUser(Object principal) {
-        if (principal instanceof CustomUserDetails ud) {
-            return userRepository.findById(ud.getUser().getId()).orElse(null);
-        }
-        if (principal instanceof OAuth2User ou) {
-            String email = ou.getAttribute("email");
-            if (email == null) return null;
-            return userRepository.findByEmail(email).orElse(null);
-        }
-        return null;
-    }
+
 }

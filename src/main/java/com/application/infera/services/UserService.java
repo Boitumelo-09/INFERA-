@@ -26,30 +26,31 @@ public class UserService {
     public void registerUserToDatabase(@Valid SignUpRequest signUpRequest) {
         User user = new User();
 
-        if (signUpRequest.getFirstName().isBlank() || signUpRequest.getLastName().isBlank()){
+        if (signUpRequest.getFirstName().isBlank() || signUpRequest.getLastName().isBlank()) {
             throw new UserNameOrLastNameCantBeNullException("Required!");
         }
-        if (signUpRequest.getFirstName().codePoints().anyMatch(Character::isEmoji) || signUpRequest.getLastName().codePoints().anyMatch(Character::isEmoji)){
+        if (signUpRequest.getFirstName().codePoints().anyMatch(Character::isEmoji) || signUpRequest.getLastName().codePoints().anyMatch(Character::isEmoji)) {
             throw new UserNameOrLastNameCantBeNullException("Emoji Not Allowed!");
         }
-        user.setFirstName(signUpRequest.getFirstName().substring(0,1).toUpperCase() + signUpRequest.getFirstName().substring(1).toLowerCase());
-        user.setLastName(signUpRequest.getLastName().substring(0,1).toUpperCase() + signUpRequest.getLastName().substring(1).toLowerCase());
+        user.setFirstName(signUpRequest.getFirstName().substring(0, 1).toUpperCase() + signUpRequest.getFirstName().substring(1).toLowerCase());
+        user.setLastName(signUpRequest.getLastName().substring(0, 1).toUpperCase() + signUpRequest.getLastName().substring(1).toLowerCase());
 
         user.setEmail(signUpRequest.getEmail());
-        if(!signUpRequest.getPassword().equals(signUpRequest.getConfirmPassword())){
-           throw new PasswordsDontMatchException("Passwords Don't Match!");
+        if (!signUpRequest.getPassword().equals(signUpRequest.getConfirmPassword())) {
+            throw new PasswordsDontMatchException("Passwords Don't Match!");
         }
 
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(Role.USER);
 
-        if(userRepository.existsByEmail(user.getEmail())){
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserEmailErrorException("Email already exists!");
         }
 
         userRepository.save(user);
     }
-    public Long countAllUsers(){
+
+    public Long countAllUsers() {
         return userRepository.count();
     }
 }

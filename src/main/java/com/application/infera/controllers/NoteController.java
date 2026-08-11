@@ -6,12 +6,12 @@ import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
-import com.application.infera.security.CustomUserDetails;
+import com.application.infera.services.CurrentUserService;
 import com.application.infera.services.NoteService;
 import com.application.infera.services.ResourceService;
 import com.application.infera.services.WorkspaceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +21,19 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/notes")
+@RequiredArgsConstructor
 public class NoteController {
 
     private final NoteService noteService;
     private final WorkspaceService workspaceService;
     private final UserRepository userRepository;
     private final ResourceService resourceService;
-
-    public NoteController(NoteService noteService, WorkspaceService workspaceService, UserRepository userRepository, ResourceService resourceService) {
-        this.noteService = noteService;
-        this.workspaceService = workspaceService;
-        this.userRepository = userRepository;
-        this.resourceService = resourceService;
-    }
+    private final CurrentUserService currentUserService;
 
     // GET /notes — show all notes across all the user's workspaces
     @GetMapping
     public String listNotes(@AuthenticationPrincipal Object principal, Model model) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         List<Note> notes = noteService.getNotesForUser(user);
@@ -59,7 +54,7 @@ public class NoteController {
     public String createNote(@AuthenticationPrincipal Object principal,
                              @ModelAttribute NoteRequest noteRequest,
                              RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         try {
@@ -78,7 +73,7 @@ public class NoteController {
                              @PathVariable Long id,
                              @ModelAttribute NoteRequest noteRequest,
                              RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         try {
@@ -96,7 +91,7 @@ public class NoteController {
     public String deleteNote(@AuthenticationPrincipal Object principal,
                              @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         try {
@@ -109,16 +104,5 @@ public class NoteController {
         return "redirect:/notes";
     }
 
-    // Resolves the logged-in user regardless of login method
-    private User resolveUser(Object principal) {
-        if (principal instanceof CustomUserDetails ud) {
-            return userRepository.findById(ud.getUser().getId()).orElse(null);
-        }
-        if (principal instanceof OAuth2User ou) {
-            String email = ou.getAttribute("email");
-            if (email == null) return null;
-            return userRepository.findByEmail(email).orElse(null);
-        }
-        return null;
-    }
+
 }

@@ -2,12 +2,9 @@ package com.application.infera.controllers;
 
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
-import com.application.infera.security.CustomUserDetails;
 import com.application.infera.services.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/profile")
@@ -28,13 +24,12 @@ public class ProfileController {
     private final WorkspaceService workspaceService;
     private final NoteService noteService;
     private final ResourceService resourceService;
-
-    @Value("${app.upload-dir:uploads/avatars}")
-    private String uploadDir;
+    private final CurrentUserService currentUserService;
+    private final ProfileService profileService;
 
     @GetMapping
     public String profilePage(@AuthenticationPrincipal Object principal, Model model) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
         model.addAttribute("user", user);
@@ -46,23 +41,18 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-   
+
     public String updateProfile(@AuthenticationPrincipal Object principal,
                                 @RequestParam("firstName") String firstName,
                                 @RequestParam("lastName") String lastName,
                                 @RequestParam(value = "lifeRole", required = false) String lifeRole,
                                 @RequestParam(value = "location", required = false) String location,
                                 @RequestParam(value = "bio", required = false) String bio,
-                                RedirectAttributes redirectAttributes)  {
-        User user = resolveUser(principal);
+                                RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
 
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setLifeRole(lifeRole);
-        user.setLocation(location);
-        user.setBio(bio);
-        userRepository.save(user);
+        profileService.updateProfile(user, firstName, lastName, lifeRole, location, bio);
         redirectAttributes.addFlashAttribute("toast", "Profile updated");
         return "redirect:/profile";
     }
@@ -71,53 +61,23 @@ public class ProfileController {
     @ResponseBody
     public Map<String, Object> uploadAvatar(@AuthenticationPrincipal Object principal,
                                             @RequestParam("file") MultipartFile file) throws IOException {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return Map.of("success", false, "message", "Not authenticated");
 
-        String contentType = file.getContentType();
-        boolean validType = contentType != null &&
-                (contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/webp"));
-        if (!validType) return Map.of("success", false, "message", "Only JPG, PNG, or WEBP allowed");
-        if (file.getSize() > 3 * 1024 * 1024) return Map.of("success", false, "message", "Max size is 3MB");
-
-        Path dir = Paths.get(uploadDir);
-        Files.createDirectories(dir);
-
-        String ext = contentType.equals("image/png") ? "png" : contentType.equals("image/webp") ? "webp" : "jpg";
-        String filename = user.getId() + "-" + UUID.randomUUID() + "." + ext;
-        Files.copy(file.getInputStream(), dir.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-
-        user.setAvatarUrl("/uploads/avatars/" + filename);
-        userRepository.save(user);
-
-        return Map.of("success", true, "avatarUrl", user.getAvatarUrl());
+        var result = profileService.uploadAvatar(user, file);
+        return result.success()
+                ? Map.of("success", true, "avatarUrl", result.avatarUrl())
+                : Map.of("success", false, "message", result.message());
     }
 
-    // same pattern as DashboardController
-    private User resolveUser(Object principal) {
-        if (principal instanceof CustomUserDetails userDetails) {
-            return userRepository.findById(userDetails.getUser().getId()).orElse(null);
-        }
-        if (principal instanceof OAuth2User oAuth2User) {
-            String email = oAuth2User.getAttribute("email");
-            return email == null ? null : userRepository.findByEmail(email).orElse(null);
-        }
-        return null;
-    }
+
     @PostMapping("/avatar/delete")
     @ResponseBody
     public Map<String, Object> deleteAvatar(@AuthenticationPrincipal Object principal) {
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
         if (user == null) return Map.of("success", false, "message", "Not authenticated");
 
-        if (user.getAvatarUrl() != null) {
-            try {
-                Path path = Paths.get(uploadDir, Paths.get(user.getAvatarUrl()).getFileName().toString());
-                Files.deleteIfExists(path);
-            } catch (IOException ignored) {}
-            user.setAvatarUrl(null);
-            userRepository.save(user);
-        }
+        profileService.deleteAvatar(user);
         return Map.of("success", true);
     }
 }

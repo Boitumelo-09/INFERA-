@@ -45,11 +45,7 @@ public class ResourceService {
 
     }
 
-    // All resources for one note (used to populate the View Note modal)
-    public List<Resource> getResourcesForNote(Long noteId, User user) {
-        Note note = noteService.getNoteForUser(noteId, user);
-        return resourceRepository.findByNoteOrderByCreatedAtDesc(note);
-    }
+
     public Map<Long, Long> getResourceCountsByWorkspace(User user) {
         List<Object[]> rows = resourceRepository.countResourcesGroupedByWorkspace(user);
         Map<Long, Long> counts = new HashMap<>();
@@ -58,6 +54,7 @@ public class ResourceService {
         }
         return counts;
     }
+
     // Ownership-scoped single lookup, used before update/delete
     public Resource getResourceForUser(Long id, User user) {
         return resourceRepository.findByIdAndNote_Workspace_User(id, user)
@@ -89,10 +86,12 @@ public class ResourceService {
     public long countResourcesForUser(User user) {
         return resourceRepository.countByNote_Workspace_User(user);
     }
+
     public Map<Long, List<Resource>> getResourcesGroupedByNote(User user) {
         List<Resource> resources = resourceRepository.findByNote_Workspace_UserOrderByCreatedAtDesc(user);
         return resources.stream().collect(Collectors.groupingBy(r -> r.getNote().getId()));
     }
+
     public Map<ResourceCategory, List<Resource>> getResourcesGroupedByCategory(User user) {
         List<Resource> resources = resourceRepository.findByNote_Workspace_UserOrderByUpdatedAtDesc(user);
         Map<ResourceCategory, List<Resource>> grouped = new EnumMap<>(ResourceCategory.class);
