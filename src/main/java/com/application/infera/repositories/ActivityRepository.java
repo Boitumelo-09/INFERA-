@@ -2,6 +2,7 @@ package com.application.infera.repositories;
 
 import com.application.infera.models.Activity;
 import com.application.infera.models.User;
+import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +23,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     List<java.sql.Date> findDistinctActiveDates(@Param("user") User user);
 
     long countByUser(User user);
+
+    List<Activity> findByWorkspace(Workspace workspace);
 }
