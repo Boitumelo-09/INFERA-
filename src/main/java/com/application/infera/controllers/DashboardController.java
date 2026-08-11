@@ -1,56 +1,43 @@
 package com.application.infera.controllers;
 
 import com.application.infera.models.User;
-import com.application.infera.repositories.UserRepository;
-import com.application.infera.security.CustomUserDetails;
 import com.application.infera.services.*;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 @Controller
+@RequiredArgsConstructor
 public class DashboardController {
 
-    private final UserRepository userRepository;
+    private final CurrentUserService currentUserService;
     private final WorkspaceService workspaceService;
     private final NoteService noteService;
     private final TagService tagService;
     private final ResourceService resourceService;
     private final ActivityService activityService;
 
-    public DashboardController(UserRepository userRepository, WorkspaceService workspaceService, NoteService noteService, TagService tagService, ResourceService resourceService, ActivityService activityService) {
-        this.userRepository = userRepository;
-        this.workspaceService = workspaceService;
-        this.noteService = noteService;
-        this.tagService = tagService;
-        this.resourceService = resourceService;
-        this.activityService = activityService;
-    }
-
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal Object principal, Model model, HttpSession session) {
         System.out.println(model.asMap());
-        User user = resolveUser(principal);
+        User user = currentUserService.resolve(principal);
 
         if (user == null) {
             return "redirect:/signin";
         }
 
         model.addAttribute("user", user);
-        model.addAttribute("sessionID", "user.getId()");
         System.out.println(".".repeat(50));
         System.out.println("LOGGED IN USER    : "+ "\u001B[32m" + user.getFirstName() + " " + user.getLastName() + "\u001B[0m");
         System.out.println("Localed Session ID: "+ "\u001B[32m" + user.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
-
         System.out.println(".".repeat(50));
         model.addAttribute("pageTitle","Dashboard — INFERA");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
@@ -69,21 +56,5 @@ public class DashboardController {
         return "dashboard";
     }
 
-    // Handles both form login and OAuth2 login principals
-    private User resolveUser(Object principal) {
-        if (principal instanceof CustomUserDetails userDetails) {
-            // Form login — principal is your CustomUserDetails
-            return userRepository.findById(userDetails.getUser().getId()).orElse(null);
-        }
 
-        if (principal instanceof OAuth2User oAuth2User) {
-            // OAuth2 login — look up user by email from the OAuth2 attributes
-            String email = oAuth2User.getAttribute("email");
-            //if (email == null) return null;
-            return email == null ? null : userRepository.findByEmail(email).orElse(null);
-            //return userRepository.findByEmail(email).orElse(null);
-        }
-
-        return null;
-    }
 }
