@@ -3,6 +3,7 @@ package com.application.infera.controllers;
 import com.application.infera.services.NoteService;
 import com.application.infera.services.UserService;
 import com.application.infera.services.WorkspaceService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,16 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/home")
+@RequiredArgsConstructor
 public class HomePageController {
     private final UserService userService;
     private final NoteService noteService;
     private final WorkspaceService workspaceService;
-
-    public HomePageController(UserService userService, NoteService noteService, WorkspaceService workspaceService) {
-        this.userService = userService;
-        this.noteService = noteService;
-        this.workspaceService = workspaceService;
-    }
 
     @GetMapping
     public String homePage(Model model) {
