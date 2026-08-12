@@ -12,7 +12,7 @@
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}"  />
     <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}"/>
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
-    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/logo.jpg}" href="/app_resources/logo.jpg">
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/infera_logo.ico}">
 </head>
 <body>
 
@@ -26,7 +26,9 @@
 
     <div class="sidebar-logo">
         <a th:href="@{/home}" href="home.html" class="logo-link d-flex align-items-center gap-2">
-            <div class="logo-mark"><i class="bi bi-layers-half"></i></div>
+            <div class="logo-mark">
+                <img th:src="@{/app_resources/logo.svg}" alt="" srcset="" width="150" height="50" class="logo-img">
+            </div>
             <span class="logo-text">INFERA</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
