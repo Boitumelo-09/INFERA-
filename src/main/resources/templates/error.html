@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 
 <head>
     <meta charset="UTF-8">
@@ -8,12 +9,14 @@
     <title>System Error — INFERA</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
 
     <link rel="stylesheet"
           href="/static/cssStyles/dashboard.css"
@@ -26,10 +29,8 @@
           href="/static/cssStyles/notes.css"
           th:href="@{/cssStyles/error.css}">
 
-    <link rel="shortcut icon"
-          type="image/x-icon"
-          href="/app_resources/logo.jpg"
-          th:href="@{/app_resources/logo.jpg}">
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/infera_logo.png}">
+
 </head>
 
 <body>
