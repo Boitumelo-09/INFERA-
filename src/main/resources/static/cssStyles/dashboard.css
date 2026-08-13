@@ -137,12 +137,13 @@ button { font-family: var(--font-body); }
 .logo-mark {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 5rem;
     color: var(--accent);
+
 
     flex-shrink: 0;
 }
@@ -152,6 +153,9 @@ button { font-family: var(--font-body); }
     font-size: 1.85rem;
     letter-spacing: 0.05em;
     color: var(--accent);
+    border-left: 2px solid;
+    border-color: color-mix(in srgb, var(--accent) 10%, transparent);
+    padding-left: 10px;
 }
 .sidebar-close {
     display: none;
