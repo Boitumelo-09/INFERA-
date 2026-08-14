@@ -24,3 +24,11 @@
     cursor: pointer;
     transition: box-shadow 0.2s;
 }
+@media (hover: none) {
+    .cursor-dot{
+        display: none;
+    }
+    .cursor-ring{
+        display: none;
+    }
+}
