@@ -50,6 +50,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             return;
         }
 
+        String avatarUrl = resolveAvatarUrl(oauthUser, provider);
+
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (existingUser.isEmpty()) {
             User user = new User();
@@ -59,6 +61,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             user.setEmail(email);
             user.setRole(Role.USER);
             user.setEnabled(true);
+            user.setAvatarUrl(avatarUrl);
             userRepository.save(user);
         }
 
@@ -66,7 +69,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     // ── ATTRIBUTE RESOLVERS ──────────────────────────────────────────
-
+    private String resolveAvatarUrl(OAuth2User oauthUser, String provider) {
+        if ("google".equals(provider)) return oauthUser.getAttribute("picture");
+        if ("github".equals(provider)) return oauthUser.getAttribute("avatar_url");
+        return null;
+    }
     private String resolveEmail(OAuth2User oauthUser, String provider) {
         // Both Google and GitHub expose "email", but GitHub users
         // can hide it — in that case we fall back to login@github.oauth
