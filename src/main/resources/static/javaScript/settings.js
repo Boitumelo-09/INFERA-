@@ -1,13 +1,3 @@
-function showToast(message, isError = false) {
-    const toast = document.getElementById('inferaToast');
-    const icon = document.getElementById('toastIcon');
-    const msg = document.getElementById('toastMessage');
-    if (!toast) return;
-    msg.textContent = message;
-    icon.classList.toggle('error', isError);
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Theme switching — only present on settings.html, but this file loads sitewide
@@ -54,13 +44,10 @@ if (dot && ring) {
         requestAnimationFrame(animateRing);
     })();
 }
-document.querySelectorAll('a, button, input, label').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-});
-document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
-
+if (dot && ring) {
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+}
 function showToast(message, isError = false) {
     const toast = document.getElementById('inferaToast');
     const icon = document.getElementById('toastIcon');
@@ -73,16 +60,3 @@ function showToast(message, isError = false) {
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarClose = document.getElementById('sidebarClose');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-    function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); document.body.style.overflow = ''; }
-    sidebarToggle?.addEventListener('click', openSidebar);
-    sidebarClose?.addEventListener('click', closeSidebar);
-    sidebarOverlay?.addEventListener('click', closeSidebar);
-    window.addEventListener('resize', () => { if (window.innerWidth >= 992) closeSidebar(); }, { passive: true });
-});
