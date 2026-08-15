@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.documentElement.classList.add('sb-collapsed', 'no-sb-transition');
+        }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${pageTitle}">Activity — INFERA</title>
@@ -50,6 +55,10 @@
         </a>
         <button class="sidebar-close" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
     </div>
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
     <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0"><i class="bi bi-search"></i><span>Search...</span><kbd>⌘K</kbd></div>
     <nav class="sidebar-nav">
         <div class="nav-section-label">Main</div>

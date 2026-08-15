@@ -2,6 +2,11 @@
 <!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.documentElement.classList.add('sb-collapsed', 'no-sb-transition');
+        }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- th:text="${pageTitle} + ' — INFERA'" -->
@@ -54,13 +59,17 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera.</span>
+            <span class="logo-text">infera</span>
         </a>
         <!-- Close button (mobile only) -->
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
+
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+        <i class="bi bi-chevron-left"></i>
+    </button>
 
     <!-- Search shortcut -->
     <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0" aria-label="Open search">
@@ -554,7 +563,9 @@
         showToast('[[${successMessage}]]');
     });
 </script>
-<script src="/static/javaScript/dashboard.js" th:src="@{/javaScript/dashboard.js}"></script>
+
+<script th:src="@{/javaScript/dashboard.js}"></script>
 <script th:src="@{/javaScript/utility.js}"></script>
+
 </body>
 </html>

@@ -11,11 +11,6 @@ if (dot && ring) {
     document.addEventListener('mouseleave', () => { dot.style.opacity='0'; ring.style.opacity='0'; });
     document.addEventListener('mouseenter', () => { dot.style.opacity='1'; ring.style.opacity='1'; });
 }
-const sidebar = $('#sidebar'), sidebarToggle = $('#sidebarToggle'), sidebarClose = $('#sidebarClose'), sidebarOverlay = $('#sidebarOverlay');
-sidebarToggle?.addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('active'); });
-sidebarClose?.addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); });
-sidebarOverlay?.addEventListener('click', () => { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('active'); });
-
 /* ─── STREAK RING ─── */
 function buildStreakRing() {
     const ring = $('#currentStreakRing');

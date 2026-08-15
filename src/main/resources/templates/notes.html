@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
-    <meta charset="UTF-8"/>
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.documentElement.classList.add('sb-collapsed', 'no-sb-transition');
+        }
+    </script>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${pageTitle}">Notes — INFERA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
@@ -53,12 +58,15 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera.</span>
+            <span class="logo-text">infera</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+        <i class="bi bi-chevron-left"></i>
+    </button>
 
     <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0" aria-label="Open search">
         <i class="bi bi-search"></i>
@@ -646,7 +654,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
 <script th:src="@{/javaScript/notes.js}" ></script>
-<script src="/javaScript/utility.js" th:src="@{/javaScript/utility.js}"></script>
-
+<script th:src="@{/javaScript/utility.js}"></script>
 </body>
 </html>
