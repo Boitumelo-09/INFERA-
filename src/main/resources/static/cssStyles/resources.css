@@ -75,8 +75,27 @@
 }
 
 /* ─── EMPTY STATE ─── */
-.res-empty-all { text-align: center; padding: 80px 24px; background: var(--card); border: 1px dashed var(--border); border-radius: var(--radius); }
-.res-empty-icon { width: 64px; height: 64px; background: rgba(234,88,12,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--accent); margin: 0 auto 20px; }
+.res-empty-all {
+    text-align: center;
+    padding: 80px 24px;
+    max-width: 500px;
+    margin-inline: auto;
+    border-radius: var(--radius);
+}
+
+.res-empty-icon {
+    width: 64px;
+    height: 64px;
+  border: 1px solid var(--accent);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin: 0 auto 20px;
+}
+
 .res-empty-all h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
 .res-empty-all p { color: var(--muted); font-size: 0.88rem; max-width: 360px; margin: 0 auto; }
 

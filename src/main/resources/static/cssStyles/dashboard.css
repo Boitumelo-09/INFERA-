@@ -129,7 +129,7 @@ button { font-family: var(--font-body); }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 16px 14px;
+    padding: 0px 16px 14px;
     flex-shrink: 0;
 }
 .logo-link { display: flex; align-items: center; gap: 9px; }
@@ -158,9 +158,9 @@ button { font-family: var(--font-body); }
     fill: var(--accent);
 }
 .logo-text {
-    font-family:sans-serif;
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-optical-sizing: auto;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.85rem;
     letter-spacing: 0.05em;
     color: var(--accent);
@@ -434,7 +434,10 @@ button { font-family: var(--font-body); }
 }
 
 .btn-topbar-accent {
-    display: flex; align-items: center; gap: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     background: transparent;
     color: var(--muted);
     border: 1px solid var(--accent);
@@ -516,7 +519,7 @@ button { font-family: var(--font-body); }
 }
 .stat-card {
     background: var(--card);
-    border: 1px solid var(--border);
+    /*border: 1px solid var(--border);*/
     border-radius: var(--radius);
     padding: 20px 20px 16px;
     transition: border-color 0.25s, transform 0.2s;
@@ -537,24 +540,44 @@ button { font-family: var(--font-body); }
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
 }
-.sc-icon.ws        { background: rgba(234,88,12,0.13); color: var(--accent); }
-.sc-icon.notes     { background: rgba(99,102,241,0.13); color: #818cf8; }
-.sc-icon.resources { background: rgba(16,185,129,0.12); color: #34d399; }
-.sc-icon.tags      { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+.sc-icon.ws {
+    /*background: rgba(234, 88, 12, 0.13);*/
+    color: var(--accent);
+}
+
+.sc-icon.notes {
+    /*background: rgba(99, 102, 241, 0.13);*/
+    color: #818cf8;
+}
+
+.sc-icon.resources {
+    /*background: rgba(16, 185, 129, 0.12);*/
+    color: #34d399;
+}
+
+.sc-icon.tags {
+    /*background: rgba(245, 158, 11, 0.12);*/
+    color: #fbbf24;
+}
 .sc-trend {
-    font-size: 0.72rem;
+    font-size: 0.62rem;
     font-weight: 600;
     display: flex; align-items: center; gap: 1px;
     border-radius: 99px;
     padding: 2px 8px;
 }
-.sc-trend.up { background: rgba(34,197,94,0.1); color: #4ade80; }
-.sc-trend.neutral { background: rgba(148,163,184,0.1); color: var(--muted); }
+
+.sc-trend.up {
+
+    color: #4ade80;
+}
+
 .sc-value {
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 800;
-    color: var(--text);
+    color: var(--muted);
     line-height: 1;
     margin-bottom: 4px;
 }
@@ -571,7 +594,7 @@ button { font-family: var(--font-body); }
 /* ─── PANELS ────────────────────────── */
 .dash-panel {
     background: var(--card);
-    border: 1px solid var(--border);
+    /*border: 1px solid var(--border);*/
     border-radius: var(--radius);
     overflow: hidden;
 }

@@ -38,6 +38,8 @@ public class ProfileService {
         if (!validType) return new AvatarUploadResult(false, "Only JPG, PNG, or WEBP allowed", null);
         if (file.getSize() > 3 * 1024 * 1024) return new AvatarUploadResult(false, "Max size is 3MB", null);
 
+        deleteLocalAvatarFile(user);
+
         Path dir = Paths.get(uploadDir);
         Files.createDirectories(dir);
 
@@ -50,14 +52,20 @@ public class ProfileService {
 
         return new AvatarUploadResult(true, null, user.getAvatarUrl());
     }
-
     public void deleteAvatar(User user) {
-        if (user.getAvatarUrl() == null) return;
-        try {
-            Path path = Paths.get(uploadDir, Paths.get(user.getAvatarUrl()).getFileName().toString());
-            Files.deleteIfExists(path);
-        } catch (IOException ignored) {}
+        deleteLocalAvatarFile(user);
         user.setAvatarUrl(null);
         userRepository.save(user);
+    }
+
+    // Only deletes files we actually own (local /uploads/avatars/ paths).
+    // OAuth avatar URLs (Google/GitHub) are external and must never be touched here.
+    private void deleteLocalAvatarFile(User user) {
+        String url = user.getAvatarUrl();
+        if (url == null || !url.startsWith("/uploads/avatars/")) return;
+        try {
+            Path path = Paths.get(uploadDir, Paths.get(url).getFileName().toString());
+            Files.deleteIfExists(path);
+        } catch (IOException ignored) {}
     }
 }
