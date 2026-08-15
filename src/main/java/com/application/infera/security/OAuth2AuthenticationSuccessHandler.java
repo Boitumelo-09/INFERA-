@@ -63,6 +63,10 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             user.setEnabled(true);
             user.setAvatarUrl(avatarUrl);
             userRepository.save(user);
+        } else if (avatarUrl != null) {
+            User user = existingUser.get();
+            user.setAvatarUrl(avatarUrl);
+            userRepository.save(user);
         }
 
         response.sendRedirect("/dashboard");
