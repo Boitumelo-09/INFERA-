@@ -42,32 +42,6 @@ if (dot && ring) {
 }
 
 /* ───────────────────────────────────────────────────────────────────
-   SIDEBAR TOGGLE (mobile)
-─────────────────────────────────────────────────────────────────── */
-const sidebar        = $('#sidebar');
-const sidebarToggle  = $('#sidebarToggle');
-const sidebarClose   = $('#sidebarClose');
-const sidebarOverlay = $('#sidebarOverlay');
-
-function openSidebar() {
-  sidebar?.classList.add('open');
-  sidebarOverlay?.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeSidebar() {
-  sidebar?.classList.remove('open');
-  sidebarOverlay?.classList.remove('active');
-  document.body.style.overflow = '';
-}
-sidebarToggle?.addEventListener('click', openSidebar);
-sidebarClose?.addEventListener('click', closeSidebar);
-sidebarOverlay?.addEventListener('click', closeSidebar);
-
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 992) closeSidebar();
-});
-
-/* ───────────────────────────────────────────────────────────────────
    SOFT PAGE NAVIGATION
    Fades the current page out before navigating, instead of the
    abrupt jump cut of a normal link/redirect. Also fades the
