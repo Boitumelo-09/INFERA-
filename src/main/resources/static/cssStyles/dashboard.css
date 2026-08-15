@@ -394,7 +394,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 .nav-item.active .nav-badge
 {
-    background: var(--bg);
+    /*background: var(--bg);*/
     color: var(--muted);
 }
 /* Workspace items */
