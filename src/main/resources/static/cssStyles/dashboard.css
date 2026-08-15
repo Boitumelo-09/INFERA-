@@ -100,7 +100,10 @@ button { font-family: var(--font-body); }
     overflow-x: hidden;
     padding-bottom: 12px;
 }
-.sidebar.collapsed { width: 76px; }
+html.sb-collapsed .sidebar, .sidebar.collapsed { width: 76px; }
+html.sb-collapsed .sidebar ~ .main-wrapper { margin-left: 76px; }
+html.no-sb-transition .sidebar,
+html.no-sb-transition .sidebar ~ .main-wrapper { transition: none !important; }
 .sidebar-collapse-btn {
     position: absolute;
     top: 50%;
@@ -122,6 +125,7 @@ button { font-family: var(--font-body); }
     transition: color 0.2s, border-color 0.2s, transform 0.3s, opacity 0.2s;
 }
 .sidebar-collapse-btn:hover { color: var(--accent); border-color: var(--accent); }
+html.sb-collapsed .sidebar-collapse-btn i,
 .sidebar.collapsed .sidebar-collapse-btn i { transform: rotate(180deg); }
 
 @media (min-width: 992px) {
@@ -131,6 +135,7 @@ button { font-family: var(--font-body); }
 /* Fine-pointer desktop: hide until hover */
 @media (min-width: 992px) and (hover: hover) and (pointer: fine) {
     .sidebar:hover .sidebar-collapse-btn,
+    html.sb-collapsed .sidebar-collapse-btn,
     .sidebar.collapsed .sidebar-collapse-btn { opacity: 1; }
 }
 
@@ -151,14 +156,14 @@ button { font-family: var(--font-body); }
     transition: opacity 0.18s ease, max-width 0.3s cubic-bezier(0.65, 0, 0.35, 1), margin 0.3s ease;
 }
 
-.sidebar.collapsed .logo-text,
-.sidebar.collapsed .sidebar-search span,
-.sidebar.collapsed .sidebar-search kbd,
-.sidebar.collapsed .nav-section-label,
-.sidebar.collapsed .nav-item span:not(.ws-dot),
-.sidebar.collapsed .nav-badge,
-.sidebar.collapsed .user-info,
-.sidebar.collapsed .logout-btn {
+html.sb-collapsed .logo-text, .sidebar.collapsed .logo-text,
+html.sb-collapsed .sidebar-search span, .sidebar.collapsed .sidebar-search span,
+html.sb-collapsed .sidebar-search kbd, .sidebar.collapsed .sidebar-search kbd,
+html.sb-collapsed .nav-section-label, .sidebar.collapsed .nav-section-label,
+html.sb-collapsed .nav-item span:not(.ws-dot), .sidebar.collapsed .nav-item span:not(.ws-dot),
+html.sb-collapsed .nav-badge, .sidebar.collapsed .nav-badge,
+html.sb-collapsed .user-info, .sidebar.collapsed .user-info,
+html.sb-collapsed .logout-btn, .sidebar.collapsed .logout-btn {
     opacity: 0;
     max-width: 0;
     margin: 0;
@@ -171,26 +176,26 @@ button { font-family: var(--font-body); }
     transition: padding 0.3s cubic-bezier(0.65, 0, 0.35, 1), justify-content 0.3s;
 }
 
-.sidebar.collapsed .sidebar-logo {
+html.sb-collapsed .sidebar-logo, .sidebar.collapsed .sidebar-logo {
     padding-left: 20px;
     padding-right: 0;
     justify-content: center;
 }
 
-.sidebar.collapsed .logo-link,
-.sidebar.collapsed .sidebar-search,
-.sidebar.collapsed .nav-item,
-.sidebar.collapsed .sidebar-user { justify-content: center; padding-left: 0; padding-right: 0; gap: 0; }
-.sidebar.collapsed .sidebar-search { margin-left: 6px; margin-right: 6px; }
+html.sb-collapsed .logo-link, .sidebar.collapsed .logo-link,
+html.sb-collapsed .sidebar-search, .sidebar.collapsed .sidebar-search,
+html.sb-collapsed .nav-item, .sidebar.collapsed .nav-item,
+html.sb-collapsed .sidebar-user, .sidebar.collapsed .sidebar-user { justify-content: center; padding-left: 0; padding-right: 0; gap: 0; }
+html.sb-collapsed .sidebar-search, .sidebar.collapsed .sidebar-search { margin-left: 6px; margin-right: 6px; }
 
-.sidebar.collapsed .sidebar-user {
+html.sb-collapsed .sidebar-user, .sidebar.collapsed .sidebar-user {
     margin-left: 6px;
     margin-right: 6px;
     background: transparent;
     border: none;
 }
 
-.sidebar.collapsed .nav-item.active::before { left: 0; }
+html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active::before { left: 0; }
 /* ─── CUSTOM CURSOR ─────────────────── */
 .cursor-dot, .cursor-ring {
     position: fixed; top: 0; left: 0;
@@ -306,7 +311,12 @@ button { font-family: var(--font-body); }
 }
 
 /* Nav */
-.sidebar-nav { flex: 1; padding: 4px 10px; overflow-y: auto; transition: padding 0.3s cubic-bezier(0.65, 0, 0.35, 1); }
+.sidebar-nav {
+    flex: 1;
+    padding: 2px 10px;
+    overflow-y: auto;
+    transition: padding 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
 
 .sidebar.collapsed .sidebar-nav { padding-left: 6px; padding-right: 6px; }
 
