@@ -1,3 +1,37 @@
+/* ───────────────────────────────────────────────────────────────────
+   SHARED HELPER
+─────────────────────────────────────────────────────────────────── */
+/* ───────────────────────────────────────────────────────────────────
+   SIDEBAR TOGGLE  (mobile)
+─────────────────────────────────────────────────────────────────── */
+const sidebar        = $('#sidebar');
+const sidebarToggle  = $('#sidebarToggle');
+const sidebarClose   = $('#sidebarClose');
+const sidebarOverlay = $('#sidebarOverlay');
+
+const sidebarCollapseBtn = $('#sidebarCollapseBtn');
+if (localStorage.getItem('sidebarCollapsed') === 'true') sidebar.classList.add('collapsed');
+sidebarCollapseBtn?.addEventListener('click', () => {
+    localStorage.setItem('sidebarCollapsed', sidebar.classList.toggle('collapsed'));
+});
+function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+sidebarToggle?.addEventListener('click', openSidebar);
+sidebarClose?.addEventListener('click', closeSidebar);
+sidebarOverlay?.addEventListener('click', closeSidebar);
+
+
+
 (function () {
     'use strict';
     const $  = (sel, ctx = document) => ctx.querySelector(sel);
@@ -106,6 +140,7 @@ void function (){
         });
     })
 }();
+
 
 
 
