@@ -11,8 +11,11 @@ const sidebarOverlay = $('#sidebarOverlay');
 
 const sidebarCollapseBtn = $('#sidebarCollapseBtn');
 if (localStorage.getItem('sidebarCollapsed') === 'true') sidebar.classList.add('collapsed');
+requestAnimationFrame(() => document.documentElement.classList.remove('no-sb-transition'));
 sidebarCollapseBtn?.addEventListener('click', () => {
-    localStorage.setItem('sidebarCollapsed', sidebar.classList.toggle('collapsed'));
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    document.documentElement.classList.toggle('sb-collapsed', isCollapsed);
+    localStorage.setItem('sidebarCollapsed', isCollapsed);
 });
 function openSidebar() {
     sidebar.classList.add('open');
