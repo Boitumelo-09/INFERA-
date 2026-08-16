@@ -15,6 +15,7 @@ public class SettingsService {
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileService profileService;
 
     public boolean updateTheme(User user, String theme) {
         if (!theme.equals("default") && !theme.equals("dark") && !theme.equals("light")) return false;
@@ -47,12 +48,13 @@ public class SettingsService {
 
         var resources = resourceRepository.findByNote_Workspace_UserOrderByCreatedAtDesc(user);
         resourceRepository.deleteAll(resources);
-        for (var note : notes)
-            note.getTags().clear(); // clears note_tags join rows, tags themselves are shared/global and stay
+        for (var note : notes) note.getTags().clear();
+
         noteRepository.saveAll(notes);
         noteRepository.deleteAll(notes);
         activityRepository.deleteAll(activityRepository.findByUserOrderByCreatedAtDesc(user));
         workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));
+        profileService.deleteAvatar(user);
         userRepository.delete(user);
 
     }
