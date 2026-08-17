@@ -641,7 +641,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     margin-bottom: 24px;
 }
 .stat-card {
-    background: var(--card);
+    /*background: var(--card);*/
     /*border: 1px solid var(--border);*/
     border-radius: var(--radius);
     padding: 20px 20px 16px;
