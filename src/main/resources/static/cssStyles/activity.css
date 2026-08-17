@@ -20,16 +20,18 @@
 .act-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
 
 .act-stat-card {
-    background: var(--card);
-    border: 3px solid var(--border);
+    
     border-radius: var(--radius);
+    border-bottom: 1px solid var(--border);
     padding: 22px;
     text-align: center;
-    transition: border-color 0.25s;
+    transition:  transform 0.25s;
 }
 
 .act-stat-card:hover {
-    border-color: var(--accent);
+
+    transform: translateY(-1px);
+
 }
 .asc-icon {
     width: 42px;
