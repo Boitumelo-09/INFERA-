@@ -641,8 +641,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     margin-bottom: 24px;
 }
 .stat-card {
-    /*background: var(--card);*/
-    /*border: 1px solid var(--border);*/
+
     border-radius: var(--radius);
     padding: 20px 20px 16px;
     transition: border-color 0.25s, transform 0.2s;
@@ -665,22 +664,22 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 
 .sc-icon.ws {
-    /*background: rgba(234, 88, 12, 0.13);*/
+
     color: var(--accent);
 }
 
 .sc-icon.notes {
-    /*background: rgba(99, 102, 241, 0.13);*/
+
     color: #818cf8;
 }
 
 .sc-icon.resources {
-    /*background: rgba(16, 185, 129, 0.12);*/
+
     color: #34d399;
 }
 
 .sc-icon.tags {
-    /*background: rgba(245, 158, 11, 0.12);*/
+
     color: #fbbf24;
 }
 .sc-trend {
