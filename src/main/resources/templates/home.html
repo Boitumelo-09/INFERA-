@@ -3,306 +3,216 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${pageTitle}"></title>
+    <title th:text="${pageTitle}">INFERA — Capture Ideas.</title>
+    <meta name="description" content="INFERA is where your notes, resources, and research live together — organized your way." />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
 </head>
 <body>
 
-<!-- Custom cursor -->
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
 <!-- ─── NAVBAR ─────────────────────────────────────────────────── -->
-<nav class="navbar navbar-expand-lg infera-nav fixed-top" id="mainNav">
-    <div class="container nav-container">
-
-        <!-- Logo -->
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-            <div class="logo-mark">
-                <svg width="1em" height="1em" viewBox="0 0 2000 2000" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <g transform="translate(0,2000) scale(0.1,-0.1)">
-                        <path d="M1962 16848 l3 -493 105 -8 c58 -4 227 -18 375 -32 662 -63 904 -110
-1135 -222 94 -45 127 -68 181 -122 166 -167 231 -392 271 -941 16 -213 24
--9375 9 -9980 -14 -561 -33 -769 -87 -970 -139 -520 -420 -637 -1691 -708
-l-298 -17 -3 -508 -2 -507 3110 0 3110 0 -2 508 -3 507 -130 7 c-1107 57
--1466 130 -1681 343 -59 58 -80 89 -123 176 -79 161 -118 338 -153 684 -16
-166 -24 10037 -8 10355 23 463 65 685 166 880 55 107 115 176 205 236 168 111
-415 182 819 234 158 20 609 64 800 77 l105 8 3 493 2 492 -3110 0 -3110 0 2
--492z M10125 14848 c-633 -322 -1511 -595 -2500 -778 -93 -17 -178 -33 -187
--36 -17 -5 -18 -27 -18 -284 l0 -278 28 -6 c15 -3 72 -13 127 -21 646 -100
-889 -213 1015 -470 77 -156 112 -335 130 -665 8 -133 10 -1025 8 -2810 -3
--2440 -5 -2624 -21 -2749 -68 -506 -232 -695 -708 -811 -136 -33 -373 -71
--584 -94 -77 -9 -164 -18 -192 -22 l-53 -5 0 -300 0 -299 2275 0 2275 0 0 299
-0 300 -42 6 c-24 3 -144 17 -268 30 -387 44 -599 90 -760 167 -115 55 -221
-159 -274 270 -75 157 -111 372 -126 755 -5 131 -10 1393 -10 2805 l0 2566 118
-104 c689 607 1362 961 2027 1065 155 25 562 25 730 0 150 -22 314 -61 425 -99
-118 -42 341 -157 425 -220 411 -310 653 -798 744 -1501 40 -307 42 -464 39
--2652 -4 -1921 -5 -2112 -21 -2245 -45 -366 -113 -547 -263 -696 -70 -70 -97
--89 -195 -137 -177 -87 -407 -144 -754 -187 -93 -11 -185 -23 -202 -27 l-33
--5 0 -299 0 -299 2195 0 2195 0 0 299 0 299 -37 6 c-21 3 -117 15 -213 26
--531 62 -760 133 -914 285 -127 125 -191 311 -227 665 -9 84 -14 805 -19 2640
--7 2735 -4 2595 -60 2950 -144 909 -545 1600 -1170 2015 -330 220 -692 349
--1150 411 -173 24 -555 24 -698 1 -474 -77 -915 -259 -1417 -585 -71 -47 -238
--152 -370 -235 -405 -254 -740 -482 -1012 -688 l-143 -108 0 850 c0 467 -3
-849 -7 848 -5 0 -53 -23 -108 -51z M9842 4169 c-214 -28 -419 -126 -566 -272
--205 -203 -301 -486 -268 -787 58 -517 449 -850 1000 -850 294 0 548 102 728
-292 162 171 245 362 261 599 29 460 -240 856 -667 981 -147 43 -335 57 -488
-37z m400 -332 c176 -56 303 -160 376 -306 57 -113 76 -206 70 -344 -13 -306
--191 -524 -487 -598 -74 -19 -104 -21 -235 -16 -165 6 -228 20 -338 79 -73 39
--175 132 -217 197 -17 26 -45 86 -62 132 -41 110 -51 274 -25 393 56 250 235
-420 506 481 102 23 314 14 412 -18z"/>
-                    </g>
-                </svg>
-            </div>
-            <span class="logo-text">INFERA</span>
+<nav class="infera-nav" id="mainNav">
+    <div class="nav-inner">
+        <a class="brand" href="#hero">
+<!--            <span class="logo-mark">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">-->
+<!--                    <defs>-->
+<!--                       <linearGradient id="logoBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">-->
+<!--                            <animateTransform attributeName="gradientTransform" type="rotate" from="0 0.5 0.5" to="360 0.5 0.5" dur="7s" repeatCount="indefinite"/>-->
+<!--                            <stop offset="0%" stop-color="var(&#45;&#45;accent)" stop-opacity="0.35"/>-->
+<!--                            <stop offset="100%" stop-color="var(&#45;&#45;accent)" stop-opacity="0"/>-->
+<!--                        </linearGradient>-->
+<!--                    </defs>-->
+<!--                    <circle class="logo-bg" cx="812" cy="1000" r="286"/>-->
+<!--                    <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">-->
+<!--                        <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376-->
+<!-- -712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444-->
+<!--121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0-->
+<!-- -425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248-->
+<!--130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5-->
+<!-- -755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429-->
+<!-- -191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220-->
+<!-- -420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220-->
+<!--54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412-->
+<!-- -200 832 -635 738z"/>-->
+<!--                    </g>-->
+<!--                </svg>-->
+<!--            </span>-->
+            <span class="brand-name">infera</span>
         </a>
 
-        <!-- Hamburger -->
-        <button class="navbar-toggler custom-toggler ms-auto" type="button"
-                data-bs-toggle="collapse" data-bs-target="#navMenu"
-                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="toggler-bar"></span>
-            <span class="toggler-bar"></span>
-            <span class="toggler-bar"></span>
-        </button>
+        <ul class="nav-links">
+            <li><a href="#showcase">Features</a></li>
+            <li><a href="#why">Why INFERA</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
 
-        <!-- Nav links — centered via absolute positioning -->
-        <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav nav-center mx-auto">
-                <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-                <li class="nav-item"><a class="nav-link" href="#how">How it works</a></li>
-                <li class="nav-item"><a class="nav-link" href="#usecases">Use cases</a></li>
-                <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-            </ul>
-            <div class="nav-actions d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                <a th:href="@{/signin}" href="signin.html" class="btn-nav-ghost">Sign in</a>
-                <a th:href="@{/signup}" href="signup.html" class="btn-nav-accent">Get started free</a>
-            </div>
+        <div class="nav-actions">
+            <a th:href="@{/signin}" class="btn-ghost">Sign in</a>
+            <a th:href="@{/signup}" class="btn-accent">Sign up free</a>
         </div>
 
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileMenu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<div class="mobile-menu-backdrop" id="menuBackdrop"></div>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+    <a href="#showcase">Features</a>
+    <a href="#why">Why INFERA</a>
+    <a href="#faq">FAQ</a>
+    <div class="mobile-menu-actions">
+        <a th:href="@{/signin}" href="signin.html" class="btn-outline">Sign in</a>
+        <a th:href="@{/signup}" href="signup.html" class="btn-accent-lg">Sign up free</a>
     </div>
 </nav>
 
 <!-- ─── HERO ──────────────────────────────────────────────────── -->
 <section class="hero-section" id="hero">
-    <div class="hero-grid-bg"></div>
-    <div class="hero-orb orb-1"></div>
-    <div class="hero-orb orb-2"></div>
-
-    <div class="container hero-content text-center">
-        <div class="hero-badge mb-4" data-aos="fade-down">
-            <span class="badge-dot"></span>
-            <span>Now in open beta — free forever for students</span>
+    <div class="hero-inner">
+        <div class="hero-logo-col">
+            <span class="hero-logo-mark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
+                     <defs>
+                       <linearGradient id="logoBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <animateTransform attributeName="gradientTransform" type="rotate" from="0 0.5 0.5" to="360 0.5 0.5" dur="7s" repeatCount="indefinite"/>
+                            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"/>
+                            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="logo-bg" cx="812" cy="1000" r="286"/>
+                    <g class="logo-icon-pulse">
+                    <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
+                        <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376
+-712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444
+121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0
+-425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248
+130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5
+-755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429
+-191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220
+-420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220
+54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412
+-200 832 -635 738z"/>
+                    </g>
+                    </g>
+                </svg>
+            </span>
         </div>
 
-        <h1 class="hero-headline" data-aos="fade-up" data-aos-delay="50">
-            Your second brain.<br />
-            <span class="accent-underline">Finally organised.</span>
-        </h1>
-
-        <p class="hero-sub mt-4" data-aos="fade-up" data-aos-delay="100">
-            INFERA brings your notes, research, resources, and ideas into one focused workspace —
-            so you can think deeper and execute faster.
-        </p>
-
-        <div class="hero-cta mt-5 d-flex flex-column flex-sm-row justify-content-center gap-3" data-aos="fade-up" data-aos-delay="150">
-            <a th:href="@{/signup}" href="signup.html" class="btn-primary-accent btn-lg-custom">
-                Start for free <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-            <a href="#how" class="btn-ghost-outline btn-lg-custom">
-                See how it works <i class="bi bi-play-circle ms-1"></i>
-            </a>
-        </div>
-
-        <div class="hero-stats mt-5 d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="stat-chip"><i class="bi bi-journals"> </i><strong th:text="${noteCount} + '+'"></strong> <span>notes created</span></div>
-            <div class="stat-sep"></div>
-            <div class="stat-chip"><i class="bi bi-people"> </i><strong th:text="${activeUsers}"></strong> <span>active users</span></div>
-            <div class="stat-sep"></div>
-            <div class="stat-chip"><i class="bi bi-folder2-open"> </i><strong th:text="${workspaceCount} + '+'"></strong> <span>workspaces</span></div>
-        </div>
-    </div>
-    </div>
-
-    <div class="hero-mockup-wrapper" data-aos="fade-up" data-aos-delay="250">
-        <div class="mockup-browser">
-            <div class="browser-bar">
-                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                <span class="browser-url">Calvin's /dashboard</span>
+        <div class="hero-text">
+            <h1 class="hero-headline">Capture ideas.<br /><em>Keep them findable.</em></h1>
+            <p class="hero-sub">
+                INFERA is where your notes, resources, and research live together —
+                sorted into workspaces, connected by tags, and one search away from wherever you left them.
+            </p>
+            <div class="hero-cta">
+                <a th:href="@{/signin}" class="btn-accent-lg">
+                    Sign In <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#showcase" class="btn-outline">
+                    See how it works
+                </a>
             </div>
-            <div class="browser-body">
-                <div class="mock-sidebar">
-                    <div class="mock-ws-label">WORKSPACES</div>
-                    <div class="mock-ws-item active"><i class="bi bi-folder2"></i> Opus Assignment</div>
-                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Research</div>
-                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Career</div>
-                    <div class="mock-ws-item"><i class="bi bi-folder2"></i> Music</div>
-                    <div class="mock-divider"></div>
-                    <div class="mock-ws-item"><i class="bi bi-search"></i> Search</div>
-                    <div class="mock-ws-item"><i class="bi bi-clock-history"></i> Activity</div>
-                </div>
-                <div class="mock-main">
-                    <div class="mock-header">
-                        <span class="mock-title">Opus Assignment</span>
-                        <span class="mock-badge">12 notes</span>
-                    </div>
-                    <div class="mock-note-list">
-                        <div class="mock-note active-note">
-                            <div class="mn-title">Literature Review</div>
-                            <div class="mn-meta">Updated 2h ago · <span class="mn-tag">#literature</span> <span class="mn-tag">#research</span></div>
-                        </div>
-                        <div class="mock-note">
-                            <div class="mn-title">Harvard Referencing notes</div>
-                            <div class="mn-meta">Updated yesterday · <span class="mn-tag">#notes</span></div>
-                        </div>
-                        <div class="mock-note">
-                            <div class="mn-title">Poster Design Notes</div>
-                            <div class="mn-meta">Updated 3d ago · <span class="mn-tag">#design</span></div>
-                        </div>
-                        <div class="mock-note">
-                            <div class="mn-title">Business Development Guide</div>
-                            <div class="mn-meta">Updated 1w ago · <span class="mn-tag">#business</span></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="hero-stats">
+                <span><strong th:text="${noteCount}">0</strong> notes captured so far</span>
+                <span><strong th:text="${workspaceCount}">0</strong> workspaces created</span>
+                <span><strong th:text="${activeUsers}">0</strong> people using INFERA</span>
+            </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ─── LOGOS (social proof) ──────────────────────────────────── -->
-<section class="logos-section py-4">
-    <div class="container text-center">
-        <p class="logos-label">Trusted by students and builders at</p>
-        <div class="logos-row d-flex flex-wrap justify-content-center align-items-center gap-4 mt-3">
-            <span class="logo-name">University of Limpopo</span>
-            <span class="logo-dot-sep">·</span>
-            <span class="logo-name">Wits University</span>
-            <span class="logo-dot-sep">·</span>
-            <span class="logo-name">UCT</span>
-            <span class="logo-dot-sep">·</span>
-            <span class="logo-name">Devs</span>
-            <span class="logo-dot-sep">·</span>
-            <span class="logo-name">Freelancers</span>
+<!-- ─── VALUE STATEMENTS ──────────────────────────────────────── -->
+<section class="values-section section-pad">
+    <div class="wave-divider wave-top" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,22 C60,4 120,4 180,22 C240,40 300,40 360,22 C420,4 480,4 540,22 C600,40 660,40 720,22 C780,4 840,4 900,22 C960,40 1020,40 1080,22 C1110,13 1140,13 1200,22 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
+    <div class="wave-divider wave-bottom" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,18 C50,32 110,2 170,18 C230,34 290,4 350,18 C410,32 470,2 530,18 C590,34 650,4 710,18 C770,32 830,2 890,18 C950,34 1010,4 1070,18 C1110,26 1150,10 1200,18 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
+    <div class="container-narrow">
+        <div class="values-grid">
+            <div class="value-item">
+                <h3>Your notes stay structured.</h3>
+                <p>Every subject, project, or role gets its own workspace — so nothing you're working on bleeds into everything else you're working on.</p>
+            </div>
+            <div class="value-item">
+                <h3>Your knowledge stays connected.</h3>
+                <p>Tags cut across workspaces. Group ideas by what they mean to you, not by which folder they happen to sit in.</p>
+            </div>
+            <div class="value-item">
+                <h3>Your research stays findable.</h3>
+                <p>One search bar covers notes, resources, and tags at once. If you wrote it or saved it, you can get back to it.</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ─── FEATURES ──────────────────────────────────────────────── -->
-<section class="features-section section-pad" id="features">
-    <div class="container">
-        <div class="section-eyebrow text-center mb-2">What you get</div>
-        <h2 class="section-title text-center">Everything your knowledge needs</h2>
-        <p class="section-sub text-center mx-auto mt-3">Purpose-built for thinkers who are tired of losing good ideas to scattered apps and forgotten tabs.</p>
+<!-- ─── FEATURE SHOWCASE ──────────────────────────────────────── -->
+<section class="section-pad" id="showcase">
+    <div class="container-narrow">
+        <div class="eyebrow text-center mb-2">What it does</div>
+        <h2 class="section-title text-center mx-auto">Built around how you actually think</h2>
 
-        <div class="row g-4 mt-4">
+        <div style="margin-top: 64px;">
 
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up">
-                <div class="feature-card h-100">
-                    <div class="fc-icon"><i class="bi bi-layout-sidebar"></i></div>
-                    <h3 class="fc-title">Smart Workspaces</h3>
-                    <p class="fc-desc">Segment your knowledge by project, subject, or role. Each workspace is a focused environment with its own notes, resources, and activity log.</p>
+            <div class="showcase-row">
+                <div class="showcase-text">
+                    <h3>Workspaces for every part of your life</h3>
+                    <p>Coursework, side projects, a job search, a novel you're writing — each gets a dedicated space with its own notes, resources, and activity, so they never get tangled together.</p>
                 </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
-                <div class="feature-card h-100">
-                    <div class="fc-icon"><i class="bi bi-journal-text"></i></div>
-                    <h3 class="fc-title">Rich Note Editor</h3>
-                    <p class="fc-desc">Write, tag, and archive notes with a clean editor. Add structure without getting in the way of your thinking.</p>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="120">
-                <div class="feature-card h-100 fc-highlight">
-                    <div class="fc-icon accent"><i class="bi bi-search"></i></div>
-                    <h3 class="fc-title">Global Search</h3>
-                    <p class="fc-desc">Find anything instantly. Search across titles, content, workspace names, and resource links — all in one keystroke.</p>
-                    <span class="fc-badge">Most loved</span>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="60">
-                <div class="feature-card h-100">
-                    <div class="fc-icon"><i class="bi bi-tags"></i></div>
-                    <h3 class="fc-title">Tag System</h3>
-                    <p class="fc-desc">Create flexible tag hierarchies that cut across workspaces. Group ideas in ways that make sense to you — not to the app.</p>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="120">
-                <div class="feature-card h-100">
-                    <div class="fc-icon"><i class="bi bi-link-45deg"></i></div>
-                    <h3 class="fc-title">Resource Library</h3>
-                    <p class="fc-desc">Save docs, articles, tutorials, and videos with context. Stop losing great links in a sea of browser bookmarks.</p>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="180">
-                <div class="feature-card h-100">
-                    <div class="fc-icon"><i class="bi bi-bar-chart-line"></i></div>
-                    <h3 class="fc-title">Dashboard Analytics</h3>
-                    <p class="fc-desc">See your knowledge stats at a glance — total notes, workspaces, recent activity. Stay aware of your learning momentum.</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ─── HOW IT WORKS ─────────────────────────────────────────── -->
-<section class="how-section section-pad" id="how">
-    <div class="container">
-        <div class="section-eyebrow text-center mb-2">How it works</div>
-        <h2 class="section-title text-center">From chaos to clarity in minutes</h2>
-
-        <div class="how-steps mt-5">
-
-            <div class="how-step" data-aos="fade-right">
-                <div class="step-num">01</div>
-                <div class="step-body">
-                    <h3 class="step-title">Create your workspace</h3>
-                    <p class="step-desc">Set up a dedicated space for each project, subject, or role. Name it, describe it, and you're ready.</p>
-                </div>
-                <div class="step-visual">
-                    <div class="step-visual-card">
-                        <div class="svc-label"><i class="bi bi-plus-circle"></i> New Workspace</div>
-                        <div class="svc-input">Research Project<span class="svc-cursor">|</span></div>
+                <div class="showcase-visual">
+                    <div class="shot-placeholder">
+                        <i class="bi bi-image"></i>
+                        <span>SCREENSHOT — Workspace view</span>
                     </div>
                 </div>
             </div>
 
-            <div class="how-step reverse" data-aos="fade-left">
-                <div class="step-num">02</div>
-                <div class="step-body">
-                    <h3 class="step-title">Capture notes and resources</h3>
-                    <p class="step-desc">Write notes, save links, and tag everything as you go. No friction — just information where it belongs.</p>
+            <div class="showcase-row reverse">
+                <div class="showcase-text">
+                    <h3>A note editor that gets out of your way</h3>
+                    <p>Markdown, math, and code, rendered cleanly as you write. Tag notes as you go, and INFERA autocompletes tags you've already used so your system stays consistent.</p>
+                    <div class="showcase-tags">
+                        <span class="showcase-tag">#literature</span>
+                        <span class="showcase-tag">#research</span>
+                        <span class="showcase-tag">#thesis</span>
+                    </div>
                 </div>
-                <div class="step-visual">
-                    <div class="step-visual-card">
-                        <div class="svc-label"><i class="bi bi-journal-plus"></i> New Note</div>
-                        <div class="svc-tags"><span class="svc-tag">#thesis</span><span class="svc-tag">#notes</span></div>
+                <div class="showcase-visual">
+                    <div class="shot-placeholder">
+                        <i class="bi bi-image"></i>
+                        <span>SCREENSHOT — Note editor</span>
                     </div>
                 </div>
             </div>
 
-            <div class="how-step" data-aos="fade-right">
-                <div class="step-num">03</div>
-                <div class="step-body">
-                    <h3 class="step-title">Find anything instantly</h3>
-                    <p class="step-desc">Global search across all your workspaces, notes, and resources. What took minutes now takes seconds.</p>
+            <div class="showcase-row">
+                <div class="showcase-text">
+                    <h3>A resource library that isn't a bookmarks folder</h3>
+                    <p>Save articles, docs, and videos with real context attached — which workspace they belong to, which notes reference them, why you saved them in the first place.</p>
                 </div>
-                <div class="step-visual">
-                    <div class="step-visual-card">
-                        <div class="svc-label"><i class="bi bi-search"></i> Search INFERA...</div>
-                        <div class="svc-result"><i class="bi bi-journal-text"></i> Literature review</div>
-                        <div class="svc-result dim"><i class="bi bi-link"></i>research project /review notes</div>
+                <div class="showcase-visual">
+                    <div class="shot-placeholder">
+                        <i class="bi bi-image"></i>
+                        <span>SCREENSHOT — Resource shelf</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-row reverse">
+                <div class="showcase-text">
+                    <h3>Search that actually finds it</h3>
+                    <p>One bar, everything in it — note titles, note bodies, resource links, workspace names, tags. Type a few characters and stop scrolling through folders.</p>
+                </div>
+                <div class="showcase-visual">
+                    <div class="shot-placeholder">
+                        <i class="bi bi-image"></i>
+                        <span>SCREENSHOT — Global search</span>
                     </div>
                 </div>
             </div>
@@ -311,103 +221,96 @@ l-298 -17 -3 -508 -2 -507 3110 0 3110 0 -2 508 -3 507 -130 7 c-1107 57
     </div>
 </section>
 
-<!-- ─── USE CASES ─────────────────────────────────────────────── -->
-<section class="usecases-section section-pad" id="usecases">
-    <div class="container">
-        <div class="section-eyebrow text-center mb-2">Who it's for</div>
-        <h2 class="section-title text-center">Built for every kind of thinker</h2>
+<!-- ─── WHY INFERA ────────────────────────────────────────────── -->
+<section class="why-section section-pad" id="why">
+    <div class="container-narrow">
+        <div class="eyebrow mb-2">Why choose INFERA</div>
+        <h2 class="section-title">A few honest reasons</h2>
 
-        <div class="row g-4 mt-4">
-            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up">
-                <div class="uc-card">
-                    <div class="uc-icon"><i class="bi bi-mortarboard"></i></div>
-                    <h4 class="uc-title">Students</h4>
-                    <ul class="uc-list">
-                        <li>Lecture notes & summaries</li>
-                        <li>Study material by subject</li>
-                        <li>Research repositories</li>
-                        <li>Assignment tracking</li>
-                    </ul>
+        <div class="why-list">
+            <div class="why-item">
+                <span class="why-num">01</span>
+                <div>
+                    <h4>It's built for structure, not just storage</h4>
+                    <p>Workspaces aren't a nice-to-have folder feature — they're the backbone of how INFERA organizes everything else you do in it.</p>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="60">
-                <div class="uc-card">
-                    <div class="uc-icon"><i class="bi bi-code-slash"></i></div>
-                    <h4 class="uc-title">Developers</h4>
-                    <ul class="uc-list">
-                        <li>Code snippets & patterns</li>
-                        <li>Technical documentation</li>
-                        <li>Learning roadmaps</li>
-                        <li>Architecture notes</li>
-                    </ul>
+            <div class="why-item">
+                <span class="why-num">02</span>
+                <div>
+                    <h4>Tags work across your whole vault</h4>
+                    <p>A tag isn't trapped inside one workspace. Use the same tag in your coursework and your side project, and search still finds both.</p>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="120">
-                <div class="uc-card">
-                    <div class="uc-icon"><i class="bi bi-lightbulb"></i></div>
-                    <h4 class="uc-title">Creators</h4>
-                    <ul class="uc-list">
-                        <li>Content ideas & drafts</li>
-                        <li>Reference & inspiration</li>
-                        <li>Script outlines</li>
-                        <li>Brand notes</li>
-                    </ul>
+            <div class="why-item">
+                <span class="why-num">03</span>
+                <div>
+                    <h4>Nothing here is a placeholder</h4>
+                    <p>If a feature is on the page, it works. No "coming soon" buttons, no fake integrations — what you see is what you can use today.</p>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3" data-aos="fade-up" data-aos-delay="180">
-                <div class="uc-card">
-                    <div class="uc-icon"><i class="bi bi-briefcase"></i></div>
-                    <h4 class="uc-title">Entrepreneurs</h4>
-                    <ul class="uc-list">
-                        <li>Business idea vault</li>
-                        <li>Planning documents</li>
-                        <li>Market research</li>
-                        <li>Project management</li>
-                    </ul>
+            <div class="why-item">
+                <span class="why-num">04</span>
+                <div>
+                    <h4>It's built by someone who uses it daily</h4>
+                    <p>INFERA isn't a boardroom product. It's built by one developer who takes their own lecture notes and project notes in it — every decision comes from actually using the thing.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ─── PRICING ───────────────────────────────────────────────── -->
-<section class="pricing-section section-pad" id="pricing">
-    <div class="container">
-        <div class="section-eyebrow text-center mb-2">Pricing</div>
-        <h2 class="section-title text-center">Simple, honest pricing</h2>
-        <p class="section-sub text-center mx-auto mt-3">Start free. Upgrade when you need more.</p>
+<!-- ─── FAQ ────────────────────────────────────────────────────── -->
+<section class="faq-section section-pad" id="faq" style="position: relative;">
+    <div class="wave-divider wave-top" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,16 C55,30 115,4 175,18 C235,32 295,4 355,18 C415,32 475,4 535,18 C595,32 655,4 715,18 C775,32 835,4 895,18 C955,32 1015,4 1075,18 C1115,26 1155,10 1200,18 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
+    <div class="container-narrow">
+        <div class="eyebrow mb-2">FAQ</div>
+        <h2 class="section-title">Questions people actually ask</h2>
 
-        <div class="row g-4 mt-4 justify-content-center">
-            <div class="col-12 col-md-5 col-lg-4" data-aos="fade-up">
-                <div class="price-card">
-                    <div class="price-plan">Starter</div>
-                    <div class="price-amount">R0 <span>/mo</span></div>
-                    <p class="price-desc">Everything you need to get started. Free forever.</p>
-                    <ul class="price-features">
-                        <li><i class="bi bi-check2"></i> 9 Workspaces</li>
-                        <li><i class="bi bi-check2"></i> 100 Notes</li>
-                        <li><i class="bi bi-check2"></i> 50 Resources</li>
-                        <li><i class="bi bi-check2"></i> Global Search</li>
-                        <li><i class="bi bi-check2"></i> Tag System</li>
-                    </ul>
-                    <a th:href="@{/signup}" href="signup.html" class="btn-price-ghost w-100">Get started</a>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    Is INFERA free to use?
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Yes — INFERA is free while it's in active development. If pricing is introduced later, anything you've already built will stay yours to access.</div>
                 </div>
             </div>
-            <div class="col-12 col-md-5 col-lg-4" data-aos="fade-up" data-aos-delay="80">
-                <div class="price-card price-popular">
-                    <span class="popular-badge">Most popular</span>
-                    <div class="price-plan">Unavailable</div>
-                    <div class="price-amount">R30 <span>/mo</span></div>
-                    <p class="price-desc">For builders and learners who need unlimited room.</p>
-                    <ul class="price-features">
-                        <li><i class="bi bi-check2"></i> Unlimited Workspaces</li>
-                        <li><i class="bi bi-check2"></i> Unlimited Notes</li>
-                        <li><i class="bi bi-check2"></i> Unlimited Resources</li>
-                        <li><i class="bi bi-check2"></i> Advanced Search</li>
-                        <li><i class="bi bi-check2"></i> Activity Analytics</li>
-                        <li><i class="bi bi-check2"></i> Priority Support</li>
-                    </ul>
-                    <a href="signup.html" class="btn-price-accent w-100">Coming Soon</a>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    Can I sign in with Google or GitHub?
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Yes. You can sign up and sign in with email and password, or with Google or GitHub OAuth — whichever you already use day to day.</div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    Where is my data stored?
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Your notes, resources, and workspaces are stored in a PostgreSQL database and scoped to your account. Nobody else can see your workspaces.</div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    What happens if I delete my account?
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Everything goes — resources, notes, tags, activity history, and workspaces are permanently removed. There's no recovery period, so it's worth exporting anything you want to keep first.</div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    Is there a mobile app?
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Not yet — INFERA is a responsive web app, so it works in your phone's browser today. A dedicated app isn't built, and we won't claim otherwise until it is.</div>
                 </div>
             </div>
         </div>
@@ -416,66 +319,79 @@ l-298 -17 -3 -508 -2 -507 3110 0 3110 0 -2 508 -3 507 -130 7 c-1107 57
 
 <!-- ─── CTA BANNER ────────────────────────────────────────────── -->
 <section class="cta-banner section-pad">
-    <div class="cta-orb"></div>
-    <div class="container text-center" data-aos="fade-up">
-        <h2 class="cta-headline">Stop losing your best ideas.</h2>
-        <p class="cta-sub mt-3">Join thousands of students and builders who've made INFERA their knowledge home base.</p>
-        <a th:href="@{/signup}" href="signup.html" class="btn-primary-accent btn-lg-custom mt-4 d-inline-flex align-items-center gap-2">
+    <div class="container-narrow">
+        <h2 class="cta-headline">Start capturing ideas.</h2>
+        <p class="cta-sub">No credit card. No trial countdown. Just a place to put your thinking.</p>
+        <a th:href="@{/signup}" href="signup.html" class="btn-accent-lg" style="margin-top: 28px;">
             Create your free account <i class="bi bi-arrow-right"></i>
         </a>
+        <p class="cta-note">Free while INFERA is in active development.</p>
     </div>
 </section>
 
 <!-- ─── FOOTER ────────────────────────────────────────────────── -->
 <footer class="infera-footer">
-    <div class="container">
-        <div class="row gy-4">
-            <div class="col-12 col-lg-4">
-                <div class="footer-brand d-flex align-items-center gap-2 mb-3">
-                    <div class="logo-mark sm"><i class="bi bi-layers-half"></i></div>
-                    <span class="logo-text">INFERA</span>
-                </div>
-                <p class="footer-tagline">Organize Knowledge.<br />Capture Ideas. Build Understanding.</p>
-                <div class="footer-socials d-flex gap-3 mt-3">
-                    <a href="mailto:belmiredub4@gmail.com" class="social-link"><i class="bi bi-envelope-at-fill"></i></a>
-                    <a href="https://github.com/Boitumelo-09" class="social-link"><i class="bi bi-github"></i></a>
-                    <a href="https://www.linkedin.com/in/boitumelo-mkhondo/" class="social-link"><i class="bi bi-linkedin"></i></a>
+    <div class="container-narrow">
+        <div class="footer-grid">
+            <div>
+                <a class="brand" href="#hero" style="margin-bottom: 14px; display: inline-flex;">
+                    <span class="logo-mark" style="width:26px;height:26px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
+                            <circle class="logo-bg" cx="812" cy="1000" r="286"/>
+                            <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
+                                <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376
+-712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444
+121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0
+-425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248
+130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5
+-755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429
+-191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220
+-420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220
+54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412
+-200 832 -635 738z"/>
+                            </g>
+                        </svg>
+                    </span>
+                    <span class="brand-name">INFERA</span>
+                </a>
+                <p class="footer-tagline">Capture ideas. Keep them structured. Never lose track of your own thinking.</p>
+                <div class="footer-socials">
+                    <a href="mailto:belmiredub4@gmail.com" class="social-link" aria-label="Email"><i class="bi bi-envelope-at-fill"></i></a>
+                    <a href="https://github.com/Boitumelo-09" class="social-link" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                    <a href="https://www.linkedin.com/in/boitumelo-mkhondo/" class="social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
                 </div>
             </div>
-            <div class="col-6 col-sm-4 col-lg-2 offset-lg-2">
+            <div>
                 <h6 class="footer-col-title">Product</h6>
                 <ul class="footer-links">
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#how">How it works</a></li>
+                    <li><a href="#showcase">Features</a></li>
+                    <li><a href="#why">Why INFERA</a></li>
+                    <li><a href="#faq">FAQ</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-sm-4 col-lg-2">
-                <h6 class="footer-col-title">Company</h6>
+            <div>
+                <h6 class="footer-col-title">Account</h6>
                 <ul class="footer-links">
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Careers</a></li>
+                    <li><a th:href="@{/signin}" href="signin.html">Sign in</a></li>
+                    <li><a th:href="@{/signup}" href="signup.html">Sign up</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-sm-4 col-lg-2">
+            <div>
                 <h6 class="footer-col-title">Legal</h6>
                 <ul class="footer-links">
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Terms</a></li>
+                    <li><a th:href="@{/privacy}" >Privacy policy</a></li>
+                    <li><a th:href="@{/terms}" >Terms &amp; conditions</a></li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom mt-5 pt-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+        <div class="footer-bottom">
             <span class="footer-copy">&copy; <span id="year"></span> INFERA. All rights reserved.</span>
-            <span class="footer-built">Built for your mind<br>Built By Belmire</span>
-
+            <span class="footer-built">Built for your mind.<br>Built by Belmire.</span>
         </div>
     </div>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-
 <script th:src="@{/javaScript/home.js}" src="/static/javaScript/home.js"></script>
 </body>
 </html>
