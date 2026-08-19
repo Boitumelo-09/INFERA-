@@ -32,6 +32,8 @@ public class UserSecurityConfig {
                                 "/home",
                                 "/signup",
                                 "/signin",
+                                "/privacy",
+                                "/terms",
                                 "/cssStyles/**",
                                 "/javaScript/**",
                                 "/app_resources/**"
