@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms &amp; Conditions — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
+</head>
+<body>
+
+<nav class="infera-nav scrolled">
+    <div class="nav-inner">
+        <a class="brand" th:href="@{/home}" href="home.html">
+            <span class="logo-mark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
+                    <circle class="logo-bg" cx="812" cy="1000" r="286"/>
+                    <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
+                        <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376
+-712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444
+121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0
+-425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248
+130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5
+-755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429
+-191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220
+-420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220
+54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412
+-200 832 -635 738z"/>
+                    </g>
+                </svg>
+            </span>
+            <span class="brand-name">INFERA</span>
+        </a>
+        <a th:href="@{/home}" href="home.html" class="btn-ghost">Back to home</a>
+    </div>
+</nav>
+
+<main class="container-narrow">
+    <div class="legal-page">
+        <h1>Terms &amp; Conditions</h1>
+        <p class="legal-updated">Last updated: August 2026</p>
+
+        <p>These terms cover your use of INFERA. By creating an account, you agree to them.</p>
+
+        <h2>Your account</h2>
+        <p>You're responsible for the accuracy of the information on your account and for keeping your password secure. You must be able to legally enter into these terms to use INFERA.</p>
+
+        <h2>Your content</h2>
+        <p>Notes, resources, and workspaces you create are yours. INFERA stores and displays them back to you; we don't claim ownership over anything you write or save.</p>
+
+        <h2>Acceptable use</h2>
+        <ul>
+            <li>Don't use INFERA to store or distribute illegal content.</li>
+            <li>Don't attempt to access another user's account or data.</li>
+            <li>Don't attempt to disrupt or overload the service.</li>
+        </ul>
+
+        <h2>Availability</h2>
+        <p>INFERA is under active development. Features may change, and the service may occasionally be unavailable during updates. We'll aim to keep disruption to a minimum.</p>
+
+        <h2>Account deletion</h2>
+        <p>You can delete your account at any time from Settings. This permanently removes your resources, notes, tags, activity history, and workspaces, and can't be reversed.</p>
+
+        <h2>Changes to these terms</h2>
+        <p>If these terms change in a meaningful way, we'll update the date at the top of this page.</p>
+
+        <h2>Contact</h2>
+        <p>Questions can be sent to <a th:href="'mailto:belmiredub4@gmail.com'" href="mailto:belmiredub4@gmail.com" style="color: var(--accent);">belmiredub4@gmail.com</a>.</p>
+    </div>
+</main>
+
+<footer class="infera-footer" style="margin-top: 0;">
+    <div class="container-narrow footer-bottom" style="border-top: none;">
+        <span class="footer-copy">&copy; <span id="year"></span> INFERA. All rights reserved.</span>
+    </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

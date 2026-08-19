@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — INFERA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
+</head>
+<body>
+
+<nav class="infera-nav scrolled">
+    <div class="nav-inner">
+        <a class="brand" th:href="@{/home}" href="home.html">
+            <span class="logo-mark">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
+                    <circle class="logo-bg" cx="812" cy="1000" r="286"/>
+                    <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
+                        <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376
+-712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444
+121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0
+-425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248
+130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5
+-755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429
+-191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220
+-420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220
+54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412
+-200 832 -635 738z"/>
+                    </g>
+                </svg>
+            </span>
+            <span class="brand-name">INFERA</span>
+        </a>
+        <a th:href="@{/home}" href="home.html" class="btn-ghost">Back to home</a>
+    </div>
+</nav>
+
+<main class="container-narrow">
+    <div class="legal-page">
+        <h1>Privacy Policy</h1>
+        <p class="legal-updated">Last updated: August 2026</p>
+
+        <p>This policy explains what INFERA stores, why, and how you can remove it. It covers the account, workspace, note, resource, and activity data created while using the app.</p>
+
+        <h2>What we store</h2>
+        <ul>
+            <li>Account details: name, email, and password hash, or your Google/GitHub profile ID and avatar if you sign in with OAuth.</li>
+            <li>Workspaces, notes, tags, and resources you create.</li>
+            <li>Activity records used to calculate your streak and dashboard stats.</li>
+            <li>An uploaded profile avatar, if you add one.</li>
+        </ul>
+
+        <h2>What we don't do</h2>
+        <ul>
+            <li>We don't sell your data or share it with advertisers.</li>
+            <li>We don't read your notes for anything other than displaying them back to you.</li>
+            <li>We don't share your workspaces with other users unless you explicitly do so yourself.</li>
+        </ul>
+
+        <h2>Where it's stored</h2>
+        <p>All data is stored in a PostgreSQL database, scoped to your account. Only you can access your workspaces, notes, and resources when signed in.</p>
+
+        <h2>OAuth sign-in</h2>
+        <p>If you sign in with Google or GitHub, we receive your name, email, and avatar URL from that provider to create and update your INFERA profile. We don't receive your password for either service.</p>
+
+        <h2>Deleting your account</h2>
+        <p>Deleting your account permanently removes your resources, notes, tags, activity history, and workspaces. This action can't be undone, so export anything you want to keep beforehand.</p>
+
+        <h2>Contact</h2>
+        <p>Questions about this policy can be sent to <a th:href="'mailto:belmiredub4@gmail.com'" href="mailto:belmiredub4@gmail.com" style="color: var(--accent);">belmiredub4@gmail.com</a>.</p>
+    </div>
+</main>
+
+<footer class="infera-footer" style="margin-top: 0;">
+    <div class="container-narrow footer-bottom" style="border-top: none;">
+        <span class="footer-copy">&copy; <span id="year"></span> INFERA. All rights reserved.</span>
+    </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
