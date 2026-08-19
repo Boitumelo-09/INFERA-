@@ -228,7 +228,12 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     padding: 0px 16px 14px;
     flex-shrink: 0;
 }
-.logo-link { display: flex; align-items: center; gap: 9px; }
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
 
 .logo-mark {
     width: 70px;
