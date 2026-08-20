@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title th:text="${pageTitle}"></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/cssStyles/auth.css" th:href="@{/cssStyles/auth.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="auth-bg">
+    <div class="auth-grid"></div>
+    <div class="auth-orb orb-tl"></div>
+    <div class="auth-orb orb-br"></div>
+</div>
+
+<nav class="auth-nav">
+    <div class="auth-nav-inner">
+        <a th:href="@{/home}" href="home.html" class="navbar-brand d-flex align-items-center gap-2">
+            <span class="logo-text">incaptur</span>
+        </a>
+    </div>
+</nav>
+
+<main class="auth-main">
+    <div class="auth-container">
+
+        <!-- Left panel -->
+        <div class="auth-panel-left d-none d-lg-flex">
+            <div class="panel-content">
+                <div class="panel-quote">
+                    <div class="quote-mark">"</div>
+                    <p>No password to forget. I just open INFERA and I'm in.</p>
+                    <div class="quote-author">
+                        <div class="author-avatar av1">TM</div>
+                        <div>
+                            <div class="author-name">Thabo M.</div>
+                            <div class="author-role">Software Developer · Freelancer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-features mt-5">
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> One code, sent to your inbox</div>
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> No passwords to create or lose</div>
+                    <div class="pf-item"><i class="bi bi-check2-circle"></i> Or continue instantly with Google, GitHub, or Microsoft</div>
+                </div>
+
+                <div class="mini-dashboard mt-5">
+                    <div class="md-header">
+                        <span class="md-title">Dashboard</span>
+                        <span class="md-live"><span class="live-dot"></span> live</span>
+                    </div>
+                    <div class="md-stats">
+                        <div class="md-stat"><div class="md-num">12</div><div class="md-lbl">Notes</div></div>
+                        <div class="md-stat"><div class="md-num">4</div><div class="md-lbl">Workspaces</div></div>
+                        <div class="md-stat"><div class="md-num">29</div><div class="md-lbl">Resources</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right panel — form -->
+        <div class="auth-panel-right">
+            <div class="auth-form-wrapper">
+
+                <div class="auth-heading">
+                    <div class="auth-badge mb-3">
+                        <span class="badge-dot"></span> Welcome
+                    </div>
+                    <h1 class="auth-title">Continue to INCAPTUR</h1>
+                    <p class="auth-sub">Your knowledge vault, one code away.</p>
+                </div>
+
+                <!-- Alert (shared for both steps) -->
+                <div class="auth-alert d-none" id="authAlert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span id="authAlertText"></span>
+                </div>
+
+                <!-- OAuth -->
+                <div class="social-btns d-flex flex-column gap-3 mt-4">
+                    <a th:href="@{/oauth2/authorization/google}" class="btn-social">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.576c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.576 9 3.576z" fill="#EA4335"/></svg>
+                        Continue with Google
+                    </a>
+                    <a th:href="@{/oauth2/authorization/github}" class="btn-social">
+                        <i class="bi bi-github" style="font-size:1.1rem;"></i>
+                        Continue with GitHub
+                    </a>
+                    <a th:href="@{/oauth2/authorization/microsoft}" class="btn-social">
+                        <i class="bi bi-microsoft" style="font-size:1rem; color:#00A4EF;"></i>
+                        Continue with Microsoft
+                    </a>
+                </div>
+
+                <div class="divider-text my-4"><span>or continue with email</span></div>
+
+                <!-- STEP 1: email -->
+                <div id="stepEmail">
+                    <div class="form-group">
+                        <label class="form-label-custom" for="email">Email address</label>
+                        <div class="input-wrap">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
+                        </div>
+                        <div class="field-error" id="emailErr"></div>
+                    </div>
+
+                    <button type="button" class="btn-submit mt-4 w-100" id="sendCodeBtn">
+                        <span class="btn-submit-text">Send code</span>
+                        <span class="btn-submit-spinner d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+                </div>
+
+                <!-- STEP 2: code -->
+                <div id="stepCode" class="d-none">
+                    <div class="code-step-header">
+                        <p class="code-sent-to">Code sent to <strong id="codeEmailDisplay"></strong></p>
+                        <button type="button" class="edit-email-btn" id="editEmailBtn">Edit</button>
+                    </div>
+
+                    <div class="otp-boxes" id="otpBoxes">
+                        <span class="otp-prefix">INC</span>
+                        <span class="otp-dash">—</span>
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0" />
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1" />
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2" />
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="3" />
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="4" />
+                        <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="5" />
+                    </div>
+
+                    <button type="button" class="btn-submit mt-4 w-100" id="verifyBtn" disabled>
+                        <span class="btn-submit-text">Verify code</span>
+                        <span class="btn-submit-spinner d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+
+                    <p class="resend-row mt-3">
+                        <span id="resendIdle">Didn't get it? <button type="button" class="link-accent-btn" id="resendBtn">Resend code</button></span>
+                        <span id="resendCooldown" class="d-none">Resend available in <span id="resendTimer">60</span>s</span>
+                    </p>
+                </div>
+
+                <p class="auth-footer-note mt-4 text-center">
+                    By continuing you agree to INFERA's <a href="#" class="link-accent">Terms</a> and <a href="#" class="link-accent">Privacy Policy</a>.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
+</body>
+</html>
