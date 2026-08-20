@@ -21,7 +21,13 @@ public class CurrentUserService {
         }
         if (principal instanceof OAuth2User oAuth2User) {
             String email = oAuth2User.getAttribute("email");
-            return email == null ? null : userRepository.findByEmail(email).orElse(null);
+            if (email == null || email.isBlank()) {
+                // Microsoft work/school accounts often omit "email" entirely
+                email = oAuth2User.getAttribute("preferred_username");
+            }
+            if (email == null || email.isBlank()) return null;
+
+            return userRepository.findByEmail(email.trim().toLowerCase()).orElse(null);
         }
         return null;
     }
