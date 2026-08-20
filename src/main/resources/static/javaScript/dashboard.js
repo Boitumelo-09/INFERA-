@@ -735,3 +735,35 @@ function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInp
         reset() { tags = []; sync(); },
         flushPending() { if (textInput.value.trim()) addTag(textInput.value); }
     };}
+
+// Welcome modal — first-time trigger
+document.addEventListener('DOMContentLoaded', () => {
+    const welcomeModalEl = document.getElementById('welcomeModal');
+    if (!welcomeModalEl) return;
+
+    const showWelcome = welcomeModalEl.dataset.show === 'true';
+    if (!showWelcome) return;
+
+    const modal = new bootstrap.Modal(welcomeModalEl);
+    modal.show();
+
+    document.getElementById('welcomeContinueBtn').addEventListener('click', () => {
+        markWelcomeSeen();
+        modal.hide();
+    });
+
+    // Also mark seen if dismissed via backdrop click / esc, so it doesn't reappear
+    welcomeModalEl.addEventListener('hidden.bs.modal', markWelcomeSeen, { once: true });
+});
+function markWelcomeSeen() {
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const headers = {};
+    if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+    fetch('/api/user/mark-welcome-seen', { method: 'POST', headers })
+        .then(res => {
+            if (!res.ok) console.error('Failed to mark welcome seen:', res.status);
+        })
+        .catch(err => console.error('Network error marking welcome seen:', err));
+}
