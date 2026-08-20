@@ -15,14 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class UserSecurityConfig {
 
     private final OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
-    private final CustomUserDetailsService customUserDetailsService;
 
-    public UserSecurityConfig(OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler,
-                              CustomUserDetailsService customUserDetailsService) {
-        this.oAuth2SuccessHandler   = oAuth2SuccessHandler;
-        this.customUserDetailsService = customUserDetailsService;
+    public UserSecurityConfig(OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler) {
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -30,8 +26,8 @@ public class UserSecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/home",
-                                "/signup",
-                                "/signin",
+                                "/auth",
+                                "/auth/**",
                                 "/privacy",
                                 "/terms",
                                 "/cssStyles/**",
@@ -40,22 +36,13 @@ public class UserSecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(daoAuthenticationProvider())
-                .formLogin(form -> form
-                        .loginPage("/signin")
-                        .usernameParameter("email")      // match your HTML input name
-                        .passwordParameter("password")   // match your HTML input name
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/signin?error=true")
-                        .permitAll()
-                )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/signin")
+                        .loginPage("/auth")
                         .successHandler(oAuth2SuccessHandler)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/signin?logout=true")
+                        .logoutSuccessUrl("/auth?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
@@ -64,13 +51,13 @@ public class UserSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
-      //  provider.setUserDetailsService();
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+    //@Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+//      //  provider.setUserDetailsService();
+//        provider.setPasswordEncoder(passwordEncoder());
+//        return provider;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
