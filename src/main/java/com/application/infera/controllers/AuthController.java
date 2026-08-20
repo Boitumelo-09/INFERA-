@@ -107,7 +107,7 @@ public class AuthController {
 
     private User createUser(String email) {
         User user = new User();
-        user.setEmail(email);
+        user.setEmail(email.toLowerCase());
         user.setFirstName("User");
         user.setLastName("Account");
         user.setRole(Role.USER);
