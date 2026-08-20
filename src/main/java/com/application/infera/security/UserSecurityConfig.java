@@ -51,7 +51,7 @@ public class UserSecurityConfig {
         return http.build();
     }
 
-    //@Bean
+//    @Bean
 //    public DaoAuthenticationProvider daoAuthenticationProvider() {
 //        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
 //      //  provider.setUserDetailsService();
