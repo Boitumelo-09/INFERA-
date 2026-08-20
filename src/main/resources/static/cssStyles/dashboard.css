@@ -177,7 +177,7 @@ html.sb-collapsed .logout-btn, .sidebar.collapsed .logout-btn {
 }
 
 html.sb-collapsed .sidebar-logo, .sidebar.collapsed .sidebar-logo {
-    padding-left: 20px;
+    padding-left: 30px;
     padding-right: 0;
     justify-content: center;
 }
@@ -267,7 +267,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     color: var(--accent);
     border-left: 2px solid ;
     border-color: color-mix(in srgb, var(--accent) 10%, transparent);
-    padding-left: 10px;
+    padding-inline: 9px;
 }
 .sidebar-close {
     display: none;
@@ -2705,4 +2705,24 @@ html[data-theme="dark"] {
 html[data-theme="dark"],
 html[data-theme="dark"] body {
     overscroll-behavior-y: none;
+}
+.welcome-modal-content {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+}
+.welcome-icon {
+    font-size: 2.4rem;
+    color: var(--accent);
+}
+.welcome-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--text);
+}
+.welcome-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 340px;
+    margin: 10px auto 0;
 }

@@ -29,10 +29,11 @@ public class DashboardController {
         User user = currentUserService.resolve(principal);
 
         if (user == null) {
-            return "redirect:/signin";
+            return "redirect:/auth";
         }
 
         model.addAttribute("user", user);
+        model.addAttribute("showWelcomeModal", !user.isHasSeenWelcome());
         System.out.println(".".repeat(50));
         System.out.println("LOGGED IN USER    : "+ "\u001B[32m" + user.getFirstName() + " " + user.getLastName() + "\u001B[0m");
         System.out.println("Localed Session ID: "+ "\u001B[32m" + user.getId()+"\u001B[0m");

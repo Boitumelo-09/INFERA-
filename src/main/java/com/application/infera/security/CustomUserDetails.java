@@ -2,6 +2,7 @@
 package com.application.infera.security;
 
 import com.application.infera.models.User;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,9 +29,14 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return user.getPassword();
+    public @Nullable String getPassword() {
+        return "";
     }
+
+//    @Override
+//    public String getPassword() {
+//        return user.getPassword();
+//    }
 
     @Override
     public String getUsername() {

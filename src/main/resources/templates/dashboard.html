@@ -9,7 +9,8 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- th:text="${pageTitle} + ' — INFERA'" -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title th:text="${pageTitle}"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
@@ -59,7 +60,7 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera</span>
+            <span class="logo-text">incaptur</span>
         </a>
         <!-- Close button (mobile only) -->
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
@@ -165,9 +166,9 @@
             <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
         </div>
         <div class="user-info">
-            <!-- th:text="${user.firstName + ' ' + user.lastName}" -->
+            
             <div th:text="${user.firstName + ' ' + user.lastName}"  class="user-name">Sipho Ndlovu</div>
-            <!-- th:text="${user.email}" -->
+
             <div th:text="${user.email}" class="user-email">sipho@example.com</div>
         </div>
         <!-- th:action="@{/logout}" method="post" -->
@@ -550,7 +551,24 @@
         </div>
     </div>
 </div>
-
+<!-- Welcome modal — first-time users only -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true" data-bs-backdrop="static" th:attr="data-show=${showWelcomeModal}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content welcome-modal-content">
+            <div class="modal-body text-center py-5 px-4">
+                <div class="welcome-icon mb-3">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <h4 class="welcome-title" id="welcomeModalLabel">Welcome to INFERA</h4>
+                <p class="welcome-sub">Your workspace is ready. Start capturing notes, organizing resources, and
+                    building your knowledge vault.</p>
+                <button type="button" class="btn-submit mt-3 px-4" id="welcomeContinueBtn">
+                    Let's go
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Toast notification -->
 <div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
     <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>

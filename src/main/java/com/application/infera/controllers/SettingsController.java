@@ -54,20 +54,7 @@ public class SettingsController {
         return updated ? Map.of("success", true) : Map.of("success", false, "message", "Invalid theme");
     }
 
-    @PostMapping("/password")
-    public String changePassword(@AuthenticationPrincipal Object principal,
-                                 @RequestParam("currentPassword") String currentPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 RedirectAttributes redirectAttributes) {
-        User user = currentUserService.resolve(principal);
-        if (user == null || principal instanceof OAuth2User) return "redirect:/signin";
 
-        var result = settingsService.changePassword(user, currentPassword, newPassword, confirmPassword);
-        redirectAttributes.addFlashAttribute(result.success() ? "toast" : "toastError",
-                result.success() ? "Password updated" : result.errorMessage());
-        return "redirect:/settings";
-    }
 
     @PostMapping("/delete-account")
     public String deleteAccount(@AuthenticationPrincipal Object principal,

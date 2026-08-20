@@ -1,220 +1,243 @@
 /* ─────────────────────────────────────────
-   INFERA — auth.js  (signup + signin)
+   INFERA — auth.js  (unified email-OTP + OAuth)
 ───────────────────────────────────────── */
 
-    // ─── CUSTOM CURSOR ───────────────────────
-    const dot  = document.getElementById('cursorDot');
-    const ring = document.getElementById('cursorRing');
-    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+// ─── CUSTOM CURSOR ───────────────────────
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX; mouseY = e.clientY;
-        dot.style.left = mouseX + 'px';
-        dot.style.top  = mouseY + 'px';
-    });
-    (function animateRing() {
-        ringX += (mouseX - ringX) * 0.14;
-        ringY += (mouseY - ringY) * 0.14;
-        ring.style.left = ringX + 'px';
-        ring.style.top  = ringY + 'px';
-        requestAnimationFrame(animateRing);
-    })();
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top  = mouseY + 'px';
+});
+(function animateRing() {
+    ringX += (mouseX - ringX) * 0.14;
+    ringY += (mouseY - ringY) * 0.14;
+    ring.style.left = ringX + 'px';
+    ring.style.top  = ringY + 'px';
+    requestAnimationFrame(animateRing);
+})();
+document.querySelectorAll('a, button, input, label').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
 
-    document.querySelectorAll('a, button, input, label').forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-    });
-    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+// ─── CSRF ─────────────────────────────────
+const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
-// ─── TOGGLE PASSWORD ─────────────────────
-const togglePw  = document.getElementById('togglePw');
-const eyeIcon   = document.getElementById('eyeIcon');
-const pwInput   = document.getElementById('password');
-
-if (togglePw && pwInput) {
-    togglePw.addEventListener('click', () => {
-        const isHidden = pwInput.type === 'password';
-        pwInput.type = isHidden ? 'text' : 'password';
-        eyeIcon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
-    });
+function authFetch(url, body) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+    return fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
 }
 
-// ─── PASSWORD STRENGTH (signup only) ─────
-const strengthBar = document.getElementById('strengthBar');
-const sbFill      = document.getElementById('sbFill');
-const sbLabel     = document.getElementById('sbLabel');
+// ─── ELEMENTS ─────────────────────────────
+const stepEmail   = document.getElementById('stepEmail');
+const stepCode    = document.getElementById('stepCode');
+const emailInput  = document.getElementById('email');
+const emailErr    = document.getElementById('emailErr');
+const sendCodeBtn = document.getElementById('sendCodeBtn');
+const codeEmailDisplay = document.getElementById('codeEmailDisplay');
+const editEmailBtn = document.getElementById('editEmailBtn');
+const otpBoxesWrap  = document.getElementById('otpBoxes');
+const otpBoxes      = Array.from(document.querySelectorAll('.otp-box'));
+const verifyBtn      = document.getElementById('verifyBtn');
+const resendBtn      = document.getElementById('resendBtn');
+const resendIdle     = document.getElementById('resendIdle');
+const resendCooldown = document.getElementById('resendCooldown');
+const resendTimer    = document.getElementById('resendTimer');
+const authAlert     = document.getElementById('authAlert');
+const authAlertText = document.getElementById('authAlertText');
 
-function getStrength(pw) {
-    let score = 0;
-    if (pw.length >= 8)  score++;
-    if (pw.length >= 12) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
-    return score;
+let currentEmail = '';
+let cooldownInterval = null;
+
+// ─── ALERT HELPERS ────────────────────────
+function showAlert(message) {
+    authAlertText.textContent = message;
+    authAlert.classList.remove('d-none');
+}
+function hideAlert() {
+    authAlert.classList.add('d-none');
 }
 
-if (pwInput && sbFill) {
-    pwInput.addEventListener('input', () => {
-        const val = pwInput.value;
-        if (!val) {
-            sbFill.style.width = '0';
-            sbLabel.textContent = '';
-            sbFill.style.background = 'var(--accent)';
-            return;
+// ─── BUTTON SPINNER HELPERS ───────────────
+function setLoading(btn, loading) {
+    const text = btn.querySelector('.btn-submit-text');
+    const spinner = btn.querySelector('.btn-submit-spinner');
+    btn.disabled = loading;
+    text.classList.toggle('d-none', loading);
+    spinner.classList.toggle('d-none', !loading);
+}
+
+// ─── EMAIL VALIDATION ─────────────────────
+function isValidEmail(val) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
+// ─── STEP 1: SEND CODE ────────────────────
+sendCodeBtn.addEventListener('click', async () => {
+    hideAlert();
+    const email = emailInput.value.trim();
+
+    if (!isValidEmail(email)) {
+        emailInput.classList.add('is-error');
+        emailErr.textContent = 'Enter a valid email address';
+        return;
+    }
+    emailInput.classList.remove('is-error');
+    emailErr.textContent = '';
+
+    setLoading(sendCodeBtn, true);
+    try {
+        const res = await authFetch('/auth/request-code', { email });
+        const data = await res.json();
+
+        if (res.ok) {
+            currentEmail = email;
+            enterCodeStep(email);
+            startResendCooldown();
+        } else if (data.status === 'cooldown') {
+            currentEmail = email;
+            enterCodeStep(email);
+            startResendCooldown();
+        } else {
+            showAlert(data.message || 'Something went wrong. Try again.');
         }
-        const score = getStrength(val);
-        const widths  = ['15%', '30%', '50%', '75%', '100%'];
-        const colors  = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#16a34a'];
-        const labels  = ['Weak', 'Fair', 'Good', 'Strong', 'Very strong'];
-        const idx = Math.min(score - 1, 4);
-        sbFill.style.width      = widths[idx];
-        sbFill.style.background = colors[idx];
-        sbLabel.textContent     = labels[idx];
+    } catch {
+        showAlert('Could not reach the server. Check your connection.');
+    } finally {
+        setLoading(sendCodeBtn, false);
+    }
+});
+
+emailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); sendCodeBtn.click(); }
+});
+
+function enterCodeStep(email) {
+    codeEmailDisplay.textContent = email;
+    stepEmail.classList.add('d-none');
+    stepCode.classList.remove('d-none');
+    otpBoxes.forEach(b => b.value = '');
+    otpBoxes[0].focus();
+    updateVerifyState();
+}
+
+editEmailBtn.addEventListener('click', () => {
+    stepCode.classList.add('d-none');
+    stepEmail.classList.remove('d-none');
+    hideAlert();
+    clearInterval(cooldownInterval);
+});
+
+// ─── STEP 2: OTP BOXES ─────────────────────
+otpBoxes.forEach((box, idx) => {
+    box.addEventListener('input', () => {
+        box.value = box.value.replace(/[^0-9]/g, '').slice(0, 1);
+        if (box.value && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
+        updateVerifyState();
     });
-}
 
-// ─── FORM VALIDATION HELPERS ─────────────
-function showError(inputId, errId, msg) {
-    const input = document.getElementById(inputId);
-    const err   = document.getElementById(errId);
-    if (input) { input.classList.add('is-error'); input.classList.remove('is-success'); }
-    if (err)   err.textContent = msg;
-}
-
-function showSuccess(inputId, errId) {
-    const input = document.getElementById(inputId);
-    const err   = document.getElementById(errId);
-    if (input) { input.classList.remove('is-error'); input.classList.add('is-success'); }
-    if (err)   err.textContent = '';
-}
-
-function clearState(inputId, errId) {
-    const input = document.getElementById(inputId);
-    const err   = document.getElementById(errId);
-    if (input) { input.classList.remove('is-error', 'is-success'); }
-    if (err)   err.textContent = '';
-}
-
-// ─── SIGNUP FORM ─────────────────────────
-const signupForm = document.getElementById('signupForm');
-
-if (signinForm) {
-
-    document.getElementById("email")?.addEventListener("blur", validateSigninEmail);
-    document.getElementById("password")?.addEventListener("blur", validateSigninPassword);
-
-    signinForm.addEventListener("submit", (e) => {
-
-        const ok = [
-            validateSigninEmail(),
-            validateSigninPassword()
-        ].every(Boolean);
-
-        if (!ok) {
-            e.preventDefault();
-            return;
+    box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !box.value && idx > 0) {
+            otpBoxes[idx - 1].focus();
+            otpBoxes[idx - 1].value = '';
+            updateVerifyState();
         }
-
-        const btn = document.getElementById("submitBtn");
-        const btnText = btn.querySelector(".btn-submit-text");
-        const spinner = btn.querySelector(".btn-submit-spinner");
-
-        btn.disabled = true;
-
-        btnText.classList.add("d-none");
-        spinner.classList.remove("d-none");
-
-        // IMPORTANT:
-        // No preventDefault().
-        // No fetch().
-        // No window.location.href.
-        // Let Spring Boot submit the form naturally.
     });
 
-    function validateFirstName() {
-        const val = document.getElementById('firstName')?.value.trim();
-        if (!val) { showError('firstName', 'firstNameErr', 'First name is required'); return false; }
-        showSuccess('firstName', 'firstNameErr'); return true;
-    }
-    function validateLastName() {
-        const val = document.getElementById('lastName')?.value.trim();
-        if (!val) { showError('lastName', 'lastNameErr', 'Last name is required'); return false; }
-        showSuccess('lastName', 'lastNameErr'); return true;
-    }
-    function validateEmail() {
-        const val = document.getElementById('email')?.value.trim();
-        const re  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!val)     { showError('email', 'emailErr', 'Email is required'); return false; }
-        if (!re.test(val)) { showError('email', 'emailErr', 'Enter a valid email address'); return false; }
-        showSuccess('email', 'emailErr'); return true;
-    }
-    function validatePassword() {
-        const val = document.getElementById('password')?.value;
-        if (!val)          { showError('password', 'passwordErr', 'Password is required'); return false; }
-        if (val.length < 8) { showError('password', 'passwordErr', 'Password must be at least 8 characters'); return false; }
-        showSuccess('password', 'passwordErr'); return true;
-    }
-    function validateConfirmPassword() {
-        const pw  = document.getElementById('password')?.value;
-        const cpw = document.getElementById('confirmPassword')?.value;
-        if (!cpw)       { showError('confirmPassword', 'confirmPasswordErr', 'Please confirm your password'); return false; }
-        if (pw !== cpw) { showError('confirmPassword', 'confirmPasswordErr', 'Passwords do not match'); return false; }
-        showSuccess('confirmPassword', 'confirmPasswordErr'); return true;
-    }
-}
-
-// ─── SIGNIN FORM ─────────────────────────
-const signinForm = document.getElementById('signinForm');
-
-if (signinForm) {
-    document.getElementById('email')?.addEventListener('blur', validateSigninEmail);
-    document.getElementById('password')?.addEventListener('blur', validateSigninPassword);
-
-    signinForm.addEventListener('submit', async (e) => {
+    box.addEventListener('paste', (e) => {
         e.preventDefault();
-        const ok = [validateSigninEmail(), validateSigninPassword()].every(Boolean);
-        if (!ok) return;
-
-        const btn     = document.getElementById('submitBtn');
-        const btnText = btn.querySelector('.btn-submit-text');
-        const spinner = btn.querySelector('.btn-submit-spinner');
-        const alert   = document.getElementById('loginAlert');
-
-        btn.disabled = true;
-        btnText.classList.add('d-none');
-        spinner.classList.remove('d-none');
-        if (alert) alert.classList.add('d-none');
-
-        await new Promise(r => setTimeout(r, 1600));
-
-        // Demo: any login succeeds
-        btn.style.background = '#16a34a';
-        spinner.classList.add('d-none');
-        btnText.classList.remove('d-none');
-        btnText.innerHTML = '<i class="bi bi-check2"></i> Welcome back!';
-
-        setTimeout(() => {
-            // Real app: redirect to dashboard
-            window.location.href = 'home.html';
-        }, 1000);
+        const pasted = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
+        pasted.split('').forEach((digit, i) => { if (otpBoxes[i]) otpBoxes[i].value = digit; });
+        const nextEmpty = otpBoxes.findIndex(b => !b.value);
+        (nextEmpty === -1 ? otpBoxes[5] : otpBoxes[nextEmpty]).focus();
+        updateVerifyState();
     });
+});
 
-    function validateSigninEmail() {
-        const val = document.getElementById('email')?.value.trim();
-        const re  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!val || !re.test(val)) { showError('email', 'emailErr', 'Enter a valid email address'); return false; }
-        showSuccess('email', 'emailErr'); return true;
-    }
-    function validateSigninPassword() {
-        const val = document.getElementById('password')?.value;
-        if (!val) { showError('password', 'passwordErr', 'Password is required'); return false; }
-        showSuccess('password', 'passwordErr'); return true;
+function getCode() {
+    return otpBoxes.map(b => b.value).join('');
+}
+
+function updateVerifyState() {
+    const code = getCode();
+    verifyBtn.disabled = code.length !== 6;
+    if (code.length === 6) verifyCode();
+}
+
+async function verifyCode() {
+    hideAlert();
+    const code = getCode();
+    if (code.length !== 6) return;
+
+    setLoading(verifyBtn, true);
+    try {
+        const res = await authFetch('/auth/verify-code', { email: currentEmail, code });
+        const data = await res.json();
+
+        if (res.ok && data.status === 'success') {
+            otpBoxesWrap.classList.add('success');
+            verifyBtn.querySelector('.btn-submit-text').innerHTML = '<i class="bi bi-check2"></i> Verified';
+            setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 500);
+        } else {
+            otpBoxesWrap.classList.add('shake');
+            setTimeout(() => otpBoxesWrap.classList.remove('shake'), 400);
+            otpBoxes.forEach(b => b.value = '');
+            otpBoxes[0].focus();
+            showAlert(data.message || 'Incorrect code.');
+            setLoading(verifyBtn, false);
+            verifyBtn.disabled = true;
+        }
+    } catch {
+        showAlert('Could not reach the server. Check your connection.');
+        setLoading(verifyBtn, false);
     }
 }
 
-// ─── INPUT ANIMATION (focus ring on label) ─
+verifyBtn.addEventListener('click', verifyCode);
+
+// ─── RESEND ─────────────────────────────────
+resendBtn.addEventListener('click', async () => {
+    hideAlert();
+    try {
+        const res = await authFetch('/auth/request-code', { email: currentEmail });
+        const data = await res.json();
+        if (res.ok) {
+            startResendCooldown();
+        } else if (data.status !== 'cooldown') {
+            showAlert(data.message || 'Could not resend. Try again.');
+        }
+    } catch {
+        showAlert('Could not reach the server. Check your connection.');
+    }
+});
+
+function startResendCooldown() {
+    let seconds = 60;
+    resendIdle.classList.add('d-none');
+    resendCooldown.classList.remove('d-none');
+    resendTimer.textContent = seconds;
+
+    clearInterval(cooldownInterval);
+    cooldownInterval = setInterval(() => {
+        seconds -= 1;
+        resendTimer.textContent = seconds;
+        if (seconds <= 0) {
+            clearInterval(cooldownInterval);
+            resendCooldown.classList.add('d-none');
+            resendIdle.classList.remove('d-none');
+        }
+    }, 1000);
+}
+
+// ─── INPUT FOCUS LABEL COLOR ────────────────
 document.querySelectorAll('.form-input').forEach(input => {
     input.addEventListener('focus', () => {
         input.closest('.form-group')?.querySelector('.form-label-custom')?.style.setProperty('color', 'var(--accent)');

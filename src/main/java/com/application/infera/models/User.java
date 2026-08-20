@@ -16,17 +16,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String firstName;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String lastName;
 
     @Column(nullable = false, unique = true, length = 150)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,7 +48,8 @@ public class User {
 
     @Column(length = 280)
     private String bio;
-   
+    @Column(nullable = false)
+    private boolean hasSeenWelcome = false;
 
     @Column(length = 20)
     private String themePreference = "default";
@@ -69,6 +67,7 @@ public class User {
         updatedAt = LocalDateTime.now();
 
     }
+
 
 
 }
