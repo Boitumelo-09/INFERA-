@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${pageTitle}">INFERA — Capture Ideas.</title>
-    <meta name="description" content="INFERA is where your notes, resources, and research live together — organized your way." />
+    <title th:text="${pageTitle}">INCAPTUR — Capture Ideas.</title>
+    <meta name="description" content="INCAPTUR is where your notes, resources, and research live together — organized your way." />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
-    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/INCAPTURLogoICON.ico}">
 </head>
 <body>
 
@@ -19,18 +19,18 @@
 <nav class="infera-nav" id="mainNav">
     <div class="nav-inner">
         <a class="brand" href="#hero">
-            <span class="brand-name">infera</span>
+            <span class="brand-name">incaptur</span>
         </a>
 
         <ul class="nav-links">
             <li><a href="#showcase">Features</a></li>
-            <li><a href="#why">Why INFERA</a></li>
+            <li><a href="#why">Why INCAPTUR</a></li>
             <li><a href="#faq">FAQ</a></li>
         </ul>
 
         <div class="nav-actions">
-            <a th:href="@{/signin}" class="btn-ghost">Sign in</a>
-            <a th:href="@{/signup}" class="btn-accent">Sign up free</a>
+            <a th:href="@{/auth}" class="btn-ghost">Sign in</a>
+            <a th:href="@{/auth}" class="btn-accent">Sign up free</a>
         </div>
 
         <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileMenu">
@@ -42,11 +42,11 @@
 <div class="mobile-menu-backdrop" id="menuBackdrop"></div>
 <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
     <a href="#showcase">Features</a>
-    <a href="#why">Why INFERA</a>
+    <a href="#why">Why INCAPTUR</a>
     <a href="#faq">FAQ</a>
     <div class="mobile-menu-actions">
-        <a th:href="@{/signin}" href="signin.html" class="btn-outline">Sign in</a>
-        <a th:href="@{/signup}" href="signup.html" class="btn-accent-lg">Sign up free</a>
+        <a th:href="@{/auth}"  class="btn-outline">Sign in</a>
+        <a th:href="@{/auth}"  class="btn-accent-lg">Sign up free</a>
     </div>
 </nav>
 
@@ -85,11 +85,11 @@
         <div class="hero-text">
             <h1 class="hero-headline">Capture ideas.<br /><em>Keep them findable.</em></h1>
             <p class="hero-sub">
-                INFERA is where your notes, resources, and research live together —
+                INCAPTUR is where your notes, resources, and research live together —
                 sorted into workspaces, connected by tags, and one search away from wherever you left them.
             </p>
             <div class="hero-cta">
-                <a th:href="@{/signin}" class="btn-accent-lg">
+                <a th:href="@{/auth}" class="btn-accent-lg">
                     Sign In <i class="bi bi-arrow-right"></i>
                 </a>
                 <a href="#showcase" class="btn-outline">
@@ -99,7 +99,7 @@
             <div class="hero-stats">
                 <span><strong th:text="${noteCount}">0</strong> notes captured so far</span>
                 <span><strong th:text="${workspaceCount}">0</strong> workspaces created</span>
-                <span><strong th:text="${activeUsers}">0</strong> people using INFERA</span>
+                <span><strong th:text="${activeUsers}">0</strong> people using INCAPTUR</span>
             </div>
             </div>
         </div>
@@ -152,7 +152,7 @@
             <div class="showcase-row reverse">
                 <div class="showcase-text">
                     <h3>A note editor that gets out of your way</h3>
-                    <p>Markdown, math, and code, rendered cleanly as you write. Tag notes as you go, and INFERA autocompletes tags you've already used so your system stays consistent.</p>
+                    <p>Markdown, math, and code, rendered cleanly as you write. Tag notes as you go, and INCAPTUR autocompletes tags you've already used so your system stays consistent.</p>
                     <div class="showcase-tags">
                         <span class="showcase-tag">#literature</span>
                         <span class="showcase-tag">#research</span>
@@ -197,10 +197,10 @@
     </div>
 </section>
 
-<!-- ─── WHY INFERA ────────────────────────────────────────────── -->
+<!-- ─── WHY INCAPTUR ────────────────────────────────────────────── -->
 <section class="why-section section-pad" id="why">
     <div class="container-narrow">
-        <div class="eyebrow mb-2">Why choose INFERA</div>
+        <div class="eyebrow mb-2">Why choose INCAPTUR</div>
         <h2 class="section-title">A few honest reasons</h2>
 
         <div class="why-list">
@@ -208,7 +208,7 @@
                 <span class="why-num">01</span>
                 <div>
                     <h4>It's built for structure, not just storage</h4>
-                    <p>Workspaces aren't a nice-to-have folder feature — they're the backbone of how INFERA organizes everything else you do in it.</p>
+                    <p>Workspaces aren't a nice-to-have folder feature — they're the backbone of how INCAPTUR organizes everything else you do in it.</p>
                 </div>
             </div>
             <div class="why-item">
@@ -229,7 +229,7 @@
                 <span class="why-num">04</span>
                 <div>
                     <h4>It's built by someone who uses it daily</h4>
-                    <p>INFERA isn't a boardroom product. It's built by one developer who takes their own lecture notes and project notes in it — every decision comes from actually using the thing.</p>
+                    <p>INCAPTUR isn't a boardroom product. It's built by one developer who takes their own lecture notes and project notes in it — every decision comes from actually using the thing.</p>
                 </div>
             </div>
         </div>
@@ -246,11 +246,11 @@
         <div class="faq-list">
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false">
-                    Is INFERA free to use?
+                    Is INCAPTUR free to use?
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <div class="faq-answer">
-                    <div class="faq-answer-inner">Yes — INFERA is free while it's in active development. If pricing is introduced later, anything you've already built will stay yours to access.</div>
+                    <div class="faq-answer-inner">Yes — INCAPTUR is free while it's in active development. If pricing is introduced later, anything you've already built will stay yours to access.</div>
                 </div>
             </div>
             <div class="faq-item">
@@ -286,7 +286,7 @@
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <div class="faq-answer">
-                    <div class="faq-answer-inner">Not yet — INFERA is a responsive web app, so it works in your phone's browser today. A dedicated app isn't built, and we won't claim otherwise until it is.</div>
+                    <div class="faq-answer-inner">Not yet — INCAPTUR is a responsive web app, so it works in your phone's browser today. A dedicated app isn't built, and we won't claim otherwise until it is.</div>
                 </div>
             </div>
         </div>
@@ -298,10 +298,10 @@
     <div class="container-narrow">
         <h2 class="cta-headline">Start capturing ideas.</h2>
         <p class="cta-sub">No credit card. No trial countdown. Just a place to put your thinking.</p>
-        <a th:href="@{/signup}" href="signup.html" class="btn-accent-lg" style="margin-top: 28px;">
+        <a th:href="@{/auth}" href="auth.html" class="btn-accent-lg" style="margin-top: 28px;">
             Create your free account <i class="bi bi-arrow-right"></i>
         </a>
-        <p class="cta-note">Free while INFERA is in active development.</p>
+        <p class="cta-note">Free while INCAPTUR is in active development.</p>
     </div>
 </section>
 
@@ -311,7 +311,7 @@
         <div class="footer-grid">
             <div>
                 <a class="brand" href="#hero" style="margin-bottom: 14px; display: inline-flex;">
-                    <span class="logo-mark" style="width:26px;height:26px;">
+                    <span class="logo-mark" style="width:48px;height:48px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
                             <circle class="logo-bg" cx="812" cy="1000" r="286"/>
                             <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
@@ -328,7 +328,7 @@
                             </g>
                         </svg>
                     </span>
-                    <span class="brand-name">INFERA</span>
+                    <span class="brand-name">incaptur</span>
                 </a>
                 <p class="footer-tagline">Capture ideas. Keep them structured. Never lose track of your own thinking.</p>
                 <div class="footer-socials">
@@ -341,15 +341,15 @@
                 <h6 class="footer-col-title">Product</h6>
                 <ul class="footer-links">
                     <li><a href="#showcase">Features</a></li>
-                    <li><a href="#why">Why INFERA</a></li>
+                    <li><a href="#why">Why INCAPTUR</a></li>
                     <li><a href="#faq">FAQ</a></li>
                 </ul>
             </div>
             <div>
                 <h6 class="footer-col-title">Account</h6>
                 <ul class="footer-links">
-                    <li><a th:href="@{/signin}" href="signin.html">Sign in</a></li>
-                    <li><a th:href="@{/signup}" href="signup.html">Sign up</a></li>
+                    <li><a th:href="@{/auth}" >Sign in</a></li>
+                    <li><a th:href="@{/auth}">Sign up</a></li>
                 </ul>
             </div>
             <div>
@@ -361,7 +361,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <span class="footer-copy">&copy; <span id="year"></span> INFERA. All rights reserved.</span>
+            <span class="footer-copy">&copy; <span id="year"></span> INCAPTUR. All rights reserved.</span>
             <span class="footer-built">Built for your mind.<br>Built by Belmire.</span>
         </div>
     </div>
