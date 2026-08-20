@@ -27,20 +27,7 @@ public class SettingsService {
     public record PasswordChangeResult(boolean success, String errorMessage) {
     }
 
-    public PasswordChangeResult changePassword(User user, String currentPassword, String newPassword, String confirmPassword) {
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            return new PasswordChangeResult(false, "Current password is incorrect");
-        }
-        if (!newPassword.equals(confirmPassword)) {
-            return new PasswordChangeResult(false, "New passwords don't match");
-        }
-        if (newPassword.length() < 8) {
-            return new PasswordChangeResult(false, "Password must be at least 8 characters");
-        }
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-        return new PasswordChangeResult(true, null);
-    }
+
 
     public void deleteUser(User user) {
 
