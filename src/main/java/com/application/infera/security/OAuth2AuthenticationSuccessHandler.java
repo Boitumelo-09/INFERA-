@@ -49,6 +49,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             response.sendRedirect("/login?error=email_unavailable");
             return;
         }
+        email = email.trim().toLowerCase();
 
         String avatarUrl = resolveAvatarUrl(oauthUser, provider);
 
