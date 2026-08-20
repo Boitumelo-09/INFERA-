@@ -57,7 +57,6 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             User user = new User();
             user.setFirstName(firstName);
             user.setLastName(lastName);
-            user.setPassword(UUID.randomUUID().toString());
             user.setEmail(email);
             user.setRole(Role.USER);
             user.setEnabled(true);
@@ -76,10 +75,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private String resolveAvatarUrl(OAuth2User oauthUser, String provider) {
         if ("google".equals(provider)) return oauthUser.getAttribute("picture");
         if ("github".equals(provider)) return oauthUser.getAttribute("avatar_url");
+        // Microsoft's default OIDC userinfo response has no photo claim —
+        // Graph photo requires a separate authenticated call we're not making here.
         return null;
     }
     private String resolveEmail(OAuth2User oauthUser, String provider) {
-        // Both Google and GitHub expose "email", but GitHub users
+        // Google and GitHub expose "email" directly, but GitHub users
         // can hide it — in that case we fall back to login@github.oauth
         String email = oauthUser.getAttribute("email");
         if (email != null && !email.isBlank()) return email;
@@ -89,13 +90,21 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             if (login != null) return login + "@github.oauth";
         }
 
+        if ("microsoft".equals(provider)) {
+            // Personal MSA accounts sometimes populate "email", work/school accounts
+            // often only populate "preferred_username" (usually the UPN/email)
+            String preferredUsername = oauthUser.getAttribute("preferred_username");
+            if (preferredUsername != null && !preferredUsername.isBlank()) return preferredUsername;
+        }
+
         return null;
     }
 
     private String resolveFirstName(OAuth2User oauthUser, String provider) {
-        if ("google".equals(provider)) {
-            // Google returns given_name directly
-            return oauthUser.getAttribute("given_name");
+        if ("google".equals(provider) || "microsoft".equals(provider)) {
+            // Both Google and Microsoft's OIDC claims return given_name directly
+            String givenName = oauthUser.getAttribute("given_name");
+            if (givenName != null && !givenName.isBlank()) return givenName;
         }
 
         if ("github".equals(provider)) {
@@ -109,22 +118,29 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             return oauthUser.getAttribute("login");
         }
 
-        return "User"; // generic fallback
-    }
-
-    private String resolveLastName(OAuth2User oauthUser, String provider) {
-        if ("google".equals(provider)) {
-            // Google returns family_name directly
-            return oauthUser.getAttribute("family_name");
+        if ("microsoft".equals(provider)) {
+            // given_name missing — fall back to splitting "name"
+            String fullName = oauthUser.getAttribute("name");
+            if (fullName != null && !fullName.isBlank()) {
+                int space = fullName.indexOf(' ');
+                return space > 0 ? fullName.substring(0, space).trim() : fullName.trim();
+            }
         }
 
-        if ("github".equals(provider)) {
+        return "User"; // generic fallback
+    }
+    private String resolveLastName(OAuth2User oauthUser, String provider) {
+        if ("google".equals(provider) || "microsoft".equals(provider)) {
+            // Both Google and Microsoft's OIDC claims return family_name directly
+            String familyName = oauthUser.getAttribute("family_name");
+            if (familyName != null && !familyName.isBlank()) return familyName;
+        }
+
+        if ("github".equals(provider) || "microsoft".equals(provider)) {
             String fullName = oauthUser.getAttribute("name");
             if (fullName != null && fullName.contains(" ")) {
                 return fullName.substring(fullName.indexOf(' ')).trim();
             }
-            // Single-word name or no name — empty string keeps @Column happy
-            return "";
         }
 
         return "";
