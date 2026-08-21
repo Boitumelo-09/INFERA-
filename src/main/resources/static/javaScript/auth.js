@@ -83,7 +83,7 @@ function isValidEmail(val) {
 // ─── STEP 1: SEND CODE ────────────────────
 sendCodeBtn.addEventListener('click', async () => {
     hideAlert();
-    const email = emailInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
 
     if (!isValidEmail(email)) {
         emailInput.classList.add('is-error');
