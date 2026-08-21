@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class AuthController {
 
     @PostMapping("/request-code")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) {
+    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) throws UnsupportedEncodingException {
         Map<String, Object> body = new HashMap<>();
 
         OtpService.RequestOutcome outcome = otpService.requestCode(request.getEmail());
