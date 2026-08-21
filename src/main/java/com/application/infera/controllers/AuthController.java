@@ -20,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,10 +45,11 @@ public class AuthController {
 
     @PostMapping("/request-code")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) throws UnsupportedEncodingException {
+    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) {
         Map<String, Object> body = new HashMap<>();
+        String email = request.getEmail().trim().toLowerCase();
 
-        OtpService.RequestOutcome outcome = otpService.requestCode(request.getEmail());
+        OtpService.RequestOutcome outcome = otpService.requestCode(email);
 
         if (outcome.status() == OtpService.RequestStatus.COOLDOWN) {
             body.put("status", "cooldown");
@@ -57,10 +57,10 @@ public class AuthController {
             return ResponseEntity.status(429).body(body);
         }
 
-        mailService.sendOtpEmail(request.getEmail(), outcome.code());
+        mailService.sendOtpEmail(email, outcome.code());
 
         body.put("status", "sent");
-        body.put("message", "Code sent to " + request.getEmail());
+        body.put("message", "Code sent to " + email);
         return ResponseEntity.ok(body);
     }
 
@@ -70,12 +70,13 @@ public class AuthController {
                                                           HttpServletRequest httpRequest,
                                                           HttpServletResponse httpResponse) {
         Map<String, Object> body = new HashMap<>();
-        OtpService.VerifyResult result = otpService.verifyCode(request.getEmail(), request.getCode());
+        String email = request.getEmail().trim().toLowerCase();
+        OtpService.VerifyResult result = otpService.verifyCode(email, request.getCode());
 
         switch (result) {
             case SUCCESS -> {
-                User user = userRepository.findByEmail(request.getEmail())
-                        .orElseGet(() -> createUser(request.getEmail()));
+                User user = userRepository.findByEmail(email)
+                        .orElseGet(() -> createUser(email));
 
                 loginUser(user, httpRequest, httpResponse);
 
@@ -108,13 +109,14 @@ public class AuthController {
 
     private User createUser(String email) {
         User user = new User();
-        user.setEmail(email.toLowerCase());
+        user.setEmail(email);
         user.setFirstName("User");
         user.setLastName("Account");
         user.setRole(Role.USER);
         user.setEnabled(true);
         return userRepository.save(user);
     }
+
     private void loginUser(User user, HttpServletRequest request, HttpServletResponse response) {
         CustomUserDetails userDetails = new CustomUserDetails(user);
         UsernamePasswordAuthenticationToken authToken =
