@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ErrorController {
     @GetMapping
     public String error(Model model) {
-          model.addAttribute("pageTitle", "Error — INFERA");
+          model.addAttribute("pageTitle", "Error — INCAPTUR");
         return "error";
     }
 }

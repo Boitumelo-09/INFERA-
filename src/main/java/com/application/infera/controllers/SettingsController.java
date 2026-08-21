@@ -30,11 +30,11 @@ public class SettingsController {
     @GetMapping
     public String settingsPage(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         boolean isOAuthUser = principal instanceof OAuth2User;
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Settings — INFERA");
+        model.addAttribute("pageTitle", "Settings — INCAPTUR");
         model.addAttribute("isOAuthUser", isOAuthUser);
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));

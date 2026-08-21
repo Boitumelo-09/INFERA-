@@ -2,6 +2,8 @@ package com.application.infera.services;
 
 import com.application.infera.models.VerificationCode;
 import com.application.infera.repositories.VerificationCodeRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -28,12 +30,14 @@ public class OtpService {
     public enum VerifyResult { SUCCESS, EXPIRED, INVALID, LOCKED, NOT_FOUND }
 
     public record RequestOutcome(RequestStatus status, String code) {}
-
+    @Transactional
     public RequestOutcome requestCode(String email) {
         Optional<VerificationCode> last = codeRepository.findTopByEmailOrderByCreatedAtDesc(email);
         if (last.isPresent() && Duration.between(last.get().getCreatedAt(), LocalDateTime.now()).compareTo(RESEND_COOLDOWN) < 0) {
             return new RequestOutcome(RequestStatus.COOLDOWN, null);
         }
+
+        codeRepository.deleteByEmail(email);
 
         String code = generateCode();
         VerificationCode vc = new VerificationCode();
@@ -46,8 +50,15 @@ public class OtpService {
     }
 
     public String generateCode() {
-        int num = random.nextInt(1_000_000);
-        return String.format("%06d", num);
+        int bound = (int) Math.pow(10, CODE_LENGTH);
+        int num = random.nextInt(bound);
+        return String.format("%0" + CODE_LENGTH + "d", num);
+    }
+
+    @Scheduled(fixedRate = 3_600_000) // every hour
+    @Transactional
+    public void cleanupExpiredCodes() {
+        codeRepository.deleteByExpiresAtBefore(LocalDateTime.now());
     }
 
     public VerifyResult verifyCode(String email, String submittedCode) {

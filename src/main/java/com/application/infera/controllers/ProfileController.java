@@ -30,10 +30,10 @@ public class ProfileController {
     @GetMapping
     public String profilePage(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Profile — INFERA");
+        model.addAttribute("pageTitle", "Profile — INCAPTUR");
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
@@ -50,7 +50,7 @@ public class ProfileController {
                                 @RequestParam(value = "bio", required = false) String bio,
                                 RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         profileService.updateProfile(user, firstName, lastName, lifeRole, location, bio);
         redirectAttributes.addFlashAttribute("toast", "Profile updated");

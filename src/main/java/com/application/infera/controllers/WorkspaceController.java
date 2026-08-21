@@ -26,7 +26,6 @@ import java.util.List;
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
-    private final UserRepository userRepository;
     private final NoteService noteService;
     private final ResourceService resourceService;
     private final CurrentUserService currentUserService;
@@ -37,10 +36,10 @@ public class WorkspaceController {
     public String listWorkspaces(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
 
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
-        model.addAttribute("pageTitle", "Workspaces — INFERA");
+        model.addAttribute("pageTitle", "Workspaces — INCAPTUR");
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
@@ -58,7 +57,7 @@ public class WorkspaceController {
                                   RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
 
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             workspaceService.createWorkspace(workspaceRequest, user);
