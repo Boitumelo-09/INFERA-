@@ -31,7 +31,7 @@ public class ResourceController {
                                  @ModelAttribute ResourceRequest resourceRequest,
                                  RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             resourceService.createResource(resourceRequest, user);
@@ -51,7 +51,7 @@ public class ResourceController {
                                  @ModelAttribute ResourceRequest resourceRequest,
                                  RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             resourceService.updateResource(id, resourceRequest, user);
@@ -68,7 +68,7 @@ public class ResourceController {
                                  @PathVariable Long id,
                                  RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             resourceService.deleteResource(id, user);
@@ -82,9 +82,9 @@ public class ResourceController {
     @GetMapping
     public String listResources(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
-        model.addAttribute("pageTitle", "Resources — INFERA");
+        model.addAttribute("pageTitle", "Resources — INCAPTUR");
         model.addAttribute("user", user);
         model.addAttribute("resourcesByCategory", resourceService.getResourcesGroupedByCategory(user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
