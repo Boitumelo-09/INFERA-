@@ -26,7 +26,6 @@ public class NoteController {
 
     private final NoteService noteService;
     private final WorkspaceService workspaceService;
-    private final UserRepository userRepository;
     private final ResourceService resourceService;
     private final CurrentUserService currentUserService;
 
@@ -34,11 +33,11 @@ public class NoteController {
     @GetMapping
     public String listNotes(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         List<Note> notes = noteService.getNotesForUser(user);
 
-        model.addAttribute("pageTitle", "Notes — INFERA");
+        model.addAttribute("pageTitle", "Notes — INCAPTUR");
         model.addAttribute("user", user);
         model.addAttribute("notes", notes);
         model.addAttribute("noteCount", notes.size());
@@ -55,7 +54,7 @@ public class NoteController {
                              @ModelAttribute NoteRequest noteRequest,
                              RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             noteService.createNote(noteRequest, user);
@@ -74,7 +73,7 @@ public class NoteController {
                              @ModelAttribute NoteRequest noteRequest,
                              RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             noteService.updateNote(id, noteRequest, user);
@@ -92,7 +91,7 @@ public class NoteController {
                              @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             noteService.deleteNote(id, user);
