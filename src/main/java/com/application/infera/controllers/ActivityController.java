@@ -24,9 +24,9 @@ public class ActivityController {
     @GetMapping
     public String showActivity(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
-        model.addAttribute("pageTitle", "Activity — INFERA");
+        model.addAttribute("pageTitle", "Activity — INCAPTUR");
         model.addAttribute("user", user);
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
