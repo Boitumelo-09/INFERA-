@@ -50,7 +50,7 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera</span>
+            <span class="logo-text">incaptur</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar"><i class="bi bi-x-lg"></i></button>
     </div>
@@ -137,42 +137,28 @@
             <div class="panel-header"><h2 class="panel-title"><i class="bi bi-shield-lock-fill" style="color:#34d399;"></i> Security</h2></div>
             <div th:if="${isOAuthUser}" class="settings-oauth-note"><i class="bi bi-info-circle"></i> Password is managed by your OAuth provider.</div>
             <div th:unless="${isOAuthUser}" class="settings-row">
-                <div><div class="settings-row-label">Password</div><div class="settings-row-sub">Change your account password</div></div>
-                <button class="panel-action" data-bs-toggle="modal" data-bs-target="#passwordModal"><i class="bi bi-key"></i> Change</button>
+                <div><div class="settings-row-label">Password</div><div class="settings-row-sub">Password Management Isn't Supported In INCAPTUR.</div></div>
             </div>
         </div>
 
         <div class="dash-panel danger-panel settings-section">
             <div class="panel-header"><h2 class="panel-title"><i class="bi bi-exclamation-triangle-fill"></i> Danger Zone</h2></div>
             <div class="settings-row">
-                <div><div class="settings-row-label">Delete account</div><div class="settings-row-sub">Permanently deletes all your data — cannot be undone</div></div>
+                <div><div class="settings-row-label">Delete account</div><div class="settings-row-sub">Permanently deletes all your data — cannot be undone.</div></div>
                 <button class="btn-danger-outline" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+
+                <div><div class="settings-row-label">Log Out</div><div class="settings-row-sub">Sign Out — will require you to sign in when you visit again.</div></div>
+                <form th:action="@{/logout}" method="post" id="logoutForm" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="button" class="btn-danger-outline" id="leaveButton">Leave</button>
+                </form>
             </div>
         </div>
 
     </main>
 </div>
 
-<div class="modal fade infera-modal" id="passwordModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-        <div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="modal-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button></div>
-        <form th:action="@{/settings/password}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <div class="modal-body">
-                <label class="form-label-custom">Current password</label>
-                <input type="password" name="currentPassword" class="form-input" required style="padding-left:14px; margin-bottom:14px;" />
-                <label class="form-label-custom">New password</label>
-                <input type="password" name="newPassword" class="form-input" required minlength="8" style="padding-left:14px; margin-bottom:14px;" />
-                <label class="form-label-custom">Confirm new password</label>
-                <input type="password" name="confirmPassword" class="form-input" required minlength="8" style="padding-left:14px;" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn-modal-accent">Update Password</button>
-            </div>
-        </form>
-    </div></div>
-</div>
+
 
 <div class="modal fade infera-modal" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
@@ -219,7 +205,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:if="${toast}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toast}]]));</script>
 <script th:if="${toastError}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toastError}]], true));</script>
-
+<!-- add near the bottom, alongside your other scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("loggedOut") === "true") {
+            showToast("See you soon!");
+            // optional: clean the URL so refreshing doesn't re-show it
+            window.history.replaceState({}, document.title, "/auth");
+        }
+    });
+</script>
 <script th:src="@{/javaScript/settings.js}"></script>
 <script th:src="@{/javaScript/profile_settings.js}"></script>
 </body>
