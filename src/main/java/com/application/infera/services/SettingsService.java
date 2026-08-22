@@ -14,7 +14,6 @@ public class SettingsService {
     private final WorkspaceRepository workspaceRepository;
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ProfileService profileService;
 
     public boolean updateTheme(User user, String theme) {
@@ -23,10 +22,6 @@ public class SettingsService {
         userRepository.save(user);
         return true;
     }
-
-    public record PasswordChangeResult(boolean success, String errorMessage) {
-    }
-
 
 
     public void deleteUser(User user) {
