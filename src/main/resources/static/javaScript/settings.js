@@ -60,3 +60,8 @@ function showToast(message, isError = false) {
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
+
+const leaveButton = document.getElementById("leaveButton");
+leaveButton?.addEventListener("click", () => {
+    document.getElementById("logoutForm").submit();
+});
