@@ -52,15 +52,7 @@ public class UserSecurityConfig {
     }
 
 //    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
-//      //  provider.setUserDetailsService();
-//        provider.setPasswordEncoder(passwordEncoder());
-//        return provider;
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
 //    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
