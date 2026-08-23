@@ -284,12 +284,12 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 /* Search trigger */
 .sidebar-search {
-    margin: 0 10px 10px;
+    margin: 0 10px 5px;
     display: flex;
     align-items: center;
     gap: 8px;
     background: var(--bg);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 9px;
     padding: 8px 12px;
     cursor: pointer;
@@ -424,10 +424,9 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 14px;
+    padding: 9px 10px;
     margin: 10px 10px 0;
     background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
     border-radius: 10px;
     flex-shrink: 0;
 }

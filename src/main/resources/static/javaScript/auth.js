@@ -2,29 +2,6 @@
    INFERA — auth.js  (unified email-OTP + OAuth)
 ───────────────────────────────────────── */
 
-// ─── CUSTOM CURSOR ───────────────────────
-const dot  = document.getElementById('cursorDot');
-const ring = document.getElementById('cursorRing');
-let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    dot.style.left = mouseX + 'px';
-    dot.style.top  = mouseY + 'px';
-});
-(function animateRing() {
-    ringX += (mouseX - ringX) * 0.14;
-    ringY += (mouseY - ringY) * 0.14;
-    ring.style.left = ringX + 'px';
-    ring.style.top  = ringY + 'px';
-    requestAnimationFrame(animateRing);
-})();
-document.querySelectorAll('a, button, input, label').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-});
-document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
 
 // ─── CSRF ─────────────────────────────────
 const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
@@ -35,7 +12,23 @@ function authFetch(url, body) {
     if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
     return fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
 }
+// add anywhere in auth.js, ideally near the top
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('inferaToast');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastIcon = document.getElementById('toastIcon');
+    if (!toast) return;
 
+    toastMsg.textContent = msg;
+    toastIcon.className = 'toast-icon' + (type === 'error' ? ' error' : '');
+    toastIcon.innerHTML = type === 'error'
+        ? '<i class="bi bi-exclamation-circle"></i>'
+        : '<i class="bi bi-check2-circle"></i>';
+
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
 // ─── ELEMENTS ─────────────────────────────
 const stepEmail   = document.getElementById('stepEmail');
 const stepCode    = document.getElementById('stepCode');
@@ -246,3 +239,4 @@ document.querySelectorAll('.form-input').forEach(input => {
         input.closest('.form-group')?.querySelector('.form-label-custom')?.style.setProperty('color', 'var(--muted)');
     });
 });
+
