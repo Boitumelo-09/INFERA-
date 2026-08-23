@@ -205,17 +205,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:if="${toast}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toast}]]));</script>
 <script th:if="${toastError}" th:inline="javascript">document.addEventListener('DOMContentLoaded', () => showToast([[${toastError}]], true));</script>
-<!-- add near the bottom, alongside your other scripts -->
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("loggedOut") === "true") {
-            showToast("See you soon!");
-            // optional: clean the URL so refreshing doesn't re-show it
-            window.history.replaceState({}, document.title, "/auth");
-        }
-    });
-</script>
+
+
 <script th:src="@{/javaScript/settings.js}"></script>
 <script th:src="@{/javaScript/profile_settings.js}"></script>
 </body>
