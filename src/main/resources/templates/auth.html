@@ -16,15 +16,6 @@
 </head>
 <body>
 
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
-<div class="auth-bg">
-    <div class="auth-grid"></div>
-    <div class="auth-orb orb-tl"></div>
-    <div class="auth-orb orb-br"></div>
-</div>
-
 <nav class="auth-nav">
     <div class="auth-nav-inner">
         <a th:href="@{/home}" href="home.html" class="navbar-brand d-flex align-items-center gap-2">
@@ -41,12 +32,12 @@
             <div class="panel-content">
                 <div class="panel-quote">
                     <div class="quote-mark">"</div>
-                    <p>No password to forget. I just open INFERA and I'm in.</p>
+                    <p>Just One Click. You're Inside!</p>
                     <div class="quote-author">
-                        <div class="author-avatar av1">TM</div>
+                        <div class="author-avatar av1">BC</div>
                         <div>
-                            <div class="author-name">Thabo M.</div>
-                            <div class="author-role">Software Developer · Freelancer</div>
+                            <div class="author-name">Boitumelo C.</div>
+                            <div class="author-role">Software Engineer · Student</div>
                         </div>
                     </div>
                 </div>
@@ -57,17 +48,7 @@
                     <div class="pf-item"><i class="bi bi-check2-circle"></i> Or continue instantly with Google, GitHub, or Microsoft</div>
                 </div>
 
-                <div class="mini-dashboard mt-5">
-                    <div class="md-header">
-                        <span class="md-title">Dashboard</span>
-                        <span class="md-live"><span class="live-dot"></span> live</span>
-                    </div>
-                    <div class="md-stats">
-                        <div class="md-stat"><div class="md-num">12</div><div class="md-lbl">Notes</div></div>
-                        <div class="md-stat"><div class="md-num">4</div><div class="md-lbl">Workspaces</div></div>
-                        <div class="md-stat"><div class="md-num">29</div><div class="md-lbl">Resources</div></div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -76,11 +57,9 @@
             <div class="auth-form-wrapper">
 
                 <div class="auth-heading">
-                    <div class="auth-badge mb-3">
-                        <span class="badge-dot"></span> Welcome
-                    </div>
+
                     <h1 class="auth-title">Continue to INCAPTUR</h1>
-                    <p class="auth-sub">Your knowledge vault, one code away.</p>
+                    <p class="auth-sub">Pick up where you left off.</p>
                 </div>
 
                 <!-- Alert (shared for both steps) -->
@@ -105,7 +84,7 @@
                     </a>
                 </div>
 
-                <div class="divider-text my-4"><span>or continue with email</span></div>
+                <div class="divider-text my-4"><span>continue with email instead</span></div>
 
                 <!-- STEP 1: email -->
                 <div id="stepEmail">
@@ -154,7 +133,7 @@
                 </div>
 
                 <p class="auth-footer-note mt-4 text-center">
-                    By continuing you agree to INFERA's <a href="#" class="link-accent">Terms</a> and <a href="#" class="link-accent">Privacy Policy</a>.
+                    By continuing you agree to INCAPTUR's <a th:href="@{/terms}" class="link-accent">Terms</a> and <a th:href="@{/privacy}" class="link-accent">Privacy Policy</a>.
                 </p>
             </div>
         </div>
@@ -162,7 +141,21 @@
     </div>
 </main>
 
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+    <span class="toast-msg" id="toastMsg">Done!</span>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("logout") === "true") {
+            showToast("Hope had a Dope experience — See you soon!");
+            window.history.replaceState({}, document.title, "/auth");
+        }
+    });
+</script>
 </body>
 </html>
