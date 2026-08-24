@@ -1,0 +1,310 @@
+/* ─────────────────────────────────────────
+   INFERA — editor.css
+   Dedicated note editor page. Deliberately has
+   NO sidebar and NO full topbar — this page's
+   only job is writing. Extends dashboard.css
+   for tokens, cursor, toast, and theme vars.
+───────────────────────────────────────── */
+
+.editor-body {
+    /* dashboard.css sets cursor:none + custom cursor on body already —
+       nothing to override here, just documenting the inheritance */
+}
+
+/* ═══════════════════════════════════════
+   TOPBAR — minimal, workspace-tinted
+═══════════════════════════════════════ */
+.editor-topbar {
+    height: var(--topbar-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+[data-theme="light"] .editor-topbar { background: var(--secondary); }
+
+.editor-back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 7px 12px 7px 8px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+.editor-back-link:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+}
+.editor-back-link i { font-size: 0.95rem; }
+
+.editor-ws-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.editor-ws-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--ws-color, var(--accent));
+    flex-shrink: 0;
+}
+
+.editor-save-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+}
+.editor-save-status i { color: #4ade80; font-size: 0.85rem; }
+.editor-save-status.saving i {
+    color: var(--ws-color, var(--accent));
+    animation: spin 0.9s linear infinite;
+}
+.editor-save-status.error i { color: #f87171; }
+
+/* ═══════════════════════════════════════
+   PAGE — centered writing column
+═══════════════════════════════════════ */
+.editor-page {
+    min-height: calc(100vh - var(--topbar-h));
+    display: flex;
+    justify-content: center;
+    padding: 56px 24px 120px;
+}
+
+.editor-column {
+    width: 100%;
+    max-width: 850px;
+}
+
+/* ─── TITLE ─────────────────────────── */
+.editor-title-input {
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: var(--text);
+    padding: 0;
+    line-height: 1.25;
+}
+.editor-title-input::placeholder { color: rgba(148,163,184,0.4); }
+
+/* ─── PROPERTIES BAR ────────────────── */
+.editor-properties-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+.editor-property-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 12px;
+}
+.editor-property-ws {
+    color: var(--ws-color, var(--accent));
+    border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 30%, var(--border));
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 10%, transparent);
+}
+.editor-property-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.editor-property-tag-empty { font-style: italic; color: rgba(148,163,184,0.5); }
+
+/* ─── DIVIDER ───────────────────────── */
+.editor-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0 20px;
+}
+
+/* ═══════════════════════════════════════
+   TOOLBAR
+═══════════════════════════════════════ */
+.tiptap-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-bottom: 18px;
+    position: sticky;
+    top: calc(var(--topbar-h) + 12px);
+    z-index: 10;
+    background: var(--bg);
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: fit-content;
+}
+[data-theme="light"] .tiptap-toolbar { background: var(--secondary); }
+
+.tiptap-toolbar-btn {
+    width: 32px; height: 32px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.92rem;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.tiptap-toolbar-btn:hover {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--text);
+}
+.tiptap-toolbar-btn.is-active {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.tiptap-toolbar-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.tiptap-toolbar-btn:disabled:hover { background: none; color: var(--muted); }
+
+.tiptap-toolbar-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+    margin: 4px 5px;
+}
+
+/* ═══════════════════════════════════════
+   EDITOR CONTENT — ProseMirror typography
+═══════════════════════════════════════ */
+.editor-content-mount {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.ProseMirror {
+    outline: none;
+    line-height: 1.85;
+    min-height: 40vh;
+}
+
+.ProseMirror p { margin-bottom: 14px; }
+
+.ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.3;
+}
+.ProseMirror h1 { font-size: 1.6rem; margin: 28px 0 12px; }
+.ProseMirror h2 { font-size: 1.3rem;  margin: 24px 0 10px; }
+.ProseMirror h3 { font-size: 1.1rem;  margin: 20px 0 8px; color: var(--muted); }
+
+.ProseMirror ul, .ProseMirror ol { margin: 0 0 14px 22px; }
+.ProseMirror li { margin-bottom: 4px; }
+.ProseMirror strong { color: var(--text); font-weight: 700; }
+.ProseMirror a { color: var(--ws-color, var(--accent)); text-decoration: underline; }
+
+.ProseMirror blockquote {
+    border-left: 3px solid var(--ws-color, var(--accent));
+    background: rgba(255,255,255,0.03);
+    padding: 8px 16px;
+    margin: 14px 0;
+    color: var(--muted);
+    border-radius: 0 6px 6px 0;
+}
+
+.ProseMirror code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    color: var(--ws-color, var(--accent));
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.ProseMirror pre {
+    background: #0a0e13;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+    overflow-x: auto;
+}
+.ProseMirror pre code {
+    background: none;
+    color: #e2e8f0;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.ProseMirror hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 22px 0;
+}
+
+/* Task list checkboxes */
+.ProseMirror ul[data-type="taskList"] { list-style: none; padding: 0; margin: 0 0 14px; }
+.ProseMirror ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.ProseMirror ul[data-type="taskList"] li > label { flex: 0 0 auto; margin-top: 3px; }
+.ProseMirror ul[data-type="taskList"] li > div { flex: 1 1 auto; }
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"] {
+    accent-color: var(--ws-color, var(--accent));
+    width: 15px; height: 15px;
+    cursor: pointer;
+}
+.ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div { color: var(--muted); text-decoration: line-through; }
+
+/* Placeholder — Tiptap's Placeholder extension injects data-placeholder
+   on the first empty node; this is the standard CSS hook for it */
+.ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: rgba(148,163,184,0.45);
+    font-style: italic;
+    pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .editor-topbar { padding: 0 16px; }
+    .editor-back-link span { display: none; }
+    .editor-ws-badge span:not(.editor-ws-dot) { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+    .editor-page { padding: 36px 18px 100px; }
+}
+
+@media (max-width: 480px) {
+    .editor-save-status span { display: none; }
+}
