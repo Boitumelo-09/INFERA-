@@ -17,8 +17,8 @@ public class Note {
     @Column(nullable = false, length = 150)
     private String title;
 
-    @Column(columnDefinition = "TEXT")   // content can be long — TEXT, not default VARCHAR(255)
-    private String content;
+    @Column(columnDefinition = "TEXT")   // Tiptap document JSON — can be long, TEXT not VARCHAR(255)
+    private String documentJson;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)   // a note MUST belong to a workspace

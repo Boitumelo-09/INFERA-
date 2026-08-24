@@ -12,11 +12,13 @@ import com.application.infera.repositories.ActivityRepository;
 import com.application.infera.repositories.NoteRepository;
 import com.application.infera.repositories.ResourceRepository;
 import com.application.infera.repositories.WorkspaceRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
@@ -25,13 +27,6 @@ public class WorkspaceService {
     private final ResourceRepository resourceRepository;
     private final ActivityRepository activityRepository;
 
-    public WorkspaceService(WorkspaceRepository workspaceRepository, ActivityService activityService, NoteRepository noteRepository, ResourceRepository resourceRepository, ActivityRepository activityRepository) {
-        this.workspaceRepository = workspaceRepository;
-        this.activityService = activityService;
-        this.noteRepository = noteRepository;
-        this.resourceRepository = resourceRepository;
-        this.activityRepository = activityRepository;
-    }
 
     // Create a new workspace linked to the logged-in user
     public void createWorkspace(WorkspaceRequest request, User user) {

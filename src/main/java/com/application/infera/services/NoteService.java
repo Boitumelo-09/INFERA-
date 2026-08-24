@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 import com.application.infera.dtos.requests.NoteRequest;
+import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.models.Note;
@@ -33,20 +34,21 @@ public class NoteService {
     }
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
-    public void createNote(NoteRequest request, User user) {
+    public Note createNote(NoteRequest request, User user) {
         // Throws WorkspaceNotFoundException if this workspace doesn't belong to the user —
         // stops someone from posting a note into a workspace that isn't theirs
         Workspace workspace = workspaceService.getWorkspaceForUser(request.getWorkspaceId(), user);
 
         Note note = new Note();
         note.setTitle(request.getTitle());
-        note.setContent(request.getContent());
+        note.setDocumentJson(request.getDocumentJson());
         note.setWorkspace(workspace);
         note.setTags(tagService.resolveTags(request.getTags(),user));
 
         noteRepository.save(note);
         activityService.log(user, ActivityType.NOTE_CREATED, note.getTitle(), workspace);
 
+        return note;
     }
 
     // All notes across every workspace this user owns
@@ -100,15 +102,13 @@ public class NoteService {
         }
 
         note.setTitle(request.getTitle());
-        note.setContent(request.getContent());
+        note.setDocumentJson(request.getDocumentJson());
         note.setTags(tagService.resolveTags(request.getTags(),user));
         noteRepository.save(note);
         activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
 
-
     }
 
-    // Delete — ownership confirmed via getNoteForUser before anything is removed
     public void deleteNote(Long id, User user) {
         Note note = getNoteForUser(id, user);
         String title = note.getTitle();
@@ -128,5 +128,21 @@ public class NoteService {
         note.setUpdatedAt(LocalDateTime.now());
         noteRepository.save(note);// @PreUpdate on Note bumps updatedAt automatically
 
+    }
+
+    // Autosave path — deliberately lighter than updateNote(): no activity
+    // log (would spam the feed every debounce cycle), no workspace/tag
+    // changes. Just title + documentJson, the two things the editor page
+    // actually owns.
+    public Note autosaveNote(Long id, NoteUpdateRequest request, User user) {
+        Note note = getNoteForUser(id, user);
+
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            note.setTitle(request.getTitle());
+        }
+        note.setDocumentJson(request.getDocumentJson());
+
+        noteRepository.save(note);
+        return note;
     }
 }

@@ -29,7 +29,7 @@ public class SearchService {
             results.add(new SearchResultDTO("workspace", ws.getId(), ws.getName(), "Workspace"));
         }
 
-        for (Note note : noteRepository.findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndContentContainingIgnoreCase(user, query, user, query)) {
+        for (Note note : noteRepository.findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndDocumentJsonContainingIgnoreCase(user, query, user, query)) {
             results.add(new SearchResultDTO("note", note.getId(), note.getTitle(), note.getWorkspace().getName()));
         }
 
