@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
+<head>
+    <script>
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.documentElement.classList.add('no-sb-transition');
+        }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${pageTitle}">Note — INCAPTUR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/editor.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
+    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body class="editor-body">
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MINIMAL EDITOR TOPBAR — no sidebar on this page. The note's
+     workspace colour is applied here so the whole page reads as
+     "you are inside workspace X" without a breadcrumb trail.
+════════════════════════════════════════════════════════════════ -->
+<header class="editor-topbar" th:style="'--ws-color:' + ${note.workspace.color}">
+    <a class="editor-back-link"
+       th:href="@{/notes(workspace=${note.workspace.id})}"
+       aria-label="Back to notes in this workspace">
+        <i class="bi bi-arrow-left"></i>
+        <span>Back</span>
+    </a>
+
+    <div class="editor-ws-badge">
+        <span class="editor-ws-dot"></span>
+        <span th:text="${note.workspace.name}">Workspace</span>
+    </div>
+
+    <div class="editor-save-status" id="editorSaveStatus">
+        <i class="bi bi-check2"></i>
+        <span>Saved</span>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     EDITOR BODY — centered writing column
+════════════════════════════════════════════════════════════════ -->
+<main class="editor-page" th:style="'--ws-color:' + ${note.workspace.color}">
+    <div class="editor-column">
+
+        <input type="text"
+               id="editorTitleInput"
+               class="editor-title-input"
+               th:value="${note.title}"
+               placeholder="Untitled"
+               maxlength="150"
+               autocomplete="off" />
+
+        <div class="editor-properties-bar">
+            <span class="editor-property-pill editor-property-ws">
+                <i class="bi bi-folder2"></i>
+                <span th:text="${note.workspace.name}">Workspace</span>
+            </span>
+
+            <span class="editor-property-tags" id="editorTagsDisplay">
+                <span class="editor-property-pill editor-property-tag"
+                      th:each="tag : ${note.tags}"
+                      th:text="'#' + ${tag.name}">#tag</span>
+                <span class="editor-property-pill editor-property-tag-empty" th:if="${note.tags.isEmpty()}">
+                    No tags yet
+                </span>
+            </span>
+        </div>
+
+        <div class="editor-divider"></div>
+
+        <!-- Toolbar mounts here in Step 3 -->
+        <div class="editor-toolbar-mount" id="editorToolbarMount"></div>
+
+        <!-- Tiptap mounts here in Step 3 — plain placeholder for now -->
+        <div class="editor-content-mount" id="editorContentMount">
+            <p class="editor-content-placeholder">The editor will mount here.</p>
+        </div>
+
+    </div>
+</main>
+
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+    <span class="toast-msg" id="toastMsg">Done!</span>
+</div>
+
+<script th:inline="javascript" th:if="${successMessage}">
+    document.addEventListener("DOMContentLoaded", () => {
+        showToast('[[${successMessage}]]');
+    });
+</script>
+<script th:inline="javascript" th:if="${errorMessage}">
+    document.addEventListener("DOMContentLoaded", () => {
+        showToast('[[${errorMessage}]]', 'error');
+    });
+</script>
+
+<!-- Hydration data for the Tiptap editor module. Thymeleaf's javascript
+     inlining ([[...]]) handles JS-string-escaping automatically, so
+     this is safe even if documentJson contains quotes/newlines. -->
+<script th:inline="javascript">
+    window.__NOTE_ID__ = /*[[${note.id}]]*/ 0;
+    window.__NOTE_RAW_CONTENT__ = /*[[${note.documentJson}]]*/ '';
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/javaScript/dashboard.js}"></script>
+<script type="module" th:src="@{/javaScript/editor/tiptap-editor.js}"></script>
+<script type="module" th:src="@{/javaScript/editor/editor-api.js}"></script>
+</body>
+</html>
