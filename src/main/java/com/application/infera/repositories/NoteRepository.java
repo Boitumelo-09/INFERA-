@@ -31,9 +31,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @Query("SELECT n.workspace.id, COUNT(n) FROM Note n WHERE n.workspace.user = :user GROUP BY n.workspace.id")
     List<Object[]> countNotesGroupedByWorkspace(@Param("user") User user);
 
-    List<Note> findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndContentContainingIgnoreCase(
+    List<Note> findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndDocumentJsonContainingIgnoreCase(
             User user1, String titleQuery, User user2, String contentQuery);
-
     List<Note> findByWorkspace_User(User user);
 
 }
