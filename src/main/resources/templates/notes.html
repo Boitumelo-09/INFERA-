@@ -231,7 +231,7 @@
                  th:style="'--ws-color:' + ${note.workspace.color}"
                  th:data-id="${note.id}"
                  th:data-title="${note.title}"
-                 th:data-content="${note.content}"
+                 th:data-content="${note.documentJson}"
                  th:data-workspace-id="${note.workspace.id}"
                  th:data-workspace-name="${note.workspace.name}"
                  th:data-tags="${note.getTagNamesCsv()}">
@@ -244,7 +244,7 @@
                         <span class="nri-ws-tag" th:text="${note.workspace.name}">Workspace</span>
                     </div>
                     <p class="nri-preview"
-                       th:text="${note.content != null and note.content != '' ? #strings.abbreviate(note.content, 120) : 'No content yet.'}">
+                       th:text="${note.documentJson != null and note.documentJson != '' ? #strings.abbreviate(note.documentJson, 120) : 'No content yet.'}">
                         Preview line...
                     </p>
                     <div class="nri-tags" th:if="${!note.tags.isEmpty()}">
@@ -384,8 +384,7 @@
                             <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
                             <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
                         </div>
-                        <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="8" placeholder="Start writing..."></textarea>
-                    </div>
+                        <textarea id="noteContent" name="documentJson" class="form-input form-textarea note-content-input" rows="8" placeholder="Start writing..."></textarea>                    </div>
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
                         <div class="tag-input-wrap" id="newNoteTagWrap">
@@ -449,8 +448,7 @@
                             <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
                             <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
                         </div>
-                        <textarea id="editNoteContent" name="content" class="form-input form-textarea note-content-input" rows="8"></textarea>
-                    </div>
+                        <textarea id="editNoteContent" name="documentJson" class="form-input form-textarea note-content-input" rows="8"></textarea>                    </div>
 
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
