@@ -48,7 +48,7 @@ public class NoteController {
         return "notes";
     }
 
-    // POST /notes — create a new note inside a chosen workspace
+    // POST /notes — create a new note inside a chosen workspace, then go straight into editing it
     @PostMapping
     public String createNote(@AuthenticationPrincipal Object principal,
                              @ModelAttribute NoteRequest noteRequest,
@@ -57,13 +57,38 @@ public class NoteController {
         if (user == null) return "redirect:/auth";
 
         try {
-            noteService.createNote(noteRequest, user);
-            redirectAttributes.addFlashAttribute("successMessage", "Note \"" + noteRequest.getTitle() + "\" created!");
+            Note note = noteService.createNote(noteRequest, user);
+            return "redirect:/notes/" + note.getId() + "/edit";
         } catch (WorkspaceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "That workspace could not be found.");
+            return "redirect:/notes";
         }
+    }
 
-        return "redirect:/notes";
+    // GET /notes/{id}/edit — the dedicated note editor page
+    @GetMapping("/{id}/edit")
+    public String editNotePage(@AuthenticationPrincipal Object principal,
+                               @PathVariable Long id,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+
+        try {
+            Note note = noteService.getNoteForUser(id, user);
+
+            model.addAttribute("pageTitle", note.getTitle() + " — INCAPTUR");
+            model.addAttribute("user", user);
+            model.addAttribute("note", note);
+            model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
+            model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+            model.addAttribute("noteCount", noteService.countNotesForUser(user));
+            model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+            return "note-editor";
+        } catch (NoteNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/notes";
+        }
     }
 
     // POST /notes/{id}/update
