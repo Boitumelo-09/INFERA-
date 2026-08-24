@@ -752,7 +752,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .panel-action:hover { background: rgba(234,88,12,0.1); }
 
 .panel-body {
-    padding: 8px 0;
+    padding: 0 0;
 
 }
 .notes-scroll {
@@ -928,7 +928,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .as-item i { color: var(--accent); }
 
 /* ─── ACTIVITY FEED ─────────────────── */
-.activity-feed { padding: 4px 0; }
+.activity-feed { padding: 0 0; }
 .activity-item {
     display: flex;
     align-items: center;
