@@ -208,6 +208,7 @@ $('#theaterResourcesBtn')?.addEventListener('click', () => {
     closeTheaterMenu();
     viewNoteDialog?.classList.toggle('resources-open');
 });
+$('#resourcesCloseBtn')?.addEventListener('click', closeResourcesDrawer);
 $('#theaterExitBtn')?.addEventListener('click', () => {
     closeTheaterMenu();
     setTheaterMode(false);
@@ -216,7 +217,6 @@ $('#theaterCloseBtn')?.addEventListener('click', () => {
     closeTheaterMenu();
     viewNoteModal?.hide();
 });
-// $('#resourcesDrawerCloseBtn')?.addEventListener('click', closeResourcesDrawer);
 /* ───────────────────────────────────────────────────────────────────
    NEW NOTE MODAL
 ─────────────────────────────────────────────────────────────────── */
