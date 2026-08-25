@@ -609,8 +609,8 @@
     padding: 64px 20px 24px;
     border-left-color: var(--border);
 }
-
 .resources-close-btn {
+    display: none;
     position: absolute;
     top: 16px;
     left: 16px;
@@ -619,11 +619,11 @@
     background: transparent;
     border: none;
     color: var(--muted);
-    display: flex;
     align-items: center; justify-content: center;
     cursor: pointer;
     transition: color 0.2s, background 0.2s;
 }
+#viewNoteDialog.theater-mode .resources-close-btn { display: flex; }
 .resources-close-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
 
 /* Narrow screens: stack instead of squeezing two columns side by
@@ -1264,7 +1264,7 @@
     margin-bottom: 4px;
 }
 
-.view-note-body strong { color: var(--text); font-weight: 700; }
+.view-note-body strong {  font-weight: 700; }
 .view-note-body mark {
     background: rgba(250, 204, 21, 0.35);
     color: inherit;
@@ -1312,11 +1312,10 @@
     font-size: 0.85rem;
 }
 
-.view-note-body hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 18px 0;
-}
+.view-note-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.view-note-body table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.view-note-body table td, .view-note-body table th { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; }
+.view-note-body table th { background: rgba(255,255,255,0.04); font-weight: 700; text-align: left; color: var(--text); }
 
 /* Task list checkboxes — read-only, so pointer-events is disabled
    rather than letting them look interactive and silently do nothing */
