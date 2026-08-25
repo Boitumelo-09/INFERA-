@@ -572,43 +572,79 @@
 /* Resources: hidden until toggled from the menu. When open, it
    becomes a real flex sibling — the reading column shrinks to make
    room (a genuine push), and both panels scroll independently. */
-#viewNoteDialog.theater-mode .view-note-resources {
-    display: none;
-}
-#viewNoteDialog.theater-mode.resources-open .modal-body {
+#viewNoteDialog.theater-mode .modal-body {
     flex-direction: row;
 }
-#viewNoteDialog.theater-mode.resources-open .view-note-resources {
+
+/* Closed state — present in the DOM and in flex flow at all times,
+   just collapsed to zero size. This is what makes the open/close
+   transition possible; display:none can't be animated. */
+#viewNoteDialog.theater-mode .view-note-resources {
     display: block;
-    flex: 0 0 360px;
+    position: relative;
+    flex: 0 0 0;
     max-width: 40vw;
     height: 100%;
+    overflow-x: clip;   /* not `hidden` — see project note on the overflow-x/y coupling quirk */
     overflow-y: auto;
-    border-left: 1px solid var(--border);
+    border-left: 1px solid transparent;
     border-top: none;
     background: var(--card);
-    padding: 64px 20px 24px;
+    padding: 64px 0 24px;
     margin: 0;
+    opacity: 0;
+    pointer-events: none;
     scrollbar-width: thin;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
+    transition: flex-basis 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.22s ease,
+    padding 0.32s ease,
+    border-color 0.32s ease;
 }
 
+#viewNoteDialog.theater-mode.resources-open .view-note-resources {
+    flex-basis: 360px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 64px 20px 24px;
+    border-left-color: var(--border);
+}
+
+.resources-close-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    display: flex;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+}
+.resources-close-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+
 /* Narrow screens: stack instead of squeezing two columns side by
-   side. Content on top, resources below — both still independently
-   scrollable, neither one an overlay on top of the other. */
+   side. Same flex-basis technique, just on the height axis since
+   the modal-body switches to a column direction here. */
 @media (max-width: 700px) {
-    #viewNoteDialog.theater-mode.resources-open .modal-body {
+    #viewNoteDialog.theater-mode .modal-body {
         flex-direction: column;
     }
-    #viewNoteDialog.theater-mode.resources-open .view-note-resources {
-        flex: 0 0 42vh;
+    #viewNoteDialog.theater-mode .view-note-resources {
         max-width: 100%;
-        max-height: 42vh;
         border-left: none;
-        border-top: 1px solid var(--border);
-        padding: 16px 18px 20px;
+        border-top: 1px solid transparent;
+        padding: 0 18px;
     }
-}
+    #viewNoteDialog.theater-mode.resources-open .view-note-resources {
+        flex-basis: 42vh;
+        padding: 44px 18px 20px;
+        border-top-color: var(--border);
+    }
+    .resources-close-btn { top: 10px; left: 10px; }}
 
 @media (max-height: 500px) {
     #viewNoteDialog.theater-mode .view-note-main { padding: 52px 18px 28px; }
@@ -1228,11 +1264,15 @@
     margin-bottom: 4px;
 }
 
-.view-note-body strong {
-    color: var(--text);
-    font-weight: 700;
+.view-note-body strong { color: var(--text); font-weight: 700; }
+.view-note-body mark {
+    background: rgba(250, 204, 21, 0.35);
+    color: inherit;
+    border-radius: 3px;
+    padding: 0 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
 }
-
 .view-note-body a {
     color: var(--ws-color, var(--accent));
     text-decoration: underline;

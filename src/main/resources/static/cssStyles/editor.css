@@ -232,7 +232,14 @@
 .ProseMirror ul, .ProseMirror ol { margin: 0 0 14px 22px; }
 .ProseMirror li { margin-bottom: 4px; }
 .ProseMirror strong { color: var(--text); font-weight: 700; }
-.ProseMirror a { color: var(--ws-color, var(--accent)); text-decoration: underline; }
+.ProseMirror mark {
+    background: rgba(250, 204, 21, 0.35);
+    color: inherit;
+    border-radius: 3px;
+    padding: 0 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}.ProseMirror a { color: var(--ws-color, var(--accent)); text-decoration: underline; }
 
 .ProseMirror blockquote {
     border-left: 3px solid var(--ws-color, var(--accent));

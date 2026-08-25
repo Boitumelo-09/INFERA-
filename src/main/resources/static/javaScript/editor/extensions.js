@@ -13,6 +13,7 @@ import Link           from 'https://esm.sh/@tiptap/extension-link@2.11.5';
 import TaskList         from 'https://esm.sh/@tiptap/extension-task-list@2.11.5';
 import TaskItem           from 'https://esm.sh/@tiptap/extension-task-item@2.11.5';
 import TextAlign            from 'https://esm.sh/@tiptap/extension-text-align@2.11.5';
+import Highlight              from 'https://esm.sh/@tiptap/extension-highlight@2.11.5';
 
 export function getSharedExtensions() {
     return [
@@ -22,6 +23,7 @@ export function getSharedExtensions() {
         TaskList,
         TaskItem.configure({ nested: true }),
         TextAlign.configure({ types: ['heading', 'paragraph'] }),
+        Highlight,
     ];
 }
 
