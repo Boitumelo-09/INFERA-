@@ -6,31 +6,31 @@
 ───────────────────────────────────────── */
 
 :root, [data-theme="default"] {
-    --bg:           #0d1117;
-    --secondary:    #161b22;
-    --card:         #1c2128;
-    --accent:       #ea580c;
+    --bg: #0d1117;
+    --secondary: #161b22;
+    --card: #1c2128;
+    --accent: #ea580c;
     --accent-hover: #c2410c;
-    --text:         #f8fafc;
-    --muted:        #94a3b8;
-    --border:       rgba(255,255,255,0.07);
-    --radius:       12px;
-    --sidebar-w:    240px;
-    --topbar-h:     60px;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.07);
+    --radius: 12px;
+    --sidebar-w: 240px;
+    --topbar-h: 60px;
     --font-display: 'Sora', sans-serif;
-    --font-body:    'Inter', sans-serif;
-    --font-mono:    'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 }
 
 [data-theme="dark"] {
-    --bg:           #050608;
-    --secondary:    #0f1115;
-    --card:         #16181d;
-    --accent:       #6366f1;
+    --bg: #050608;
+    --secondary: #0f1115;
+    --card: #16181d;
+    --accent: #6366f1;
     --accent-hover: #4f46e5;
-    --text:         #f1f5f9;
-    --muted:        #8b93a1;
-    --border:       rgba(255,255,255,0.06);
+    --text: #f1f5f9;
+    --muted: #8b93a1;
+    --border: rgba(255, 255, 255, 0.06);
 }
 
 [data-theme="light"] {
@@ -54,6 +54,7 @@
     gap: 16px;
     margin-bottom: 22px;
 }
+
 .notes-page-title {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-optical-sizing: auto;
@@ -62,12 +63,18 @@
     color: transparent;
     -webkit-text-stroke: 0.5px var(--text);
 }
+
 [data-theme="light"] .notes-page-title {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: var(--text);
     -webkit-text-stroke: 0;
 }
-.notes-page-sub { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+
+.notes-page-sub {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+}
 
 /* ─── WORKSPACE FILTER PILLS ─────────── */
 .ws-filter-row {
@@ -76,6 +83,7 @@
     gap: 8px;
     margin-bottom: 22px;
 }
+
 .ws-filter-pill {
     display: flex;
     align-items: center;
@@ -90,19 +98,27 @@
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s, color 0.2s;
 }
-.ws-filter-pill:hover { border-color: rgba(255,255,255,0.16); color: var(--text); }
+
+.ws-filter-pill:hover {
+    border-color: rgba(255, 255, 255, 0.16);
+    color: var(--text);
+}
+
 .ws-filter-pill.active {
     background: color-mix(in srgb, var(--ws-color, var(--accent)) 15%, var(--card));
     border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
     color: var(--text);
 }
+
 .ws-filter-pill[data-filter="all"].active {
     background: var(--secondary);
     border-color: var(--border);
     color: var(--accent);
 }
+
 .ws-filter-dot {
-    width: 8px; height: 8px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--ws-color, var(--accent));
     flex-shrink: 0;
@@ -117,14 +133,20 @@
     border-radius: var(--radius);
     margin-inline: auto;
 }
+
 .notes-empty-icon {
-    width: 64px; height: 64px;
+    width: 64px;
+    height: 64px;
     border: 1px solid var(--accent);
     border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem; color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--accent);
     margin: 0 auto 20px;
 }
+
 .notes-empty h3 {
     font-family: var(--font-display);
     font-size: 1.15rem;
@@ -132,6 +154,7 @@
     color: var(--text);
     margin-bottom: 8px;
 }
+
 .notes-empty p {
     color: var(--muted);
     font-size: 0.88rem;
@@ -161,6 +184,7 @@
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
 }
+
 .note-row-item {
     display: flex;
     align-items: center;
@@ -171,16 +195,18 @@
     border-bottom: 1px solid var(--border);
     position: relative;
     border-radius: inherit;
-    transition: transform .22s cubic-bezier(.2, .8, .2, 1),border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
+    transition: transform .22s cubic-bezier(.2, .8, .2, 1), border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
 
 }
+
 /*.note-row-item:last-child { border-bottom: none; }*/
-.note-row-item:hover{
+.note-row-item:hover {
     transform: translateY(-2px);
     border-bottom-color: var(--ws-color, var(--accent));
-    background:linear-gradient(-187deg,rgba(255,255,255,.04) 85%,color-mix(in srgb, var(--ws-color, var(--accent)) 45%, transparent));
+    background: linear-gradient(-187deg, rgba(255, 255, 255, .04) 85%, color-mix(in srgb, var(--ws-color, var(--accent)) 45%, transparent));
     /*box-shadow: 0 8px 20px rgba(0,0,0,.25),inset 0 0 0 1px var(--ws-color, var(--accent));*/
 }
+
 .note-row-item.menu-active {
     z-index: 30;
 }
@@ -197,6 +223,7 @@
     flex: 1;
     min-width: 0;
 }
+
 .nri-top {
     display: flex;
     align-items: center;
@@ -204,6 +231,7 @@
     margin-bottom: 4px;
     flex-wrap: wrap;
 }
+
 .nri-title {
     font-family: var(--font-display);
     font-size: 0.98rem;
@@ -214,6 +242,7 @@
     text-overflow: ellipsis;
     max-width: 380px;
 }
+
 .nri-ws-tag {
     font-size: 0.68rem;
     font-weight: 700;
@@ -225,6 +254,7 @@
     padding: 2px 10px;
     flex-shrink: 0;
 }
+
 .nri-preview {
     font-size: 0.82rem;
     color: var(--muted);
@@ -240,15 +270,17 @@
     gap: 16px;
     flex-shrink: 0;
 }
+
 .nri-date {
     font-size: 0.72rem;
-    color: rgba(148,163,184,0.55);
+    color: rgba(148, 163, 184, 0.55);
     font-family: 'JetBrains Mono', monospace;
     display: flex;
     align-items: center;
     gap: 5px;
     white-space: nowrap;
 }
+
 .note-row-item:last-child .ws-menu-dropdown,
 .note-row-item:nth-last-child(2) .ws-menu-dropdown {
     top: auto;
@@ -260,36 +292,49 @@
 .note-row-item:nth-last-child(2) .ws-tile-menu.open .ws-menu-dropdown {
     transform: none;
 }
+
 /* Menu (shared shape with workspace three-dot menu) */
-.ws-tile-menu { position: relative; }
+.ws-tile-menu {
+    position: relative;
+}
+
 .ws-menu-btn {
-    width: 30px; height: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 7px;
     background: transparent;
     border: none;
     color: var(--muted);
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background 0.2s, color 0.2s;
 }
-.ws-menu-btn:hover { background: rgba(255,255,255,0.06); color: var(--text);
- z-index: 20000;}
+
+.ws-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    z-index: 20000;
+}
 
 .ws-menu-dropdown {
     position: absolute;
-    top: 36px; right: 0;
+    top: 36px;
+    right: 0;
     background: var(--secondary);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 6px;
     min-width: 150px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-6px);
     transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
 
 }
+
 .ws-tile-menu.open .ws-menu-dropdown {
     opacity: 1;
     visibility: visible;
@@ -297,9 +342,12 @@
     z-index: 2;
 
 }
+
 .ws-menu-item {
     width: 100%;
-    display: flex; align-items: center; gap: 9px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
     padding: 8px 10px;
     border-radius: 7px;
     background: none;
@@ -311,11 +359,22 @@
     transition: background 0.15s;
     z-index: 50;
 }
-.ws-menu-item:hover { background: rgba(255,255,255,0.06); }
-.ws-menu-item.danger { color: #f87171; }
-.ws-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
 
-.note-row-item.filtered-out { display: none; }
+.ws-menu-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.ws-menu-item.danger {
+    color: #f87171;
+}
+
+.ws-menu-item.danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.note-row-item.filtered-out {
+    display: none;
+}
 
 /* ═══════════════════════════════════════
    VIEW NOTE MODAL — the reading experience
@@ -325,6 +384,7 @@
     border-bottom: 1px solid var(--border);
     padding-top: 14px;
 }
+
 .view-note-ws {
     display: inline-block;
     font-size: 0.7rem;
@@ -336,6 +396,7 @@
     border-radius: 99px;
     padding: 3px 12px;
 }
+
 .view-note-content .modal-title {
     font-family: var(--font-display);
     font-size: 1.3rem;
@@ -343,6 +404,7 @@
     color: var(--text);
     line-height: 1.3;
 }
+
 .view-note-date {
     display: flex;
     align-items: center;
@@ -368,6 +430,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
+
 .view-note-body:empty::before,
 .view-note-body.is-empty::before {
     content: 'This note has no content yet.';
@@ -376,12 +439,19 @@
 }
 
 /* Chrome / Edge / Safari scrollbar theming — same workspace colour */
-.view-note-body::-webkit-scrollbar { width: 6px; }
-.view-note-body::-webkit-scrollbar-track { background: transparent; }
+.view-note-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.view-note-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .view-note-body::-webkit-scrollbar-thumb {
     background: var(--ws-color, var(--accent));
     border-radius: 99px;
 }
+
 .view-note-body::-webkit-scrollbar-thumb:hover {
     background: var(--ws-color, var(--accent));
     filter: brightness(1.15);
@@ -395,6 +465,7 @@
     color: var(--ws-color, var(--accent));
 
 }
+
 .view-note-content .modal-footer .btn-modal-accent:hover {
     background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
     filter: brightness(0.88);
@@ -407,6 +478,7 @@
     gap: 6px;
     flex-shrink: 0;
 }
+
 .modal-expand-btn {
     background: none;
     border: none;
@@ -417,7 +489,11 @@
     border-radius: 7px;
     transition: color 0.2s, background 0.2s;
 }
-.modal-expand-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+.modal-expand-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.06);
+}
 
 /* ═══════════════════════════════════════
    THEATER / EXPANDED MODE
@@ -431,118 +507,232 @@
 }
 
 #viewNoteDialog.theater-mode {
-    max-width: 97vw;
-    width: 97vw;
-    height: 96vh;
-    margin: 2vh auto;
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+}
+/* Distraction-free: header & footer chrome fully collapse in theater
+   mode. Nothing lives at the top or bottom edges except the single
+   floating menu button (see .theater-menu below). */
+#viewNoteDialog.theater-mode .modal-header,
+#viewNoteDialog.theater-mode .modal-footer {
+    display: none;
 }
 
-#viewNoteDialog.theater-mode .modal-header {
-    padding: 10px 20px;
-}
-#viewNoteDialog.theater-mode .modal-title {
-    font-size: 1.1rem !important;
-    margin-top: 2px !important;
-}
-#viewNoteDialog.theater-mode .view-note-ws {
-    font-size: 0.62rem;
-    padding: 2px 9px;
-}
-#viewNoteDialog.theater-mode .view-note-date {
-    font-size: 0.68rem;
-    margin-top: 3px;
-}
-#viewNoteDialog.theater-mode .modal-footer {
-    padding: 8px 20px;
-}
 #viewNoteDialog.theater-mode .modal-content {
     height: 100%;
     display: flex;
     flex-direction: column;
-
+    border-color: transparent;
+    border-radius: 0;
+    position: relative; /* anchors the floating menu button */
 }
-
 #viewNoteDialog.theater-mode .modal-body {
     flex: 1;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 28px;
-    padding: 5px 5px;
+    flex-direction: column;
     overflow: hidden;
+    padding: 0;
 }
 
-#viewNoteDialog.theater-mode .view-note-body {
-    overflow-y: auto;
-    max-height: 100%;
-    padding-right: 12px;
-
-    scrollbar-width: thin;
-    scrollbar-color: var(--ws-color, var(--accent)) transparent;
-}
-#viewNoteDialog.theater-mode .view-note-resources {
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    flex-shrink: 0;
-    width: 300px;
-    min-width: 220px;
-    max-width: 640px;
-    max-height: 100%;
-    overflow: auto;
-    direction: rtl;
-    resize: horizontal;
-    margin-top: 0;
-    border-top: none;
-    padding-left: 24px;
-    border-left: 1px solid var(--border);
-    scrollbar-width: thin;
-    scrollbar-color: var(--ws-color, var(--accent)) transparent;
-}
-#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar { width: 3px; }
-#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-track { background: transparent; }
-#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb {
-    background: var(--ws-color, var(--accent));
-    border-radius: 99px;
-}
-#viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb:hover {
-    filter: brightness(1.15);
-}
-
-
-#viewNoteDialog.theater-mode .view-note-body {
-    max-width: 760px;
-    width: 100%;
-    height: 100%;
-    max-height: 100%;
+/* The reading column — content + tags together, so they scroll as
+   one unit independently of the resources panel once it's open. */
+#viewNoteDialog.theater-mode .view-note-main {
+    flex: 1;
+    min-width: 0;
     min-height: 0;
-    font-size: 1.08rem;
-    line-height: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px 48px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
-#viewNoteDialog.theater-mode .view-note-content .modal-title {
 
-    font-size: 1.6rem;
+#viewNoteDialog.theater-mode .view-note-body {
+    width: 100%;
+    max-width: 760px;
+    height: auto;
+    max-height: none;
+    font-size: 1.05rem;
+    line-height: 1.95;
+    overflow: visible;
+    padding-right: 0;
+}
+#viewNoteDialog.theater-mode .view-note-tags {
+    width: 100%;
+    max-width: 760px;
+    margin-top: 20px;
 }
 
+/* Resources: hidden until toggled from the menu. When open, it
+   becomes a real flex sibling — the reading column shrinks to make
+   room (a genuine push), and both panels scroll independently. */
+#viewNoteDialog.theater-mode .view-note-resources {
+    display: none;
+}
+#viewNoteDialog.theater-mode.resources-open .modal-body {
+    flex-direction: row;
+}
+#viewNoteDialog.theater-mode.resources-open .view-note-resources {
+    display: block;
+    flex: 0 0 360px;
+    max-width: 40vw;
+    height: 100%;
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+    border-top: none;
+    background: var(--card);
+    padding: 64px 20px 24px;
+    margin: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
+}
+
+/* Narrow screens: stack instead of squeezing two columns side by
+   side. Content on top, resources below — both still independently
+   scrollable, neither one an overlay on top of the other. */
+@media (max-width: 700px) {
+    #viewNoteDialog.theater-mode.resources-open .modal-body {
+        flex-direction: column;
+    }
+    #viewNoteDialog.theater-mode.resources-open .view-note-resources {
+        flex: 0 0 42vh;
+        max-width: 100%;
+        max-height: 42vh;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 16px 18px 20px;
+    }
+}
+
+@media (max-height: 500px) {
+    #viewNoteDialog.theater-mode .view-note-main { padding: 52px 18px 28px; }
+}
+@media (max-width: 480px) {
+    #viewNoteDialog.theater-mode .view-note-body { font-size: 0.98rem; }
+}
+/* ─── DISTRACTION-FREE MENU (theater mode only) ───── */
+.theater-menu {
+    display: none;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 70;
+}
+#viewNoteDialog.theater-mode .theater-menu { display: block; }
+
+.theater-menu-btn {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.theater-menu-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.16); }
+
+.theater-menu-dropdown {
+    position: absolute;
+    top: 46px; right: 0;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 190px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+}
+.theater-menu.open .theater-menu-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.theater-menu-label {
+    padding: 8px 11px 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+.theater-menu-item {
+    width: 100%;
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 11px;
+    border-radius: 7px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+}
+.theater-menu-item:hover { background: rgba(255,255,255,0.06); }
+.theater-menu-item.danger { color: #f87171; }
+.theater-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
+
+/*.drawer-close-btn {*/
+/*    display: none;*/
+/*    position: absolute;*/
+/*    top: 16px; right: 16px;*/
+/*    width: 30px; height: 30px;*/
+/*    border-radius: 7px;*/
+/*    background: rgba(255,255,255,0.06);*/
+/*    border: none;*/
+/*    color: var(--muted);*/
+/*    align-items: center; justify-content: center;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*#viewNoteDialog.theater-mode .view-note-resources .drawer-close-btn {*/
+/*    background: transparent;*/
+/*    top: 10px;*/
+/*    left: 16px;*/
+/*    display: flex;*/
+/*}*/
+
+.drawer-close-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
 /* Stronger blur behind the modal in theater mode — deepens the focus effect */
 .modal-backdrop.theater-backdrop {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    background: rgba(13,17,23,0.88);
+    background: rgba(13, 17, 23, 0.88);
     transition: backdrop-filter 0.35s, background 0.35s;
 }
 
-@media (max-width: 768px) {
-    #viewNoteDialog.theater-mode {
-        max-width: 100vw;
-        width: 100vw;
-        height: 100vh;
-        margin: 0;
-        border-radius: 0;
-    }
-    #viewNoteDialog.theater-mode .modal-content { border-radius: 0; height: 100vh; }
-}
+/*@media (max-width: 768px) {*/
+/*    #viewNoteDialog.theater-mode {*/
+/*        max-width: 100vw;*/
+/*        width: 100vw;*/
+/*        height: 100vh;*/
+/*        margin: 0;*/
+/*        border-radius: 0;*/
+/*    }*/
+
+/*    #viewNoteDialog.theater-mode .modal-content {*/
+/*        border-radius: 0;*/
+/*        height: 100vh;*/
+/*    }*/
+/*}*/
 
 /* ─── DELETE WARNING (shared pattern) ─── */
 .delete-warning {
@@ -551,18 +741,23 @@
     align-items: flex-start;
     padding: 4px;
 }
+
 .delete-warning i {
     font-size: 1.4rem;
     color: #f87171;
     flex-shrink: 0;
     margin-top: 2px;
 }
+
 .delete-warning p {
     font-size: 0.88rem;
     color: var(--muted);
     line-height: 1.6;
 }
-.delete-warning strong { color: var(--text); }
+
+.delete-warning strong {
+    color: var(--text);
+}
 
 .btn-modal-danger {
     padding: 9px 22px;
@@ -574,27 +769,51 @@
     background: #dc2626;
     border: none;
     color: #fff;
-    display: flex; align-items: center; gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     transition: background 0.2s, transform 0.15s;
 }
-.btn-modal-danger:hover { background: #b91c1c; transform: translateY(-1px); }
+
+.btn-modal-danger:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
 
 /* ─── RESPONSIVE ─────────────────────── */
 @media (max-width: 768px) {
-    .nri-preview { max-width: 220px; }
-    .nri-title { max-width: 200px; }
+    .nri-preview {
+        max-width: 220px;
+    }
+
+    .nri-title {
+        max-width: 200px;
+    }
 }
 
 @media (max-width: 576px) {
-    .notes-page-header { flex-direction: column; align-items: stretch; }
-    .notes-page-header .btn-topbar-accent { justify-content: center; }
+    .notes-page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .notes-page-header .btn-topbar-accent {
+        justify-content: center;
+    }
 
     .note-row-item {
         flex-wrap: wrap;
         padding: 14px 16px;
     }
-    .nri-preview { display: none; }
-    .nri-title { max-width: 200px; }
+
+    .nri-preview {
+        display: none;
+    }
+
+    .nri-title {
+        max-width: 200px;
+    }
+
     .nri-meta {
         width: 100%;
         justify-content: space-between;
@@ -602,10 +821,14 @@
         padding-left: 20px;
     }
 }
+
 /* ─── TAG INPUT WIDGET ──────────────── */
 .tag-input-wrap {
     position: relative;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
     background: var(--secondary);
     border: 1px solid var(--border);
     border-radius: 9px;
@@ -617,13 +840,18 @@
     border-color: rgba(234, 88, 12, 0.5);
     box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
 }
+
 [data-theme="dark"] .tag-input-wrap:focus-within {
     border-color: var(--accent-hover);
 
 }
 
 
-.tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
 
 .tag-chip {
     display: flex;
@@ -642,6 +870,7 @@
     border: 2px solid var(--border);
     color: var(--text);
 }
+
 [data-theme="dark"] .tag-chip {
     background: var(--bg);
     border: 2px solid var(--accent);
@@ -649,31 +878,80 @@
 }
 
 .tag-chip button {
-    background: none; border: none; color: inherit; cursor: pointer;
-    font-size: 0.7rem; padding: 2px; border-radius: 50%;
-    display: flex; align-items: center; transition: background 0.15s;
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 2px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s;
 }
-.tag-chip button:hover { background: rgba(255,255,255,0.15); }
+
+.tag-chip button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
 .tag-text-input {
-    flex: 1; min-width: 100px;
-    background: none; border: none; outline: none;
-    color: var(--text); font-family: var(--font-body); font-size: 0.86rem;
+    flex: 1;
+    min-width: 100px;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.86rem;
     padding: 4px 2px;
 }
-[data-theme="light"] .tag-input-wrap:focus-within { border-color: var(--accent);  }
-.tag-text-input::placeholder { color: rgba(148,163,184,0.4); }
-.tag-suggestions {
-    position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-    background: var(--card); border: 1px solid var(--border); border-radius: 9px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-    max-height: 180px; overflow-y: auto; z-index: 20; display: none;
+
+[data-theme="light"] .tag-input-wrap:focus-within {
+    border-color: var(--accent);
 }
-.tag-suggestions.open { display: block; }
-.tag-suggestion-item { padding: 8px 12px; font-size: 0.82rem; color: var(--text); cursor: pointer; transition: background 0.15s; }
-.tag-suggestion-item:hover, .tag-suggestion-item.focused { background: rgba(234,88,12,0.1); }
+
+.tag-text-input::placeholder {
+    color: rgba(148, 163, 184, 0.4);
+}
+
+.tag-suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 20;
+    display: none;
+}
+
+.tag-suggestions.open {
+    display: block;
+}
+
+.tag-suggestion-item {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.tag-suggestion-item:hover, .tag-suggestion-item.focused {
+    background: rgba(234, 88, 12, 0.1);
+}
 
 /* ─── TAG PILLS ─── */
-.nri-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.nri-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+}
 
 .nri-tag-pill, .view-note-tag-pill {
     font-size: 0.68rem;
@@ -684,8 +962,14 @@
     border-radius: 99px;
     padding: 2px 9px;
 }
+
 /* ─── Resource Supporter ─── */
-.view-note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.view-note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
 
 .view-note-resources {
     margin-top: 20px;
@@ -695,15 +979,44 @@
 }
 
 .vnr-summary {
-    display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer; list-style: none; margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    margin-bottom: 10px;
 }
-.vnr-summary::-webkit-details-marker { display: none; }
-.vnr-summary h4 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.vnr-summary h4 i { color: var(--ws-color,var(--accent)); }
-.vnr-chevron { color: var(--muted); transition: transform 0.2s; }
-.vnr-details[open] .vnr-chevron { transform: rotate(180deg); }
-.vnr-body { padding-top: 4px; }
+
+.vnr-summary::-webkit-details-marker {
+    display: none;
+}
+
+.vnr-summary h4 {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vnr-summary h4 i {
+    color: var(--ws-color, var(--accent));
+}
+
+.vnr-chevron {
+    color: var(--muted);
+    transition: transform 0.2s;
+}
+
+.vnr-details[open] .vnr-chevron {
+    transform: rotate(180deg);
+}
+
+.vnr-body {
+    padding-top: 4px;
+}
 
 .vnr-list-wrap {
     max-height: 320px;
@@ -711,7 +1024,7 @@
     padding-right: 6px;
     margin-top: 10px;
     scrollbar-width: thin;
-    scrollbar-color: var(--ws-color,var(--accent)) transparent;
+    scrollbar-color: var(--ws-color, var(--accent)) transparent;
     resize: vertical;
     direction: rtl;
 }
@@ -723,7 +1036,7 @@
 #viewNoteDialog.theater-mode .view-note-body {
     min-width: 280px;
     flex-shrink: 1;
-    
+
 }
 
 [data-theme="light"] #viewNoteDialog.theater-mode .view-note-body {
@@ -731,9 +1044,19 @@
     border-radius: 15px;
     padding-left: 10px;
 }
-.vnr-list-wrap::-webkit-scrollbar { width: 6px; }
-.vnr-list-wrap::-webkit-scrollbar-track { background: transparent; }
-.vnr-list-wrap::-webkit-scrollbar-thumb { background: var(--ws-color); border-radius: 99px; }
+
+.vnr-list-wrap::-webkit-scrollbar {
+    width: 6px;
+}
+
+.vnr-list-wrap::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.vnr-list-wrap::-webkit-scrollbar-thumb {
+    background: var(--ws-color);
+    border-radius: 99px;
+}
 
 /* Theater mode gets more room to breathe */
 #viewNoteDialog.theater-mode .vnr-list-wrap {
@@ -754,73 +1077,176 @@
     cursor: pointer;
     transition: background 0.2s;
 }
-.btn-add-resource:hover { background: color-mix(in srgb, var(--ws-color, var(--accent)) 20%, transparent); }
-.vnr-empty { color: var(--muted); font-size: 0.84rem; font-style: italic; text-align: center; padding: 16px 0; }
-.vnr-list { display: flex; flex-direction: column; gap: 12px; }
-.vnr-card { background: var(--secondary); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; }
-.vnr-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.vnr-category-tag { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 10px; border-radius: 99px; color: var(--muted); background: rgba(255,255,255,0.06); }
-.vnr-category-tag.video { color: #f87171; background: rgba(239,68,68,0.12); }
-.vnr-category-tag.image { color: #34d399; background: rgba(16,185,129,0.12); }
-.vnr-category-tag.article, .vnr-category-tag.tutorial, .vnr-category-tag.documentation { color: #818cf8; background: rgba(99,102,241,0.12); }
-.vnr-title { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-.vnr-description { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
-.vnr-link { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--accent); word-break: break-all; }
-.vnr-link:hover { color: #fb923c; }
-.vnr-video-embed { width: 100%; aspect-ratio: 16 / 9; border: none; border-radius: 8px; display: block; }
-.vnr-image { width: 100%; max-height: 320px; object-fit: cover; border-radius: 8px; display: block; }
-.resource-url-hint { display: block; margin-top: 6px; font-size: 0.72rem; color: rgba(148,163,184,0.55); }
+
+.btn-add-resource:hover {
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 20%, transparent);
+}
+
+.vnr-empty {
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-style: italic;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.vnr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vnr-card {
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+}
+
+.vnr-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.vnr-category-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 10px;
+    border-radius: 99px;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.vnr-category-tag.video {
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.12);
+}
+
+.vnr-category-tag.image {
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.vnr-category-tag.article, .vnr-category-tag.tutorial, .vnr-category-tag.documentation {
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.12);
+}
+
+.vnr-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.vnr-description {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.vnr-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--accent);
+    word-break: break-all;
+}
+
+.vnr-link:hover {
+    color: #fb923c;
+}
+
+.vnr-video-embed {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 8px;
+    display: block;
+}
+
+.vnr-image {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.resource-url-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: rgba(148, 163, 184, 0.55);
+}
 
 
 /*
-       THE PERSONALITY OF NOTE
+   VIEW NOTE TYPOGRAPHY — matches the live editor's hierarchy
+   (see .ProseMirror rules in editor.css) instead of the old
+   decorative markdown-preview styling.
 */
 .view-note-body h1, .view-note-body h2, .view-note-body h3 {
     font-family: var(--font-display);
     font-weight: 800;
     color: var(--text);
-    margin: 20px 0 10px;
     line-height: 1.3;
 }
 
 .view-note-body h1 {
     font-size: 1.5rem;
-    letter-spacing: .2rem;
-    border-bottom: 1px solid var(--ws-color, var(--accent));
-    color: transparent;
-    -webkit-text-stroke: 0.5px var(--ws-color, var(--accent));
-    padding-bottom: 6px;
-    font-family: "Cursive",serif;
-    text-align: right;
+    margin: 26px 0 12px;
 }
 
 .view-note-body h2 {
-    font-size: 1.25rem;
-    color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, transparent);
-    font-family: "Inter", sans-serif;
+    font-size: 1.22rem;
+    margin: 22px 0 10px;
 }
 
 .view-note-body h3 {
     font-size: 1.05rem;
-    color: var(--muted, var(--accent));
-    border-bottom: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
-    padding-bottom: 4px;
-    text-align: center;
-    font-family: "Cursive",serif;
-    max-width: 50%;
+    margin: 18px 0 8px;
+    color: var(--muted);
 }
-.view-note-body p { margin-bottom: 12px; }
-.view-note-body ul, .view-note-body ol { margin: 0 0 12px 22px; }
-.view-note-body li { margin-bottom: 4px; }
-.view-note-body strong { color: var(--text); font-weight: 700; }
+
+.view-note-body p {
+    margin-bottom: 12px;
+}
+
+.view-note-body ul, .view-note-body ol {
+    margin: 0 0 12px 22px;
+}
+
+.view-note-body li {
+    margin-bottom: 4px;
+}
+
+.view-note-body strong {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.view-note-body a {
+    color: var(--ws-color, var(--accent));
+    text-decoration: underline;
+}
+
 .view-note-body blockquote {
     border-left: 3px solid var(--ws-color, var(--accent));
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     padding: 8px 16px;
     margin: 12px 0;
     color: var(--muted);
     border-radius: 0 6px 6px 0;
 }
+
 .view-note-body code {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85em;
@@ -829,6 +1255,7 @@
     padding: 2px 6px;
     border-radius: 4px;
 }
+
 .view-note-body pre {
     background: #0a0e13 !important;
     border: 1px solid var(--border);
@@ -837,21 +1264,59 @@
     margin: 14px 0;
     overflow-x: auto;
 }
+
 .view-note-body pre code {
     background: none;
     color: inherit;
     padding: 0;
     font-size: 0.85rem;
 }
-.view-note-body .katex-display {
-    background: rgba(99,102,241,0.06);
-    border: 1px solid rgba(99,102,241,0.2);
-    border-radius: 8px;
-    padding: 14px;
-    margin: 14px 0;
-    overflow-x: auto;
+
+.view-note-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 18px 0;
 }
-.view-note-body hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+/* Task list checkboxes — read-only, so pointer-events is disabled
+   rather than letting them look interactive and silently do nothing */
+.view-note-body ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+}
+
+.view-note-body ul[data-type="taskList"] li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.view-note-body ul[data-type="taskList"] li > label {
+    flex: 0 0 auto;
+    margin-top: 3px;
+}
+
+.view-note-body ul[data-type="taskList"] li > div {
+    flex: 1 1 auto;
+}
+
+.view-note-body ul[data-type="taskList"] li > label {
+    pointer-events: none; /* labels forward clicks to their checkbox
+                              regardless of pointer-events on the input
+                              itself — this is what actually blocks it */
+}
+.view-note-body ul[data-type="taskList"] input[type="checkbox"] {
+    accent-color: var(--ws-color, var(--accent));
+    width: 15px; height: 15px;
+    pointer-events: none;
+}
+
+.view-note-body ul[data-type="taskList"] li[data-checked="true"] > div {
+    color: var(--muted);
+    text-decoration: line-through;
+}
 
 .editor-toolbar {
     display: flex;
@@ -885,16 +1350,19 @@
 #viewNoteDialog.theater-mode .view-note-resources::-webkit-scrollbar-thumb {
     background: transparent;
 }
+
 .view-note-body:hover::-webkit-scrollbar-thumb,
 .vnr-list-wrap:hover::-webkit-scrollbar-thumb,
 #viewNoteDialog.theater-mode .view-note-resources:hover::-webkit-scrollbar-thumb {
     background: var(--ws-color, var(--accent));
 }
+
 .view-note-body::-webkit-scrollbar-thumb,
 .vnr-list-wrap::-webkit-scrollbar-thumb,
 #viewNoteDialog.theater-mode .view-note-body::-webkit-scrollbar-thumb {
     background: transparent;
 }
+
 .view-note-body:hover::-webkit-scrollbar-thumb,
 .vnr-list-wrap:hover::-webkit-scrollbar-thumb,
 #viewNoteDialog.theater-mode .view-note-body:hover::-webkit-scrollbar-thumb {
@@ -907,16 +1375,19 @@
 #viewNoteDialog.theater-mode .view-note-resources {
     scrollbar-color: transparent transparent;
 }
+
 .view-note-body:hover,
 .vnr-list-wrap:hover,
 #viewNoteDialog.theater-mode .view-note-resources:hover {
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
+
 .view-note-body,
 .vnr-list-wrap,
 #viewNoteDialog.theater-mode .view-note-body {
     scrollbar-color: transparent transparent;
 }
+
 .view-note-body:hover,
 .vnr-list-wrap:hover,
 #viewNoteDialog.theater-mode .view-note-body:hover {
