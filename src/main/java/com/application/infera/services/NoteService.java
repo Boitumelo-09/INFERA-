@@ -102,11 +102,17 @@ public class NoteService {
         }
 
         note.setTitle(request.getTitle());
-        note.setDocumentJson(request.getDocumentJson());
+        // The trimmed properties modal (workspace + tags only) doesn't
+        // submit a documentJson field at all — request.getDocumentJson()
+        // comes back null in that case. Only overwrite if something was
+        // actually sent, so editing properties never wipes the note body.
+        if (request.getDocumentJson() != null) {
+            note.setDocumentJson(request.getDocumentJson());
+        }
         note.setTags(tagService.resolveTags(request.getTags(),user));
         noteRepository.save(note);
         activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
-
+    
     }
 
     public void deleteNote(Long id, User user) {

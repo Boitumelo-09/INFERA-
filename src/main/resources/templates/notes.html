@@ -20,7 +20,6 @@
     <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
 </head>
 <body>
@@ -269,6 +268,9 @@
                             <button class="ws-menu-item note-edit-trigger">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
+                            <button class="ws-menu-item note-properties-trigger">
+                                <i class="bi bi-sliders"></i> Properties
+                            </button>
                             <button class="ws-menu-item danger note-delete-trigger">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
@@ -298,6 +300,26 @@
 <div class="modal fade infera-modal" id="viewNoteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" id="viewNoteDialog">
         <div class="modal-content view-note-content">
+            <div class="theater-menu">
+                <button type="button" class="theater-menu-btn" id="theaterMenuBtn" aria-label="Note menu" aria-haspopup="true">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="theater-menu-dropdown" id="theaterMenuDropdown">
+                    <div class="theater-menu-label" id="theaterMenuTitle">Note</div>
+                    <button type="button" class="theater-menu-item" id="theaterEditBtn">
+                        <i class="bi bi-pencil"></i> Edit this note
+                    </button>
+                    <button type="button" class="theater-menu-item" id="theaterResourcesBtn">
+                        <i class="bi bi-link-45deg"></i> Resources
+                    </button>
+                    <button type="button" class="theater-menu-item" id="theaterExitBtn">
+                        <i class="bi bi-arrows-angle-contract"></i> Exit focus mode
+                    </button>
+                    <button type="button" class="theater-menu-item danger" id="theaterCloseBtn">
+                        <i class="bi bi-x-lg"></i> Close
+                    </button>
+                </div>
+            </div>
             <div class="modal-header">
                 <div>
                     <span class="view-note-ws" id="viewNoteWs" style="--ws-color:#ea580c;">Workspace</span>
@@ -315,8 +337,10 @@
                 </div>
             </div>
             <div class="modal-body">
-                <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>
-                <div class="view-note-tags" id="viewNoteTags"></div>
+                <div class="view-note-main" id="viewNoteMain">
+                    <div class="view-note-body" id="viewNoteContent">Note content will appear here.</div>
+                    <div class="view-note-tags" id="viewNoteTags"></div>
+                </div>
 
                 <div class="view-note-resources">
                     <details class="vnr-details" open>
@@ -371,20 +395,6 @@
                             </option>
                         </select>
                     </div>
-                    <div class="form-group mb-3">
-                        <div class="editor-toolbar" data-target="noteContent">
-                            <button type="button" data-action="h1" title="Heading"><i class="bi bi-type-h1"></i></button>
-                            <button type="button" data-action="h2" title="Heading"><i class="bi bi-type-h2"></i></button>
-                            <button type="button" data-action="h3" title="Heading"><i class="bi bi-type-h3"></i></button>
-                            <button type="button" data-action="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
-                            <button type="button" data-action="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
-                            <button type="button" data-action="list" title="Bullet list"><i class="bi bi-list-ul"></i></button>
-                            <button type="button" data-action="code" title="Inline code"><i class="bi bi-code"></i></button>
-                            <button type="button" data-action="codeblock" title="Code block"><i class="bi bi-code-square"></i></button>
-                            <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
-                            <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
-                        </div>
-                        <textarea id="noteContent" name="documentJson" class="form-input form-textarea note-content-input" rows="8" placeholder="Start writing..."></textarea>                    </div>
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
                         <div class="tag-input-wrap" id="newNoteTagWrap">
@@ -413,12 +423,14 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Note</h5>
+                <h5 class="modal-title">Note Properties</h5>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
-            <!-- action rewritten by JS to /notes/{id}/update before submit -->
+            <!-- action rewritten by JS to /notes/{id}/update before submit.
+                 Content editing lives on the dedicated /notes/{id}/edit page —
+                 this modal only handles workspace + tags. -->
             <form method="post" id="editNoteForm">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <div class="modal-body">
@@ -434,21 +446,6 @@
                             </option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <div class="editor-toolbar" data-target="editNoteContent">
-                            <button type="button" data-action="h1" title="Heading"><i class="bi bi-type-h1"></i></button>
-                            <button type="button" data-action="h2" title="Heading"><i class="bi bi-type-h2"></i></button>
-                            <button type="button" data-action="h3" title="Heading"><i class="bi bi-type-h3"></i></button>
-                            <button type="button" data-action="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
-                            <button type="button" data-action="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
-                            <button type="button" data-action="list" title="Bullet list"><i class="bi bi-list-ul"></i></button>
-                            <button type="button" data-action="code" title="Inline code"><i class="bi bi-code"></i></button>
-                            <button type="button" data-action="codeblock" title="Code block"><i class="bi bi-code-square"></i></button>
-                            <button type="button" data-action="math" title="Math formula"><i class="bi bi-calculator"></i></button>
-                            <button type="button" data-action="quote" title="Quote"><i class="bi bi-quote"></i></button>
-                        </div>
-                        <textarea id="editNoteContent" name="documentJson" class="form-input form-textarea note-content-input" rows="8"></textarea>                    </div>
 
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
@@ -646,11 +643,9 @@
         showToast('[[${errorMessage}]]', 'error');
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+<script type="module" th:src="@{/javaScript/editor/view-renderer.js}"></script>
 <script th:src="@{/javaScript/notes.js}" ></script>
 <script th:src="@{/javaScript/utility.js}"></script>
 </body>
