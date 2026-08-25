@@ -90,8 +90,7 @@ function escapeHtml(str) {
    VIEW NOTE MODAL — the default action when clicking a row
 ─────────────────────────────────────────────────────────────────── */
 const viewNoteModalEl = $('#viewNoteModal');
-const viewNoteModal    = viewNoteModalEl ? new bootstrap.Modal(viewNoteModalEl) : null;
-
+const viewNoteModal    = viewNoteModalEl ? new bootstrap.Modal(viewNoteModalEl, { keyboard: false }) : null;
 let currentlyViewedRow = null;   // remembers which row is open, so "Edit this note" knows what to edit
 
 function openViewNoteModal(row) {
@@ -109,6 +108,7 @@ function openViewNoteModal(row) {
     modalContent?.style.setProperty('--ws-color', wsColor);
 
     $('#viewNoteTitle').textContent = title;
+    $('#theaterMenuTitle').textContent = title;
     $('#viewNoteWs').textContent    = wsName;
     $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
     $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
@@ -127,9 +127,8 @@ function openViewNoteModal(row) {
 /* "Edit this note" button inside the View modal — hands off to the Edit modal */
 $('#viewNoteEditBtn')?.addEventListener('click', () => {
     if (!currentlyViewedRow) return;
-    viewNoteModal?.hide();
-    setTimeout(() => openEditNoteModal(currentlyViewedRow), 250);
-});
+    softNavigate(`/notes/${currentlyViewedRow.dataset.id}/edit`);
+})
 
 /* ───────────────────────────────────────────────────────────────────
    THEATER MODE — expand/shrink toggle, like YouTube's expand button
@@ -137,6 +136,13 @@ $('#viewNoteEditBtn')?.addEventListener('click', () => {
 const viewNoteDialog     = $('#viewNoteDialog');
 const viewNoteExpandBtn  = $('#viewNoteExpandBtn');
 let isTheaterMode = false;
+
+function closeTheaterMenu() {
+    $('.theater-menu')?.classList.remove('open');
+}
+function closeResourcesDrawer() {
+    viewNoteDialog?.classList.remove('resources-open');
+}
 
 function setTheaterMode(on) {
     isTheaterMode = on;
@@ -153,6 +159,11 @@ function setTheaterMode(on) {
     // Deepen the backdrop blur while expanded — reinforces the "focus mode" feel
     const backdrop = document.querySelector('.modal-backdrop');
     backdrop?.classList.toggle('theater-backdrop', on);
+
+    if (!on) {
+        closeTheaterMenu();
+        closeResourcesDrawer();
+    }
 }
 
 viewNoteExpandBtn?.addEventListener('click', () => setTheaterMode(!isTheaterMode));
@@ -162,7 +173,10 @@ viewNoteExpandBtn?.addEventListener('click', () => setTheaterMode(!isTheaterMode
 viewNoteModalEl?.addEventListener('hidden.bs.modal', () => setTheaterMode(false));
 
 /* Keyboard shortcut: "f" toggles theater mode while the view modal is open,
-   mirroring the muscle memory people already have from video players */
+   mirroring the muscle memory people already have from video players.
+   Escape is handled manually (Bootstrap's own keyboard-close is disabled
+   above) so it exits focus mode first, like a video player's fullscreen,
+   rather than slamming the whole note shut from inside theater mode. */
 document.addEventListener('keydown', e => {
     const modalIsOpen = viewNoteModalEl?.classList.contains('show');
     if (!modalIsOpen) return;
@@ -170,9 +184,39 @@ document.addEventListener('keydown', e => {
 
     if (e.key === 'f' || e.key === 'F') {
         setTheaterMode(!isTheaterMode);
+    } else if (e.key === 'Escape') {
+        if (isTheaterMode) setTheaterMode(false);
+        else viewNoteModal?.hide();
     }
 });
 
+/* ─── DISTRACTION-FREE MENU (theater mode) ─────────────────────── */
+$('#theaterMenuBtn')?.addEventListener('click', e => {
+    e.stopPropagation();
+    $('.theater-menu')?.classList.toggle('open');
+});
+document.addEventListener('click', e => {
+    if (!e.target.closest('.theater-menu')) closeTheaterMenu();
+});
+
+$('#theaterEditBtn')?.addEventListener('click', () => {
+    closeTheaterMenu();
+    if (!currentlyViewedRow) return;
+    softNavigate(`/notes/${currentlyViewedRow.dataset.id}/edit`);
+});
+$('#theaterResourcesBtn')?.addEventListener('click', () => {
+    closeTheaterMenu();
+    viewNoteDialog?.classList.toggle('resources-open');
+});
+$('#theaterExitBtn')?.addEventListener('click', () => {
+    closeTheaterMenu();
+    setTheaterMode(false);
+});
+$('#theaterCloseBtn')?.addEventListener('click', () => {
+    closeTheaterMenu();
+    viewNoteModal?.hide();
+});
+// $('#resourcesDrawerCloseBtn')?.addEventListener('click', closeResourcesDrawer);
 /* ───────────────────────────────────────────────────────────────────
    NEW NOTE MODAL
 ─────────────────────────────────────────────────────────────────── */
@@ -206,32 +250,20 @@ const editNoteModalEl = $('#editNoteModal');
 const editNoteModal   = editNoteModalEl ? new bootstrap.Modal(editNoteModalEl) : null;
 const editNoteForm    = $('#editNoteForm');
 
-function openEditNoteModal(row) {
+function openNotePropertiesModal(row) {
     const id          = row.dataset.id;
     const title       = row.dataset.title;
-    const content     = row.dataset.content || '';
     const workspaceId = row.dataset.workspaceId;
 
     editNoteForm.action = `/notes/${id}/update`;
 
     $('#editNoteTitle').value     = title;
-    $('#editNoteContent').value   = content === 'null' ? '' : content;
     $('#editNoteWorkspace').value = workspaceId;
     editNoteTagWidget?.setTags(row.dataset.tags ? row.dataset.tags.split(',').filter(Boolean) : []);
 
     editNoteModal?.show();
     setTimeout(() => $('#editNoteTitle')?.focus(), 300);
 }
-
-editNoteForm?.addEventListener('submit', e => {
-    editNoteTagWidget?.flushPending();
-    const title = $('#editNoteTitle').value.trim();
-    if (!title) {
-        e.preventDefault();
-        $('#editNoteTitle').focus();
-        $('#editNoteTitle').style.borderColor = '#ef4444';
-    }
-});
 
 /* ───────────────────────────────────────────────────────────────────
    DELETE NOTE MODAL
@@ -352,11 +384,12 @@ function openDeleteResourceModal(card) {
    ROW WIRING — click row = View, three-dot menu = View/Edit/Delete
 ─────────────────────────────────────────────────────────────────── */
 $$('.note-row-item').forEach(row => {
-    const menuWrap   = row.querySelector('.ws-tile-menu');
-    const menuBtn    = row.querySelector('.nri-menu-btn');
-    const viewBtn    = row.querySelector('.note-view-trigger');
-    const editBtn    = row.querySelector('.note-edit-trigger');
-    const deleteBtn  = row.querySelector('.note-delete-trigger');
+    const menuWrap      = row.querySelector('.ws-tile-menu');
+    const menuBtn        = row.querySelector('.nri-menu-btn');
+    const viewBtn          = row.querySelector('.note-view-trigger');
+    const editBtn            = row.querySelector('.note-edit-trigger');
+    const propertiesBtn        = row.querySelector('.note-properties-trigger');
+    const deleteBtn              = row.querySelector('.note-delete-trigger');
 
     // Clicking anywhere on the row (but not the menu) opens the read-only view
     row.addEventListener('click', e => {
@@ -387,7 +420,14 @@ $$('.note-row-item').forEach(row => {
         e.stopPropagation();
         menuWrap.classList.remove('open');
         row.classList.remove('menu-active');
-        openEditNoteModal(row);
+        softNavigate(`/notes/${row.dataset.id}/edit`);
+    });
+
+    propertiesBtn?.addEventListener('click', e => {
+        e.stopPropagation();
+        menuWrap.classList.remove('open');
+        row.classList.remove('menu-active');
+        openNotePropertiesModal(row);
     });
 
     deleteBtn?.addEventListener('click', e => {
@@ -545,61 +585,32 @@ function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInp
 //
 // -- NOTE RENDERING
 //
-function renderNoteContent(raw) {
+function waitForViewRenderer() {
+    return new Promise(resolve => {
+        (function poll() {
+            if (window.__inferaViewRenderer) resolve(window.__inferaViewRenderer);
+            else setTimeout(poll, 50);
+        })();
+    });
+}
+
+async function renderNoteContent(raw) {
     const bodyEl = $('#viewNoteContent');
     const clean = raw === 'null' || !raw ? '' : raw;
 
     bodyEl.classList.toggle('is-empty', !clean.trim());
     if (!clean.trim()) { bodyEl.innerHTML = ''; return; }
 
-    const html = marked.parse(clean, { breaks: true });
+    // view-renderer.js loads as a module and fetches Tiptap over the
+    // network — briefly show a loading state rather than a blank body
+    // if this fires before it's ready (rare in practice: renders are
+    // click-triggered, well after page load).
+    bodyEl.innerHTML = '<p class="view-note-loading">Loading preview…</p>';
+
+    const renderer = await waitForViewRenderer();
+    const html = renderer.render(clean);
     bodyEl.innerHTML = DOMPurify.sanitize(html);
 
     $$('pre code', bodyEl).forEach(block => hljs.highlightElement(block));
-
-    renderMathInElement(bodyEl, {
-        delimiters: [
-            { left: '$$', right: '$$', display: true },
-            { left: '$', right: '$', display: false }
-        ],
-        throwOnError: false
-    });
-}
-function wrapSelection(textarea, before, after, placeholder) {
-    const start = textarea.selectionStart, end = textarea.selectionEnd;
-    const selected = textarea.value.slice(start, end) || placeholder;
-    const newText = textarea.value.slice(0, start) + before + selected + after + textarea.value.slice(end);
-    textarea.value = newText;
-    const cursorPos = start + before.length;
-    textarea.focus();
-    textarea.setSelectionRange(cursorPos, cursorPos + selected.length);
 }
 
-function insertAtLineStart(textarea, prefix) {
-    const start = textarea.selectionStart;
-    const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
-    textarea.value = textarea.value.slice(0, lineStart) + prefix + textarea.value.slice(lineStart);
-    textarea.focus();
-    textarea.setSelectionRange(start + prefix.length, start + prefix.length);
-}
-
-const TOOLBAR_ACTIONS = {
-    h1:        t => insertAtLineStart(t, '# '),
-    h2:        t => insertAtLineStart(t, '## '),
-    h3:        t => insertAtLineStart(t, '### '),
-    bold:      t => wrapSelection(t, '**', '**', 'bold text'),
-    italic:    t => wrapSelection(t, '*', '*', 'italic text'),
-    list:      t => insertAtLineStart(t, '- '),
-    code:      t => wrapSelection(t, '`', '`', 'code'),
-    codeblock: t => wrapSelection(t, '```\n', '\n```', 'your code here'),
-    math:      t => wrapSelection(t, '$', '$', 'E = mc^2'),
-    quote:     t => insertAtLineStart(t, '> ')
-};
-
-$$('.editor-toolbar').forEach(toolbar => {
-    const textarea = $(`#${toolbar.dataset.target}`);
-    if (!textarea) return;
-    toolbar.querySelectorAll('button[data-action]').forEach(btn => {
-        btn.addEventListener('click', () => TOOLBAR_ACTIONS[btn.dataset.action]?.(textarea));
-    });
-});
