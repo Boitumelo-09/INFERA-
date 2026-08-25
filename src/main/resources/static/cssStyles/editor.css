@@ -118,7 +118,8 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 14px;
+    margin-block: 10px;
+
 }
 .editor-property-pill {
     display: inline-flex;
@@ -141,11 +142,56 @@
 .editor-property-tag-empty { font-style: italic; color: rgba(148,163,184,0.5); }
 
 /* ─── DIVIDER ───────────────────────── */
-.editor-divider {
-    height: 1px;
+.tiptap-toolbar-divider {
+    width: 1px;
+    align-self: stretch;
     background: var(--border);
-    margin: 24px 0 20px;
+    margin: 4px 5px;
 }
+
+/* Text colour picker — reuses .cp-swatch / .color-picker from
+   dashboard.css (same circles as the workspace colour picker) so
+   colour means the same thing everywhere in INFERA. */
+.tiptap-color-picker { position: relative; display: inline-flex; }
+
+.tiptap-color-popover {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    min-width: 168px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 20;
+}
+.tiptap-color-picker.open .tiptap-color-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+.color-picker-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 6px 8px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.color-picker-reset:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 
 /* ═══════════════════════════════════════
    TOOLBAR
@@ -231,7 +277,7 @@
 
 .ProseMirror ul, .ProseMirror ol { margin: 0 0 14px 22px; }
 .ProseMirror li { margin-bottom: 4px; }
-.ProseMirror strong { color: var(--text); font-weight: 700; }
+.ProseMirror strong { font-weight: 700; }
 .ProseMirror mark {
     background: rgba(250, 204, 21, 0.35);
     color: inherit;
@@ -300,6 +346,56 @@
     color: rgba(148,163,184,0.45);
     font-style: italic;
     pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   SLASH COMMAND MENU
+═══════════════════════════════════════ */
+.slash-menu {
+    position: fixed;
+    z-index: 300;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 200px;
+    max-height: 280px;
+    overflow-y: auto;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+.slash-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.slash-menu-item i {
+    color: var(--ws-color, var(--accent));
+    font-size: 0.95rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.slash-menu-item:hover,
+.slash-menu-item.selected {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.slash-menu-empty {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
 }
 
 /* ═══════════════════════════════════════
