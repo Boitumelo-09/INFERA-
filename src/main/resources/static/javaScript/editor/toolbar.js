@@ -67,7 +67,7 @@ const COMMANDS = {
             e.chain().focus().extendMarkRange('link').unsetLink().run();
             return;
         }
-        e.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
+        e.chain().focus().extendMarkRange('link').setLink({ href: url.trim(), target:'_blank' }).run();
     },
 };
 
