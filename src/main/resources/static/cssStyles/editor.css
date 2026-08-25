@@ -206,7 +206,7 @@
     top: calc(var(--topbar-h) + 12px);
     z-index: 10;
     background: var(--bg);
-    padding: 6px;
+    padding: 6px 2px;
     border: 1px solid var(--border);
     border-radius: 10px;
     width: fit-content;
@@ -227,13 +227,13 @@
     transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .tiptap-toolbar-btn:hover {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    background: color-mix(in srgb, var(--secondary) 80%, transparent);
     color: var(--text);
 }
 .tiptap-toolbar-btn.is-active {
-    background: color-mix(in srgb, var(--accent) 16%, transparent);
-    color: var(--accent);
-    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    background: color-mix(in srgb, var(--secondary) 80%, transparent);
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--text) 30%, transparent);
 }
 .tiptap-toolbar-btn:disabled {
     opacity: 0.35;
@@ -351,52 +351,72 @@
 /* ═══════════════════════════════════════
    SLASH COMMAND MENU
 ═══════════════════════════════════════ */
-.slash-menu {
-    position: fixed;
-    z-index: 300;
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 6px;
-    min-width: 200px;
-    max-height: 280px;
-    overflow-y: auto;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
+.tiptap-table-picker { position: relative; display: inline-flex; }
+.tiptap-table-popover {
+    position: absolute; top: 40px; left: 0;
+    background: var(--secondary); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px; min-width: 190px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    opacity: 0; visibility: hidden; transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s; z-index: 20;
+    display: flex; flex-direction: column; gap: 10px;
 }
-.slash-menu-item {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 7px;
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 0.85rem;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-.slash-menu-item i {
-    color: var(--ws-color, var(--accent));
-    font-size: 0.95rem;
-    width: 18px;
-    text-align: center;
-    flex-shrink: 0;
-}
-.slash-menu-item:hover,
-.slash-menu-item.selected {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-}
-.slash-menu-empty {
-    padding: 10px 12px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    font-style: italic;
-}
+.tiptap-table-picker.open .tiptap-table-popover { opacity: 1; visibility: visible; transform: none; }
+.tiptap-table-popover label { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--muted); gap: 10px; }
+.tiptap-table-popover input[type="number"] { width: 60px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 0.82rem; }
+.tiptap-table-insert-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; padding: 6px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.tiptap-table-insert-btn:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+.ProseMirror table { border-collapse: collapse; width: 100%; margin: 16px 0; overflow: hidden; }
+.ProseMirror table td, .ProseMirror table th { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; min-width: 80px; }
+.ProseMirror table th { background: rgba(255,255,255,0.04); font-weight: 700; text-align: left; color: var(--text); }
+.ProseMirror table .selectedCell { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+/*.old-slash-menu-dead {*/
+/*    position: fixed;*/
+/*    z-index: 300;*/
+/*    background: var(--secondary);*/
+/*    border: 1px solid var(--border);*/
+/*    border-radius: 10px;*/
+/*    padding: 6px;*/
+/*    min-width: 200px;*/
+/*    max-height: 280px;*/
+/*    overflow-y: auto;*/
+/*    box-shadow: 0 16px 40px rgba(0,0,0,0.45);*/
+/*    scrollbar-width: thin;*/
+/*    scrollbar-color: var(--accent) transparent;*/
+/*}*/
+/*.slash-menu-item {*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 10px;*/
+/*    padding: 8px 10px;*/
+/*    border-radius: 7px;*/
+/*    background: none;*/
+/*    border: none;*/
+/*    color: var(--text);*/
+/*    font-size: 0.85rem;*/
+/*    text-align: left;*/
+/*    cursor: pointer;*/
+/*    transition: background 0.15s;*/
+/*}*/
+/*.slash-menu-item i {*/
+/*    color: var(--ws-color, var(--accent));*/
+/*    font-size: 0.95rem;*/
+/*    width: 18px;*/
+/*    text-align: center;*/
+/*    flex-shrink: 0;*/
+/*}*/
+/*.slash-menu-item:hover,*/
+/*.slash-menu-item.selected {*/
+/*    background: color-mix(in srgb, var(--accent) 12%, transparent);*/
+/*}*/
+/*.slash-menu-empty {*/
+/*    padding: 10px 12px;*/
+/*    font-size: 0.8rem;*/
+/*    color: var(--muted);*/
+/*    font-style: italic;*/
+/*}*/
 
 /* ═══════════════════════════════════════
    RESPONSIVE
