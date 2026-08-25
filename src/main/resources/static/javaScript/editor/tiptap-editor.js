@@ -12,6 +12,7 @@ import Placeholder   from 'https://esm.sh/@tiptap/extension-placeholder@2.11.5';
 import { getSharedExtensions, parseDocumentJson } from './extensions.js';
 import { renderToolbar } from './toolbar.js';
 
+
 const mountEl = document.getElementById('editorContentMount');
 mountEl.innerHTML = ''; // clear the Step 2 "editor will mount here" placeholder
 
@@ -20,6 +21,7 @@ const editor = new Editor({
     extensions: [
         ...getSharedExtensions(),
         Placeholder.configure({ placeholder: 'Start capturing your idea...' }),
+        
     ],
     content: parseDocumentJson(window.__NOTE_RAW_CONTENT__ || ''),
     autofocus: false,

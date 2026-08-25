@@ -14,6 +14,12 @@ import TaskList         from 'https://esm.sh/@tiptap/extension-task-list@2.11.5'
 import TaskItem           from 'https://esm.sh/@tiptap/extension-task-item@2.11.5';
 import TextAlign            from 'https://esm.sh/@tiptap/extension-text-align@2.11.5';
 import Highlight              from 'https://esm.sh/@tiptap/extension-highlight@2.11.5';
+import TextStyle                from 'https://esm.sh/@tiptap/extension-text-style@2.11.5';
+import Color                      from 'https://esm.sh/@tiptap/extension-color@2.11.5';
+import Table                        from 'https://esm.sh/@tiptap/extension-table@2.11.5';
+import TableRow                       from 'https://esm.sh/@tiptap/extension-table-row@2.11.5';
+import TableHeader                      from 'https://esm.sh/@tiptap/extension-table-header@2.11.5';
+import TableCell                          from 'https://esm.sh/@tiptap/extension-table-cell@2.11.5';
 
 export function getSharedExtensions() {
     return [
@@ -24,6 +30,12 @@ export function getSharedExtensions() {
         TaskItem.configure({ nested: true }),
         TextAlign.configure({ types: ['heading', 'paragraph'] }),
         Highlight,
+        TextStyle,
+        Color,
+        Table.configure({ resizable: false }),
+        TableRow,
+        TableHeader,
+        TableCell,
     ];
 }
 
