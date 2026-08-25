@@ -6,6 +6,9 @@
    without touching editor mount/init logic.
 ═══════════════════════════════════════════════════════════════════ */
 
+import { buildTableInsertControl } from './slash-menu.js';
+
+
 const GROUPS = [
     [
         { action: 'bold',      icon: 'bi-type-bold',          title: 'Bold (Ctrl+B)' },
@@ -41,6 +44,84 @@ const GROUPS = [
         { action: 'redo', icon: 'bi-arrow-clockwise',        title: 'Redo (Ctrl+Shift+Z)' },
     ],
 ];
+const COLORS = [
+    { name: 'Orange',  value: '#ea580c' },
+    { name: 'Indigo',  value: '#6366f1' },
+    { name: 'Emerald', value: '#10b981' },
+    { name: 'Amber',   value: '#f59e0b' },
+    { name: 'Sky',     value: '#0ea5e9' },
+    { name: 'Pink',    value: '#ec4899' },
+    { name: 'Muted',   value: '#94a3b8' },
+];
+
+function buildColorPicker(editor) {
+    const wrap = document.createElement('span');
+    wrap.className = 'tiptap-color-picker';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tiptap-toolbar-btn';
+    btn.title = 'Text colour';
+    btn.setAttribute('aria-label', 'Text colour');
+    btn.setAttribute('aria-haspopup', 'true');
+    btn.innerHTML = `<i class="bi bi-palette"></i>`;
+
+    const popover = document.createElement('div');
+    popover.className = 'tiptap-color-popover';
+
+    const swatchRow = document.createElement('div');
+    swatchRow.className = 'color-picker';
+    const swatchButtons = {};
+
+    COLORS.forEach(({ name, value }) => {
+        const sw = document.createElement('button');
+        sw.type = 'button';
+        sw.className = 'cp-swatch';
+        sw.style.setProperty('--sw', value);
+        sw.setAttribute('aria-label', name);
+        sw.title = name;
+        sw.addEventListener('click', () => {
+            editor.chain().focus().setColor(value).run();
+            wrap.classList.remove('open');
+        });
+        swatchRow.appendChild(sw);
+        swatchButtons[value] = sw;
+    });
+
+    const resetBtn = document.createElement('button');
+    resetBtn.type = 'button';
+    resetBtn.className = 'color-picker-reset';
+    resetBtn.innerHTML = `<i class="bi bi-slash-circle"></i> Default`;
+    resetBtn.addEventListener('click', () => {
+        editor.chain().focus().unsetColor().run();
+        wrap.classList.remove('open');
+    });
+
+    popover.appendChild(swatchRow);
+    popover.appendChild(resetBtn);
+
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        wrap.classList.toggle('open');
+    });
+    document.addEventListener('click', e => {
+        if (!wrap.contains(e.target)) wrap.classList.remove('open');
+    });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(popover);
+
+    return {
+        el: wrap,
+        sync() {
+            const activeColor = editor.getAttributes('textStyle').color || null;
+            Object.entries(swatchButtons).forEach(([value, el]) => {
+                el.classList.toggle('active', value === activeColor);
+            });
+            btn.classList.toggle('is-active', !!activeColor);
+        },
+    };
+}
 
 const COMMANDS = {
     bold:        e => e.chain().focus().toggleBold().run(),
@@ -98,7 +179,8 @@ export function renderToolbar(editor, mountEl) {
     mountEl.classList.add('tiptap-toolbar');
 
     const buttons = {};
-
+    const colorPicker = buildColorPicker(editor);
+    const tablePicker = buildTableInsertControl(editor);
     GROUPS.forEach((group, gi) => {
         if (gi > 0) {
             const divider = document.createElement('span');
@@ -116,7 +198,24 @@ export function renderToolbar(editor, mountEl) {
             mountEl.appendChild(btn);
             buttons[action] = btn;
         });
+
+        // Text colour rides alongside the basic formatting group — same
+        // "change how the selection looks" concern as bold/highlight,
+        // just needs a swatch popover instead of a plain toggle.
+        if (gi === 0) {
+            const divider = document.createElement('span');
+            divider.className = 'tiptap-toolbar-divider';
+            mountEl.appendChild(divider);
+            mountEl.appendChild(colorPicker.el);
+        }
+        if (gi === 3) { // alongside quote/code-block
+            const divider = document.createElement('span');
+            divider.className = 'tiptap-toolbar-divider';
+            mountEl.appendChild(divider);
+            mountEl.appendChild(tablePicker.el);
+        }
     });
+
 
     function syncState() {
         Object.entries(ACTIVE_CHECK).forEach(([action, check]) => {
@@ -124,7 +223,10 @@ export function renderToolbar(editor, mountEl) {
         });
         if (buttons.undo) buttons.undo.disabled = !editor.can().undo();
         if (buttons.redo) buttons.redo.disabled = !editor.can().redo();
+        colorPicker.sync();
+        tablePicker.sync();
     }
+    
 
     editor.on('transaction', syncState);
     editor.on('selectionUpdate', syncState);
