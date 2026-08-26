@@ -3,6 +3,31 @@
    button, same pattern as the colour picker. Table schema itself
    lives in extensions.js since the View modal needs it too. */
 
+export function buildTableContextBar(editor) {
+    const el = document.createElement('div');
+    el.className = 'table-context-bar';
+
+    const actions = [
+        { icon: 'bi-arrow-bar-down',     title: 'Add row below',      run: e => e.chain().focus().addRowAfter().run() },
+        { icon: 'bi-dash-square',        title: 'Delete row',         run: e => e.chain().focus().deleteRow().run() },
+        { icon: 'bi-arrow-bar-right',    title: 'Add column after',   run: e => e.chain().focus().addColumnAfter().run() },
+        { icon: 'bi-dash-square-dotted', title: 'Delete column',      run: e => e.chain().focus().deleteColumn().run() },
+        { icon: 'bi-trash',              title: 'Delete table', danger: true, run: e => e.chain().focus().deleteTable().run() },
+    ];
+
+    actions.forEach(a => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'table-context-btn' + (a.danger ? ' danger' : '');
+        btn.title = a.title;
+        btn.innerHTML = `<i class="bi ${a.icon}"></i>`;
+        btn.addEventListener('click', () => a.run(editor));
+        el.appendChild(btn);
+    });
+
+    return { el, sync() { el.classList.toggle('visible', editor.isActive('table')); } };
+}
+
 export function buildTableInsertControl(editor) {
     const wrap = document.createElement('span');
     wrap.className = 'tiptap-table-picker';
