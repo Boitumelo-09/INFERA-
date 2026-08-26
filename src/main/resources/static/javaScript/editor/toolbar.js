@@ -6,7 +6,7 @@
    without touching editor mount/init logic.
 ═══════════════════════════════════════════════════════════════════ */
 
-import { buildTableInsertControl } from './slash-menu.js';
+import { buildTableInsertControl, buildTableContextBar } from './slash-menu.js';
 
 
 const GROUPS = [
@@ -181,7 +181,8 @@ export function renderToolbar(editor, mountEl) {
     const buttons = {};
     const colorPicker = buildColorPicker(editor);
     const tablePicker = buildTableInsertControl(editor);
-    GROUPS.forEach((group, gi) => {
+    const tableBar = buildTableContextBar(editor);
+    mountEl.insertAdjacentElement('afterend', tableBar.el);    GROUPS.forEach((group, gi) => {
         if (gi > 0) {
             const divider = document.createElement('span');
             divider.className = 'tiptap-toolbar-divider';
@@ -225,6 +226,7 @@ export function renderToolbar(editor, mountEl) {
         if (buttons.redo) buttons.redo.disabled = !editor.can().redo();
         colorPicker.sync();
         tablePicker.sync();
+        tableBar.sync();
     }
     
 
