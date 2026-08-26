@@ -351,8 +351,28 @@
 /* ═══════════════════════════════════════
    SLASH COMMAND MENU
 ═══════════════════════════════════════ */
-.tiptap-table-picker { position: relative; display: inline-flex; }
-.tiptap-table-popover {
+.table-context-bar {
+    display: none;
+    gap: 4px;
+    margin: -8px 0 16px;
+    padding: 6px;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: fit-content;
+}
+.table-context-bar.visible { display: flex; }
+.table-context-btn {
+    width: 30px; height: 30px;
+    background: none; border: none; border-radius: 6px;
+    color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+.table-context-btn:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--text); }
+.table-context-btn.danger:hover { background: rgba(239,68,68,0.12); color: #f87171; }
+
+.tiptap-table-picker { position: relative; display: inline-flex; }.tiptap-table-popover {
     position: absolute; top: 40px; left: 0;
     background: var(--secondary); border: 1px solid var(--border); border-radius: 10px;
     padding: 12px; min-width: 190px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);
