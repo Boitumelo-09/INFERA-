@@ -91,25 +91,6 @@ public class NoteController {
         }
     }
 
-    // POST /notes/{id}/update
-    @PostMapping("/{id}/update")
-    public String updateNote(@AuthenticationPrincipal Object principal,
-                             @PathVariable Long id,
-                             @ModelAttribute NoteRequest noteRequest,
-                             RedirectAttributes redirectAttributes) {
-        User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/auth";
-
-        try {
-            noteService.updateNote(id, noteRequest, user);
-            redirectAttributes.addFlashAttribute("successMessage", "Note updated!");
-        } catch (NoteNotFoundException | WorkspaceNotFoundException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-
-        return "redirect:/notes";
-    }
-
     // POST /notes/{id}/delete
     @PostMapping("/{id}/delete")
     public String deleteNote(@AuthenticationPrincipal Object principal,

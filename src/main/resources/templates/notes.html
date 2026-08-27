@@ -57,7 +57,7 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera</span>
+            <span class="logo-text">incaptur</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
             <i class="bi bi-x-lg"></i>
@@ -161,10 +161,10 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
-            <button class="btn-topbar-accent" id="newNoteBtnTop">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-sm-inline">New note</span>
-            </button>
+<!--            <button class="btn-topbar-accent" id="newNoteBtnTop">-->
+<!--                <i class="bi bi-plus-lg"></i>-->
+<!--                <span class="d-none d-sm-inline">New note</span>-->
+<!--            </button>-->
             <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
                 <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
@@ -243,7 +243,7 @@
                         <span class="nri-ws-tag" th:text="${note.workspace.name}">Workspace</span>
                     </div>
                     <p class="nri-preview"
-                       th:text="${note.documentJson != null and note.documentJson != '' ? #strings.abbreviate(note.documentJson, 120) : 'No content yet.'}">
+                       th:text="${note.plainText != null and note.plainText != '' ? #strings.abbreviate(note.plainText, 120) : 'No content yet.'}">
                         Preview line...
                     </p>
                     <div class="nri-tags" th:if="${!note.tags.isEmpty()}">
@@ -268,9 +268,7 @@
                             <button class="ws-menu-item note-edit-trigger">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
-                            <button class="ws-menu-item note-properties-trigger">
-                                <i class="bi bi-sliders"></i> Properties
-                            </button>
+
                             <button class="ws-menu-item danger note-delete-trigger">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
@@ -412,58 +410,6 @@
                     <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Discard</button>
                     <button type="submit" class="btn-modal-accent">
                         <span class="btn-text"><i class="bi bi-floppy"></i> Save note</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     EDIT NOTE MODAL
-════════════════════════════════════════════════════════════════ -->
-<div class="modal fade infera-modal" id="editNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Note Properties</h5>
-                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-            <!-- action rewritten by JS to /notes/{id}/update before submit.
-                 Content editing lives on the dedicated /notes/{id}/edit page —
-                 this modal only handles workspace + tags. -->
-            <form method="post" id="editNoteForm">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <input type="text" id="editNoteTitle" name="title" class="form-input note-title-input" required
-                               maxlength="150"/>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label class="form-label-custom" for="editNoteWorkspace">Workspace</label>
-                        <select id="editNoteWorkspace" name="workspaceId" class="form-input form-select-custom"
-                                required>
-                            <option th:each="ws : ${workspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
-                        <div class="tag-input-wrap" id="editNoteTagWrap">
-                            <div class="tag-chips" id="editNoteTagChips"></div>
-                            <input type="text" id="editNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
-                            <div class="tag-suggestions" id="editNoteTagSuggestions"></div>
-                        </div>
-                        <input type="hidden" id="editNoteTags" name="tags" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-modal-accent">
-                        <span class="btn-text">Save changes</span>
                     </button>
                 </div>
             </form>

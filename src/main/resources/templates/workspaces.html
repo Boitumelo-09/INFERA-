@@ -54,7 +54,7 @@
                     </g>
                 </svg>
             </div>
-            <span class="logo-text">infera</span>
+            <span class="logo-text">incaptur</span>
         </a>
         <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
             <i class="bi bi-x-lg"></i>
@@ -158,10 +158,10 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
-            <button class="btn-topbar-accent" id="newWorkspaceBtnTop">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-sm-inline">New workspace</span>
-            </button>
+<!--            <button class="btn-topbar-accent" id="newWorkspaceBtnTop">-->
+<!--                <i class="bi bi-plus-lg"></i>-->
+<!--                <span class="d-none d-sm-inline">New workspace</span>-->
+<!--            </button>-->
             <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div th:class="${user.avatarUrl} ? 'topbar-avatar' : 'topbar-avatar'"

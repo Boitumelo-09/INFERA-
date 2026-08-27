@@ -243,27 +243,6 @@ $('#newNoteForm')?.addEventListener('submit', e => {
     }
 });
 
-/* ───────────────────────────────────────────────────────────────────
-   EDIT NOTE MODAL — only reachable via menu or View modal's edit button
-─────────────────────────────────────────────────────────────────── */
-const editNoteModalEl = $('#editNoteModal');
-const editNoteModal   = editNoteModalEl ? new bootstrap.Modal(editNoteModalEl) : null;
-const editNoteForm    = $('#editNoteForm');
-
-function openNotePropertiesModal(row) {
-    const id          = row.dataset.id;
-    const title       = row.dataset.title;
-    const workspaceId = row.dataset.workspaceId;
-
-    editNoteForm.action = `/notes/${id}/update`;
-
-    $('#editNoteTitle').value     = title;
-    $('#editNoteWorkspace').value = workspaceId;
-    editNoteTagWidget?.setTags(row.dataset.tags ? row.dataset.tags.split(',').filter(Boolean) : []);
-
-    editNoteModal?.show();
-    setTimeout(() => $('#editNoteTitle')?.focus(), 300);
-}
 
 /* ───────────────────────────────────────────────────────────────────
    DELETE NOTE MODAL

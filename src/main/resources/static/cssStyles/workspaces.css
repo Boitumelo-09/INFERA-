@@ -112,7 +112,7 @@
 
 .ws-tile {
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: var(--radius);
     padding: 22px 20px;
     position: relative;

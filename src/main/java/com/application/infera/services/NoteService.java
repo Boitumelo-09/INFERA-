@@ -10,6 +10,7 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
 import com.application.infera.repositories.ResourceRepository;
 import org.springframework.stereotype.Service;
+import com.application.infera.util.TiptapTextExtractor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class NoteService {
         note.setDocumentJson(request.getDocumentJson());
         note.setWorkspace(workspace);
         note.setTags(tagService.resolveTags(request.getTags(),user));
+        syncPlainText(note);
 
         noteRepository.save(note);
         activityService.log(user, ActivityType.NOTE_CREATED, note.getTitle(), workspace);
@@ -92,28 +94,7 @@ public class NoteService {
     }
 
     // Update — re-verifies both the note AND the (possibly new) target workspace belong to the user
-    public void updateNote(Long id, NoteRequest request, User user) {
-        Note note = getNoteForUser(id, user);
-
-        // If the user is moving the note to a different workspace, confirm they own that one too
-        if (!note.getWorkspace().getId().equals(request.getWorkspaceId())) {
-            Workspace newWorkspace = workspaceService.getWorkspaceForUser(request.getWorkspaceId(), user);
-            note.setWorkspace(newWorkspace);
-        }
-
-        note.setTitle(request.getTitle());
-        // The trimmed properties modal (workspace + tags only) doesn't
-        // submit a documentJson field at all — request.getDocumentJson()
-        // comes back null in that case. Only overwrite if something was
-        // actually sent, so editing properties never wipes the note body.
-        if (request.getDocumentJson() != null) {
-            note.setDocumentJson(request.getDocumentJson());
-        }
-        note.setTags(tagService.resolveTags(request.getTags(),user));
-        noteRepository.save(note);
-        activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
-    
-    }
+//
 
     public void deleteNote(Long id, User user) {
         Note note = getNoteForUser(id, user);
@@ -130,6 +111,21 @@ public class NoteService {
         return noteRepository.count();
     }
 
+    // Logged once per editing "session" — see editor-api.js: fired when
+    // the tab is hidden/navigated away from, and only if title or
+    // documentJson actually differ from what was open at page load.
+    // Deliberately NOT called from autosaveNote() itself, which would
+    // spam one entry per debounce cycle.
+    public void logEditActivity(Long id, User user) {
+        Note note = getNoteForUser(id, user);
+        activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
+    }
+
+    // Kept in sync every time documentJson changes (create + autosave).
+    // Never called on its own — always right after setDocumentJson().
+    private void syncPlainText(Note note) {
+        note.setPlainText(TiptapTextExtractor.extract(note.getDocumentJson()));
+    }
     public void touchNote(Note note) {
         note.setUpdatedAt(LocalDateTime.now());
         noteRepository.save(note);// @PreUpdate on Note bumps updatedAt automatically
@@ -147,8 +143,27 @@ public class NoteService {
             note.setTitle(request.getTitle());
         }
         note.setDocumentJson(request.getDocumentJson());
+        syncPlainText(note);
+
+        // Properties bar (item 3): workspace + tags now ride this same
+        // autosave endpoint instead of the old form-post. A workspace
+        // move is deliberate enough to still log — tag edits don't,
+        // same reasoning as why plain content edits don't log here
+        // (see item 5, still undecided).
+        boolean workspaceChanged = false;
+        if (request.getWorkspaceId() != null && !request.getWorkspaceId().equals(note.getWorkspace().getId())) {
+            Workspace newWorkspace = workspaceService.getWorkspaceForUser(request.getWorkspaceId(), user);
+            note.setWorkspace(newWorkspace);
+            workspaceChanged = true;
+        }
+        if (request.getTags() != null) {
+            note.setTags(tagService.resolveTags(request.getTags(), user));
+        }
 
         noteRepository.save(note);
+        if (workspaceChanged) {
+            activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
+        }
         return note;
     }
 }

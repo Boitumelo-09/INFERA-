@@ -138,9 +138,60 @@
     border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 30%, var(--border));
     background: color-mix(in srgb, var(--ws-color, var(--accent)) 10%, transparent);
 }
-.editor-property-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.editor-property-tags { display: flex; flex-wrap: wrap; gap: 8px; cursor: pointer; }
 .editor-property-tag-empty { font-style: italic; color: rgba(148,163,184,0.5); }
 
+.editor-property-ws-select { position: relative; }
+.editor-property-ws { cursor: pointer; }
+.editor-ws-dropdown {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 180px;
+    max-height: 240px;
+    overflow-y: auto;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 20;
+}
+.editor-property-ws-select.open .editor-ws-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.editor-ws-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 10px;
+    background: none;
+    border: none;
+    border-radius: 7px;
+    color: var(--text);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.editor-ws-option:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+.editor-tags-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    min-width: 200px;
+}
 /* ─── DIVIDER ───────────────────────── */
 .tiptap-toolbar-divider {
     width: 1px;
@@ -369,7 +420,12 @@
     display: flex; align-items: center; justify-content: center;
     transition: background 0.15s, color 0.15s;
 }
-.table-context-btn:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--text); }
+
+.table-context-btn:hover {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    color: var(--text);
+}
+
 .table-context-btn.danger:hover { background: rgba(239,68,68,0.12); color: #f87171; }
 
 .tiptap-table-picker { position: relative; display: inline-flex; }.tiptap-table-popover {
