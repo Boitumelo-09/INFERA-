@@ -2,6 +2,7 @@ package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.exception.NoteNotFoundException;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.services.CurrentUserService;
@@ -37,6 +38,24 @@ public class NoteApiController {
         try {
             Note note = noteService.autosaveNote(id, request, user);
             return ResponseEntity.ok(new AutosaveResponse(note.getUpdatedAt()));
+        } catch (NoteNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (WorkspaceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/log-edit")
+    public ResponseEntity<?> logEdit(@AuthenticationPrincipal Object principal,
+                                     @PathVariable Long id) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            noteService.logEditActivity(id, user);
+            return ResponseEntity.ok().build();
         } catch (NoteNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
