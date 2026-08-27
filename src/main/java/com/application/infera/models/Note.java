@@ -16,9 +16,15 @@ public class Note {
 
     @Column(nullable = false, length = 150)
     private String title;
-
     @Column(columnDefinition = "TEXT")   // Tiptap document JSON — can be long, TEXT not VARCHAR(255)
     private String documentJson;
+
+    // Denormalized plain-text extraction of documentJson, kept in sync
+    // in NoteService whenever documentJson changes. Exists purely so
+    // search/row-preview have real words to match against instead of
+    // Tiptap JSON syntax noise ("type":"heading" etc).
+    @Column(columnDefinition = "TEXT")
+    private String plainText;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)   // a note MUST belong to a workspace
