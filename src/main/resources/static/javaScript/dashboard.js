@@ -405,13 +405,16 @@ function buildActivityBars() {
 /* ───────────────────────────────────────────────────────────────────
    NEW WORKSPACE MODAL
 ─────────────────────────────────────────────────────────────────── */
-const newWorkspaceModal = new bootstrap.Modal('#newWorkspaceModal', { backdrop: true });
+// const newWorkspaceModal = new bootstrap.Modal('#newWorkspaceModal', { backdrop: true });
 const newWorkspaceForm  = $('#newWorkspaceForm');
 const wsColorInput      = $('#wsColor');
-
+const newWorkspaceModalEl = document.getElementById('newWorkspaceModal');
+const newWorkspaceModal = newWorkspaceModalEl
+    ? new bootstrap.Modal(newWorkspaceModalEl, { backdrop: true })
+    : null
 /* Open from sidebar button */
 $('#newWorkspaceBtn')?.addEventListener('click', () => {
-    newWorkspaceModal.show();
+    newWorkspaceModal?.show();
 });
 
 /* Colour picker */
@@ -560,7 +563,7 @@ document.addEventListener('keydown', e => {
         case 'W':
             /* W = new workspace */
             if (!e.metaKey && !e.ctrlKey) {
-                newWorkspaceModal.show();
+                newWorkspaceModal?.show();
             }
             break;
     }
