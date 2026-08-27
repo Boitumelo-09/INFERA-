@@ -33,8 +33,7 @@
      workspace colour is applied here so the whole page reads as
      "you are inside workspace X" without a breadcrumb trail.
 ════════════════════════════════════════════════════════════════ -->
-<header class="editor-topbar" th:style="'--ws-color:' + ${note.workspace.color}">
-    <a class="editor-back-link"
+<header class="editor-topbar" id="editorTopbar" th:style="'--ws-color:' + ${note.workspace.color}">    <a class="editor-back-link"
        th:href="@{/notes(workspace=${note.workspace.id})}"
        aria-label="Back to notes in this workspace">
         <i class="bi bi-arrow-left"></i>
@@ -43,9 +42,8 @@
 
     <div class="editor-ws-badge">
         <span class="editor-ws-dot"></span>
-        <span th:text="${note.workspace.name}">Workspace</span>
+        <span id="editorTopbarWsName" th:text="${note.workspace.name}">Workspace</span>
     </div>
-
     <div class="editor-save-status" id="editorSaveStatus">
         <i class="bi bi-check2"></i>
         <span>Saved</span>
@@ -55,8 +53,7 @@
 <!-- ═══════════════════════════════════════════════════════════════
      EDITOR BODY — centered writing column
 ════════════════════════════════════════════════════════════════ -->
-<main class="editor-page" th:style="'--ws-color:' + ${note.workspace.color}">
-    <div class="editor-column">
+<main class="editor-page" id="editorPageMain" th:style="'--ws-color:' + ${note.workspace.color}">    <div class="editor-column">
 
         <input type="text"
                id="editorTitleInput"
@@ -66,22 +63,34 @@
                maxlength="150"
                autocomplete="off" />
 
-        <div class="editor-properties-bar">
-            <span class="editor-property-pill editor-property-ws">
+    <div class="editor-properties-bar">
+        <div class="editor-property-ws-select" id="editorWsSelect">
+            <button type="button" class="editor-property-pill editor-property-ws" id="editorWsTrigger">
                 <i class="bi bi-folder2"></i>
-                <span th:text="${note.workspace.name}">Workspace</span>
-            </span>
-
-            <span class="editor-property-tags" id="editorTagsDisplay">
-                <span class="editor-property-pill editor-property-tag"
-                      th:each="tag : ${note.tags}"
-                      th:text="'#' + ${tag.name}">#tag</span>
-                <span class="editor-property-pill editor-property-tag-empty" th:if="${note.tags.isEmpty()}">
-                    No tags yet
-                </span>
-            </span>
+                <span id="editorWsLabel" th:text="${note.workspace.name}">Workspace</span>
+            </button>
+            <div class="editor-ws-dropdown" id="editorWsDropdown">
+                <button type="button" class="editor-ws-option"
+                        th:each="ws : ${workspaces}"
+                        th:attr="data-id=${ws.id},data-name=${ws.name},data-color=${ws.color}"
+                        th:text="${ws.name}">Workspace name</button>
+            </div>
         </div>
 
+        <div class="editor-property-tags-editor" id="editorTagsEditor"
+             th:attr="data-tags-csv=${note.getTagNamesCsv()}">
+                <span class="editor-property-tags" id="editorTagsDisplay">
+                    <span class="editor-property-pill editor-property-tag"
+                          th:each="tag : ${note.tags}"
+                          th:text="'#' + ${tag.name}">#tag</span>
+                    <span class="editor-property-pill editor-property-tag-empty" th:if="${note.tags.isEmpty()}">
+                        No tags yet
+                    </span>
+                </span>
+            <input type="text" id="editorTagsInput" class="editor-tags-input"
+                   placeholder="tag1, tag2..." style="display:none;" autocomplete="off" />
+        </div>
+    </div>
         <div class="editor-divider"></div>
 
         <!-- Toolbar mounts here in Step 3 -->
@@ -117,11 +126,13 @@
 <script th:inline="javascript">
     window.__NOTE_ID__ = /*[[${note.id}]]*/ 0;
     window.__NOTE_RAW_CONTENT__ = /*[[${note.documentJson}]]*/ '';
+    window.__NOTE_WORKSPACE_ID__ = /*[[${note.workspace.id}]]*/ 0
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/javaScript/dashboard.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/tiptap-editor.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/editor-api.js}"></script>
+<script type="module" th:src="@{/javaScript/editor/properties-bar.js}"></script>
 </body>
 </html>
