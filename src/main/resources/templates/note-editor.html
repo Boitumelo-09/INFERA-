@@ -104,8 +104,16 @@
     </div>
 </main>
 
-<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
-    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
+<div class="editor-scroll-nav" id="editorScrollNav">
+    <button type="button" class="scroll-nav-btn" id="scrollToTopBtn" aria-label="Scroll to top">
+        <i class="bi bi-chevron-up"></i>
+    </button>
+    <button type="button" class="scroll-nav-btn" id="scrollToBottomBtn" aria-label="Scroll to bottom">
+        <i class="bi bi-chevron-down"></i>
+    </button>
+</div>
+
+<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">    <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
     <span class="toast-msg" id="toastMsg">Done!</span>
 </div>
 
@@ -134,5 +142,6 @@
 <script type="module" th:src="@{/javaScript/editor/tiptap-editor.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/editor-api.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/properties-bar.js}"></script>
+<script type="module" th:src="@{/javaScript/editor/scroll-nav.js}"></script>
 </body>
 </html>
