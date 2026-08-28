@@ -498,7 +498,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     background: var(--bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid transparent;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -507,6 +507,9 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     top: 0;
     z-index: 100;
     flex-shrink: 0;
+}
+.topbar.scrolled{
+    border-bottom-color: var(--border);
 }
 
 [data-theme="light"] .topbar {
@@ -1087,7 +1090,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 ═══════════════════════════════════════ */
 .infera-modal .modal-content {
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 16px;
     box-shadow: 0 32px 72px rgba(0,0,0,0.55);
 }
