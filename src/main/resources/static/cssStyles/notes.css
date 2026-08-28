@@ -664,7 +664,7 @@
     width: 38px; height: 38px;
     border-radius: 10px;
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     color: var(--muted);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
@@ -678,7 +678,7 @@
     position: absolute;
     top: 46px; right: 0;
     background: var(--secondary);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 10px;
     padding: 6px;
     min-width: 190px;
@@ -751,6 +751,78 @@
     -webkit-backdrop-filter: blur(10px);
     background: rgba(13, 17, 23, 0.88);
     transition: backdrop-filter 0.35s, background 0.35s;
+}
+
+/* ─── FOCUS-MODE SCROLL NAV ──────────────
+   Only ever shown in theater mode — .modal-content is already
+   position:relative there (see #viewNoteDialog.theater-mode
+   .modal-content above), so this anchors to it directly. Never
+   shown outside theater mode: the normal-sized modal's own
+   .view-note-body scrollbar is enough at that size. */
+.modal-scroll-nav {
+    display: none;
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 20; /* stays below .theater-menu's z-index: 70 */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s, right 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#viewNoteDialog.theater-mode .modal-scroll-nav {
+    display: flex;
+}
+.modal-scroll-nav.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+/* Slide left out of the way when the resources drawer pushes the
+   reading column over — matches its flex-basis: 360px from the
+   .resources-open rule above. */
+#viewNoteDialog.theater-mode.resources-open .modal-scroll-nav {
+    right: 392px;
+}
+.modal-scroll-nav .scroll-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s, background 0.15s, color 0.15s;
+}
+.modal-scroll-nav .scroll-nav-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.modal-scroll-nav .scroll-nav-btn:hover {
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, var(--card));
+    color: var(--text);
+}
+
+@media (max-width: 700px) {
+    /* Resources drawer stacks below the reading column on narrow
+       screens instead of beside it — sliding left makes no sense
+       here, so drop the nav above it instead when it's open. */
+    #viewNoteDialog.theater-mode.resources-open .modal-scroll-nav {
+        right: 20px;
+        bottom: 46vh;
+    }
+}
+@media (max-height: 500px) {
+    .modal-scroll-nav { bottom: 20px; right: 20px; }
 }
 
 /*@media (max-width: 768px) {*/

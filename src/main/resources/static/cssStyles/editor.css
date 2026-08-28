@@ -525,7 +525,7 @@
     height: 38px;
     border-radius: 50%;
     background: var(--secondary);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     color: var(--muted);
     display: flex;
     align-items: center;
@@ -536,7 +536,7 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(6px);
-    transition: opacity 0.18s, transform 0.18s, visibility 0.18s, background 0.15s, color 0.15s;
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s, background 0.15s, color 0.15s,border-color 0.15s;
 }
 .scroll-nav-btn.visible {
     opacity: 1;
@@ -544,8 +544,9 @@
     transform: none;
 }
 .scroll-nav-btn:hover {
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, var(--secondary));
+    background: color-mix(in srgb, var(--ws-color, var(--bg)) 84%, var(--secondary));
     color: var(--text);
+    border-color: var(--border);
 }
 
 @media (max-width: 480px) {

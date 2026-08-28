@@ -137,13 +137,79 @@ const viewNoteDialog     = $('#viewNoteDialog');
 const viewNoteExpandBtn  = $('#viewNoteExpandBtn');
 let isTheaterMode = false;
 
+// Only relevant in theater/focus mode — a normal-sized modal never
+// needs jump arrows. Container is resolved at runtime (see
+// getModalScrollContainer) rather than assumed, since we don't know
+// offhand which element notes.css actually makes scrollable.
+const modalScrollNav       = $('#modalScrollNav');
+const modalScrollTopBtn    = $('#modalScrollTopBtn');
+const modalScrollBottomBtn = $('#modalScrollBottomBtn');
+let modalScrollContainerRef = null;
+
+function getModalScrollContainer() {
+    let el = $('#viewNoteContent');
+    while (el && el !== document.body) {
+        const style = getComputedStyle(el);
+        const scrollableStyle = style.overflowY === 'auto' || style.overflowY === 'scroll';
+        if (scrollableStyle && el.scrollHeight > el.clientHeight) return el;
+        el = el.parentElement;
+    }
+    // Fallback — Bootstrap modals almost always make .modal-body the
+    // scroll container when nothing more specific matched above.
+    return $('.modal-body', viewNoteModalEl);
+}
+
+function updateModalScrollNav() {
+    if (!isTheaterMode || !modalScrollNav) { modalScrollNav?.classList.remove('visible'); return; }
+
+    const container = getModalScrollContainer();
+    if (!container) { modalScrollNav.classList.remove('visible'); return; }
+
+    const NEAR_EDGE = 40;
+    const scrollable = container.scrollHeight > container.clientHeight + NEAR_EDGE;
+    const atTop = container.scrollTop < NEAR_EDGE;
+    const atBottom = container.scrollTop + container.clientHeight > container.scrollHeight - NEAR_EDGE;
+
+    modalScrollNav.classList.toggle('visible', scrollable);
+    modalScrollTopBtn?.classList.toggle('visible', scrollable && !atTop);
+    modalScrollBottomBtn?.classList.toggle('visible', scrollable && !atBottom);
+}
+
+function bindModalScrollListener() {
+    modalScrollContainerRef?.removeEventListener('scroll', updateModalScrollNav);
+    modalScrollContainerRef = getModalScrollContainer();
+    modalScrollContainerRef?.addEventListener('scroll', updateModalScrollNav, { passive: true });
+    updateModalScrollNav();
+}
+
+modalScrollTopBtn?.addEventListener('click', () => {
+    getModalScrollContainer()?.scrollTo({ top: 0, behavior: 'smooth' });
+});
+modalScrollBottomBtn?.addEventListener('click', () => {
+    const c = getModalScrollContainer();
+    c?.scrollTo({ top: c.scrollHeight, behavior: 'smooth' });
+});
+window.addEventListener('resize', updateModalScrollNav);
+
 function closeTheaterMenu() {
     $('.theater-menu')?.classList.remove('open');
 }
 function closeResourcesDrawer() {
     viewNoteDialog?.classList.remove('resources-open');
+    stopAllResourceVideos();
 }
 
+/* Closing the drawer/modal only hides the resources panel visually —
+   the <iframe> embeds stay in the DOM and keep playing in the
+   background unless forced to stop. Clearing src is the reliable
+   cross-browser way to kill an embedded YouTube player; re-setting it
+   later (next renderResourcesForRow call) naturally reloads a fresh,
+   paused player. */
+function stopAllResourceVideos() {
+    $$('.vnr-video-embed').forEach(iframe => {
+        iframe.src = iframe.src;
+    });
+}
 function setTheaterMode(on) {
     isTheaterMode = on;
     viewNoteDialog?.classList.toggle('theater-mode', on);
@@ -163,6 +229,12 @@ function setTheaterMode(on) {
     if (!on) {
         closeTheaterMenu();
         closeResourcesDrawer();
+        modalScrollNav?.classList.remove('visible');
+    } else {
+        // Content is already rendered by the time expand is clicked, so
+        // the scroll container exists — bind on the next frame so
+        // layout (theater-mode's size change) has settled first.
+        requestAnimationFrame(bindModalScrollListener);
     }
 }
 
@@ -170,8 +242,10 @@ viewNoteExpandBtn?.addEventListener('click', () => setTheaterMode(!isTheaterMode
 
 /* Reset to normal size every time the modal is closed, so it doesn't
    reopen expanded next time by surprise */
-viewNoteModalEl?.addEventListener('hidden.bs.modal', () => setTheaterMode(false));
-
+viewNoteModalEl?.addEventListener('hidden.bs.modal', () => {
+    setTheaterMode(false);
+    stopAllResourceVideos();
+});
 /* Keyboard shortcut: "f" toggles theater mode while the view modal is open,
    mirroring the muscle memory people already have from video players.
    Escape is handled manually (Bootstrap's own keyboard-close is disabled
@@ -206,7 +280,8 @@ $('#theaterEditBtn')?.addEventListener('click', () => {
 });
 $('#theaterResourcesBtn')?.addEventListener('click', () => {
     closeTheaterMenu();
-    viewNoteDialog?.classList.toggle('resources-open');
+    const nowOpen = viewNoteDialog?.classList.toggle('resources-open');
+    if (!nowOpen) stopAllResourceVideos();
 });
 $('#resourcesCloseBtn')?.addEventListener('click', closeResourcesDrawer);
 $('#theaterExitBtn')?.addEventListener('click', () => {
