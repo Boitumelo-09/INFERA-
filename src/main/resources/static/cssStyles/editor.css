@@ -507,3 +507,48 @@
 @media (max-width: 480px) {
     .editor-save-status span { display: none; }
 }
+
+/* ═══════════════════════════════════════
+   SCROLL NAV — floating jump-to-top/bottom
+═══════════════════════════════════════ */
+.editor-scroll-nav {
+    position: fixed;
+    right: 24px;
+    bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 90;
+}
+.scroll-nav-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s, background 0.15s, color 0.15s;
+}
+.scroll-nav-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+.scroll-nav-btn:hover {
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, var(--secondary));
+    color: var(--text);
+}
+
+@media (max-width: 480px) {
+    .editor-scroll-nav { right: 14px; bottom: 18px; }
+    .scroll-nav-btn { width: 34px; height: 34px; font-size: 0.9rem; }
+}
