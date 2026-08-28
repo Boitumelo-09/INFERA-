@@ -67,6 +67,11 @@ document.querySelectorAll('a, button, input, label').forEach(el => {
 document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
 document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
 
+const nav = document.getElementById('topbar');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 30) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+}, { passive: true });
 
 /* ───────────────────────────────────────────────────────────────────
    SOFT PAGE NAVIGATION
