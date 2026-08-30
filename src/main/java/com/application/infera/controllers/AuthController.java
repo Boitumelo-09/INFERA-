@@ -8,6 +8,7 @@ import com.application.infera.services.MailService;
 import com.application.infera.services.OtpService;
 import com.application.infera.dtos.requests.EmailRequest;
 import com.application.infera.dtos.requests.VerifyCodeRequest;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class AuthController {
 
     @PostMapping("/request-code")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) {
+    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) throws MessagingException {
         Map<String, Object> body = new HashMap<>();
         String email = request.getEmail().trim().toLowerCase();
 
