@@ -326,9 +326,8 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .sidebar.collapsed .sidebar-nav { padding-left: 6px; padding-right: 6px; }
 
 .nav-section-label {
-    font-family: var(--font-mono);
+    font-family: open-sans, sans-serif;
     font-size: 0.65rem;
-    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted);
     padding: 6px 8px 1px;
