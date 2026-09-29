@@ -7,8 +7,8 @@
 ═══════════════════════════════════════════════════════════════════ */
 
 import { buildTableInsertControl, buildTableContextBar } from './slash-menu.js';
-
-
+import { createDrawing, drawingStore } from './drawing-node.js';
+import { drawingSession } from './drawing-canvas.js';
 const GROUPS = [
     [
         { action: 'bold',      icon: 'bi-type-bold',          title: 'Bold (Ctrl+B)' },
@@ -123,6 +123,63 @@ function buildColorPicker(editor) {
     };
 }
 
+const DRAWING_OPTIONS = [
+    { mode: 'DRAWING',     icon: 'bi-brush',        label: 'Drawing',     hint: 'Blank canvas' },
+    { mode: 'HANDWRITING', icon: 'bi-journal-text', label: 'Handwriting', hint: 'Ruled book page' },
+];
+
+function buildDrawingInsertControl(editor) {
+    const wrap = document.createElement('span');
+    wrap.className = 'tiptap-drawing-picker';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tiptap-toolbar-btn';
+    btn.title = 'Insert drawing';
+    btn.setAttribute('aria-label', 'Insert drawing');
+    btn.setAttribute('aria-haspopup', 'true');
+    btn.innerHTML = `<i class="bi bi-vector-pen"></i>`;
+
+    const popover = document.createElement('div');
+    popover.className = 'tiptap-drawing-popover';
+
+    let busy = false;
+    DRAWING_OPTIONS.forEach(({ mode, icon, label, hint }) => {
+        const opt = document.createElement('button');
+        opt.type = 'button';
+        opt.className = 'tiptap-drawing-option';
+        opt.innerHTML = `<i class="bi ${icon}"></i>
+            <span class="drawing-option-text"><strong>${label}</strong><small>${hint}</small></span>`;
+        opt.addEventListener('click', async () => {
+            if (busy) return;
+            busy = true;
+            wrap.classList.remove('open');
+            try {
+                const created = await createDrawing(mode);
+                drawingStore.put(created);
+                editor.chain().focus().insertDrawing({ drawingId: created.id, mode: created.mode }).run();
+            } catch (err) {
+                window.showToast?.('Could not create the drawing. Please try again.', 'error');
+            } finally {
+                busy = false;
+            }
+        });
+        popover.appendChild(opt);
+    });
+
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        wrap.classList.toggle('open');
+    });
+    document.addEventListener('click', e => {
+        if (!wrap.contains(e.target)) wrap.classList.remove('open');
+    });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(popover);
+    return { el: wrap };
+}
+
 const COMMANDS = {
     bold:        e => e.chain().focus().toggleBold().run(),
     italic:      e => e.chain().focus().toggleItalic().run(),
@@ -140,8 +197,8 @@ const COMMANDS = {
     alignLeft:   e => e.chain().focus().setTextAlign('left').run(),
     alignCenter: e => e.chain().focus().setTextAlign('center').run(),
     alignRight:  e => e.chain().focus().setTextAlign('right').run(),
-    undo:        e => e.chain().focus().undo().run(),
-    redo:        e => e.chain().focus().redo().run(),
+    undo:        e => drawingSession.isActive() ? drawingSession.undo() : e.chain().focus().undo().run(),
+    redo:        e => drawingSession.isActive() ? drawingSession.redo() : e.chain().focus().redo().run(),
     link: e => {
         const existing = e.getAttributes('link').href;
         const url = window.prompt('Link URL', existing || 'https://');
@@ -181,6 +238,7 @@ export function renderToolbar(editor, mountEl) {
     const buttons = {};
     const colorPicker = buildColorPicker(editor);
     const tablePicker = buildTableInsertControl(editor);
+    const drawingPicker = buildDrawingInsertControl(editor);
     const tableBar = buildTableContextBar(editor);
     mountEl.insertAdjacentElement('afterend', tableBar.el);    GROUPS.forEach((group, gi) => {
         if (gi > 0) {
@@ -195,8 +253,8 @@ export function renderToolbar(editor, mountEl) {
             btn.title = title;
             btn.setAttribute('aria-label', title);
             btn.innerHTML = `<i class="bi ${icon}"></i>`;
-            btn.addEventListener('click', () => COMMANDS[action]?.(editor));
-            mountEl.appendChild(btn);
+            btn.dataset.action = action;
+            btn.addEventListener('click', () => COMMANDS[action]?.(editor));            mountEl.appendChild(btn);
             buttons[action] = btn;
         });
 
@@ -214,6 +272,7 @@ export function renderToolbar(editor, mountEl) {
             divider.className = 'tiptap-toolbar-divider';
             mountEl.appendChild(divider);
             mountEl.appendChild(tablePicker.el);
+            mountEl.appendChild(drawingPicker.el);
         }
     });
 
@@ -222,8 +281,11 @@ export function renderToolbar(editor, mountEl) {
         Object.entries(ACTIVE_CHECK).forEach(([action, check]) => {
             buttons[action]?.classList.toggle('is-active', !!check(editor));
         });
-        if (buttons.undo) buttons.undo.disabled = !editor.can().undo();
-        if (buttons.redo) buttons.redo.disabled = !editor.can().redo();
+        // While a drawing is live these belong to Excalidraw, which doesn't
+        // report its history depth, so they stay enabled.
+        const drawing = drawingSession.isActive();
+        if (buttons.undo) buttons.undo.disabled = !drawing && !editor.can().undo();
+        if (buttons.redo) buttons.redo.disabled = !drawing && !editor.can().redo();
         colorPicker.sync();
         tablePicker.sync();
         tableBar.sync();
@@ -232,5 +294,6 @@ export function renderToolbar(editor, mountEl) {
 
     editor.on('transaction', syncState);
     editor.on('selectionUpdate', syncState);
+    drawingSession.subscribe(syncState);
     syncState();
 }
