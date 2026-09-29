@@ -9,15 +9,17 @@ import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
 import com.application.infera.repositories.ResourceRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.application.infera.util.TiptapTextExtractor;
-
+import com.application.infera.repositories.DrawingRepository;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class NoteService {
 
     private final NoteRepository noteRepository;
@@ -25,14 +27,8 @@ public class NoteService {
     private final TagService tagService;
     private final ActivityService activityService;
     private final ResourceRepository resourceRepository;
+    private final DrawingRepository drawingRepository;
 
-    public NoteService(NoteRepository noteRepository, WorkspaceService workspaceService, TagService tagService, ActivityService activityService, ResourceRepository resourceRepository) {
-        this.noteRepository = noteRepository;
-        this.workspaceService = workspaceService;
-        this.tagService = tagService;
-        this.activityService = activityService;
-        this.resourceRepository = resourceRepository;
-    }
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
     public Note createNote(NoteRequest request, User user) {
@@ -102,7 +98,7 @@ public class NoteService {
         Workspace ws = note.getWorkspace();
 
         resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
-        note.getTags().clear();
+        drawingRepository.deleteAll(drawingRepository.findByNote(note));        note.getTags().clear();
         noteRepository.save(note);
         noteRepository.delete(note);
         activityService.log(user, ActivityType.NOTE_DELETED, title, ws);

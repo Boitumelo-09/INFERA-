@@ -8,7 +8,7 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="${pageTitle}">Note — INCAPTUR</title>
+    <title th:text="${pageTitle}"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
@@ -22,6 +22,17 @@
     <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <!-- One shared React for the lazily-loaded Excalidraw canvas (drawing-canvas.js) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@19.0.0",
+                "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+                "react-dom": "https://esm.sh/react-dom@19.0.0",
+                "react-dom/client": "https://esm.sh/react-dom@19.0.0/client?external=react,react-dom"
+            }
+        }
+    </script>
 </head>
 <body class="editor-body">
 

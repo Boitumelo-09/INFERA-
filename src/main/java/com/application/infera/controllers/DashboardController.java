@@ -40,7 +40,7 @@ public class DashboardController {
         System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
         System.out.println(".".repeat(50));
-        model.addAttribute("pageTitle","Dashboard — INCAPTUR");
+        model.addAttribute("pageTitle","Dashboard | INCAPTUR");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
@@ -49,7 +49,7 @@ public class DashboardController {
         model.addAttribute("tagCount",tagService.countTagsForUser(user));
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceResourceCount",resourceService.getResourceCountsByWorkspace(user));
-        model.addAttribute("weeklyNotes", activityService.countWeeklyByPrefix(user, "NOTE_"));
+        model.addAttribute("weeklyNotes", activityService.countWeeklyByPrefix(user, "NOTE_CREATED"));
         model.addAttribute("weeklyResources", activityService.countWeeklyByPrefix(user, "RESOURCE_"));
         model.addAttribute("weeklyWorkspaces", activityService.countWeeklyByPrefix(user, "WORKSPACE_"));
         model.addAttribute("dailyActivityCounts", activityService.getWeeklyDailyCounts(user));
