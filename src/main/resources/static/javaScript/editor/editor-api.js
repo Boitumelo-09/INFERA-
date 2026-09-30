@@ -30,7 +30,7 @@ let dirtyDuringSave = false;
 let sessionBaselineSnapshot = null;
 let loggingEdit = false;
 
-function setStatus(state) {
+function setStatus(state, errorText = 'Retrying…') {
     if (!statusEl) return;
     statusEl.classList.remove('saving', 'error');
     if (state === 'saving') {
@@ -40,12 +40,28 @@ function setStatus(state) {
     } else if (state === 'error') {
         statusEl.classList.add('error');
         statusIcon.className = 'bi bi-exclamation-circle';
-        statusText.textContent = 'Retrying…';
+        statusText.textContent = errorText;
     } else {
         statusIcon.className = 'bi bi-check2';
         statusText.textContent = 'Saved';
     }
 }
+
+/* One pill, several writers (note autosave, drawing saves). Each source
+   reports its own state; the pill shows the combined picture, so a note
+   save finishing can't hide a drawing save that is still in flight. */
+const sourceStates = { note: 'saved', drawing: 'saved' };
+const sourceErrorText = { note: 'Retrying…', drawing: 'Drawing not saved' };
+
+function reportStatus(source, state) {
+    sourceStates[source] = state;
+    const entries = Object.entries(sourceStates);
+    const errored = entries.find(([, s]) => s === 'error');
+    if (entries.some(([, s]) => s === 'saving')) setStatus('saving');
+    else if (errored) setStatus('error', sourceErrorText[errored[0]]);
+    else setStatus('saved');
+}
+window.__inferaReportSaveStatus = reportStatus;
 
 function currentSnapshot() {
     const title = (titleInput?.value || '').trim() || 'Untitled';
@@ -62,7 +78,9 @@ function currentSnapshot() {
 function sessionContentSnapshot() {
     const title = (titleInput?.value || '').trim() || 'Untitled';
     const documentJson = JSON.stringify(window.__inferaEditor.getJSON());
-    return JSON.stringify({ title, documentJson });
+    // drawingRevision: a drawing edit changes neither title nor documentJson,
+    // so drawing saves bump this counter to count as a content edit.
+    return JSON.stringify({ title, documentJson, drawingRevision: window.__inferaDrawingRevision || 0 });
 }
 
 async function logEditIfChanged() {
@@ -92,7 +110,7 @@ async function performSave(isExit = false) {
     if (isSaving) { dirtyDuringSave = true; return; }
 
     isSaving = true;
-    setStatus('saving');
+    reportStatus('note', 'saving');
     const snapshot = currentSnapshot();
     const body = JSON.stringify(snapshot);
 
@@ -118,10 +136,10 @@ async function performSave(isExit = false) {
         if (!res.ok) throw new Error('Save failed: ' + res.status);
 
         lastSavedSnapshot = JSON.stringify(snapshot);
-        setStatus('saved');
+        reportStatus('note', 'saved');
     } catch (err) {
-        console.error('[INFERA] autosave error', err);
-        setStatus('error');
+        console.error('[Incaptur] autosave error', err);
+        reportStatus('note', 'error');
         saveTimer = setTimeout(() => performSave(isExit), 4000); // retry, don't just give up
     } finally {
         isSaving = false;
@@ -186,3 +204,4 @@ window.addEventListener('pagehide', () => {
 // debounce, so a workspace switch or tag edit doesn't open a second
 // save path.
 window.__inferaScheduleSave = scheduleSave;
+window.__inferaLogEditIfChanged = logEditIfChanged; // drawings call this after a save that lands while the tab is hidden

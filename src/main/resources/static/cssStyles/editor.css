@@ -89,12 +89,12 @@
     min-height: calc(100vh - var(--topbar-h));
     display: flex;
     justify-content: center;
-    padding: 56px 24px 120px;
+    padding: 15px 24px 120px;
 }
 
 .editor-column {
     width: 100%;
-    max-width: 850px;
+    max-width: 920px;
 }
 
 /* ─── TITLE ─────────────────────────── */
@@ -254,12 +254,12 @@
     gap: 3px;
     margin-bottom: 18px;
     position: sticky;
-    top: calc(var(--topbar-h) + 12px);
+    top: calc(var(--topbar-h) + -2px);
     z-index: 10;
-    background: var(--bg);
+    background: var(--secondary);
     padding: 6px 2px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 4px;
     width: fit-content;
 }
 [data-theme="light"] .tiptap-toolbar { background: var(--secondary); }
@@ -278,7 +278,7 @@
     transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .tiptap-toolbar-btn:hover {
-    background: color-mix(in srgb, var(--secondary) 80%, transparent);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
     color: var(--text);
 }
 .tiptap-toolbar-btn.is-active {
@@ -314,7 +314,7 @@
     min-height: 40vh;
 }
 
-.ProseMirror p { margin-bottom: 14px; }
+.ProseMirror p { margin-bottom: 1px; }
 
 .ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
     font-family: var(--font-display);
@@ -588,7 +588,8 @@
 }
 [data-theme="light"] .ProseMirror .drawing-node { background: transparent; }
 .ProseMirror .drawing-node.ProseMirror-selectednode {
-    outline: 1px solid var(--ws-color, var(--accent)); outline-offset: 1px;
+    outline: 1px solid color-mix(in srgb, var(--ws-color) 20%, transparent);
+    outline-offset: 1px;
 }
 
 .drawing-preview-img { display: block; width: 100%; height: 100%; object-fit: contain;
@@ -622,7 +623,9 @@
 .drawing-node.ProseMirror-selectednode .drawing-resize-handle,
 .drawing-node.is-resizing .drawing-resize-handle,
 .drawing-resize-handle:focus-visible { opacity: 1; }
-.drawing-resize-handle:focus-visible { outline: 2px solid var(--ws-color, var(--accent)); outline-offset: -2px; }
+.drawing-resize-handle:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--ws-color) 20%, transparent);
+    outline-offset: -2px; }
 .drawing-node.is-resizing { user-select: none; }
 @media (hover: none) { .drawing-resize-handle { opacity: 1; } }
 
@@ -631,7 +634,8 @@
 ═══════════════════════════════════════ */
 .ProseMirror .drawing-node:not(.is-live) { cursor: pointer; }
 .ProseMirror .drawing-node.is-live {
-    outline: 2px solid var(--ws-color, var(--accent)); outline-offset: 2px;
+    outline: 1px solid color-mix(in srgb, var(--ws-color) 20%, transparent);
+    outline-offset: 1px;
 }
 /* No text selection or dragging inside the canvas, except the text tool's own editor */
 .drawing-live-mount { -webkit-user-select: none; user-select: none; }
@@ -644,3 +648,83 @@
     background: color-mix(in srgb, var(--bg) 70%, transparent);
     color: var(--muted); font-size: 0.8rem;
 }
+/* Bootstrap's .dropdown-menu is display:none and would hide Excalidraw's own
+   menus (hamburger, "more tools"), which reuse that class name. Show them, and
+   cancel the Bootstrap box styling so Excalidraw's look wins. */
+.drawing-live-mount .excalidraw .dropdown-menu {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    text-align: inherit;
+}
+/* Tall canvases (Excalidraw desktop layout): styles panel on demand, not pinned.
+   .App-menu__left only exists in that layout, so the compact layout is untouched. */
+.drawing-node.is-live:not(.props-open) .excalidraw .App-menu__left { display: none; }
+
+.drawing-props-toggle {
+    position: absolute; left: 64px; top: 16px; z-index: 6;
+    width: 36px; height: 36px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--secondary); border: 1px solid var(--border); border-radius: 10px;
+    color: var(--muted); font-size: 1rem; cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.drawing-props-toggle[hidden] { display: none; }
+.drawing-props-toggle:hover,
+.drawing-props-toggle[aria-pressed="true"] {
+    color: var(--text); border-color: var(--ws-color, var(--accent));
+}
+
+/* Shape library is intentionally unavailable in INCAPTUR drawings */
+.drawing-node .excalidraw .default-sidebar-trigger,
+.drawing-node .excalidraw .sidebar-trigger,
+.drawing-node .excalidraw .default-sidebar { display: none !important; }
+
+/* ═══════════════════════════════════════
+   EXPAND / FULL SCREEN
+═══════════════════════════════════════ */
+.drawing-expand-btn {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 6;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, border-color 0.15s;
+}
+.drawing-node:hover .drawing-expand-btn,
+.drawing-node.is-live .drawing-expand-btn,
+.drawing-expand-btn:focus-visible { opacity: 1; }
+.drawing-expand-btn:hover { color: var(--text); border-color: var(--ws-color, var(--accent)); }
+@media (hover: none) { .drawing-expand-btn { opacity: 1; } }
+
+/* Only the canvas moves to a fixed layer; the card keeps its place in the note,
+   so nothing reflows underneath and the scroll position is preserved. Starts
+   below the top bar so the save pill and Back link stay visible. */
+body.drawing-expanded { overflow: hidden; }
+.drawing-node.is-expanded .drawing-live-mount {
+    position: fixed; inset: var(--topbar-h) 0 0 0; z-index: 95; background: var(--bg);
+}
+.drawing-node.is-expanded .drawing-expand-btn {
+    position: fixed; right: 16px; top: calc(var(--topbar-h) + 16px); z-index: 96; opacity: 1;
+}
+.drawing-node.is-expanded .drawing-props-toggle {
+    position: fixed; left: 64px; top: calc(var(--topbar-h) + 16px); z-index: 96;
+}
+.drawing-node.is-expanded .drawing-resize-handle { display: none; }

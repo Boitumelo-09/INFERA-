@@ -125,6 +125,35 @@ const Drawing = Node.create({
             applyHeight(current.attrs.height);
 
             /* ─── Resize handle (bottom edge) ─── */
+            /* ─── Expand / collapse: full-screen overlay on the SAME live canvas ─── */
+            let expanded = false;
+            const expandBtn = document.createElement('button');
+            expandBtn.type = 'button';
+            expandBtn.className = 'drawing-expand-btn';
+            expandBtn.innerHTML = '<i class="bi bi-arrows-angle-expand"></i>';
+
+            const applyExpanded = on => {
+                expanded = on;
+                dom.classList.toggle('is-expanded', on);
+                document.body.classList.toggle('drawing-expanded', on); // freezes page scroll behind the overlay
+                expandBtn.querySelector('i').className = on ? 'bi bi-arrows-angle-contract' : 'bi bi-arrows-angle-expand';
+                const label = on ? 'Exit full screen' : 'Full screen';
+                expandBtn.title = label;
+                expandBtn.setAttribute('aria-label', label);
+            };
+            const setExpanded = on => {
+                applyExpanded(on);
+                drawingSession.refresh(); // canvas moved/resized: Excalidraw must re-measure
+            };
+            applyExpanded(false);
+
+            expandBtn.addEventListener('click', async e => {
+                e.stopPropagation(); // don't let the card's own click handler run as well
+                if (expanded) { setExpanded(false); return; }
+                if (!live) await drawingSession.activate(ctx); // from a static preview: open first, then expand
+                if (live) setExpanded(true);
+            });
+
             const handle = document.createElement('div');
             handle.className = 'drawing-resize-handle';
             handle.setAttribute('role', 'separator');
@@ -219,7 +248,7 @@ const Drawing = Node.create({
                 }
                 // render() clears the node, so the handle is re-attached each time.
                 // No handle in read-only surfaces (View modal).
-                if (editor.isEditable) dom.appendChild(handle);
+                if (editor.isEditable) { dom.appendChild(handle); dom.appendChild(expandBtn); }
             };
 
             // Only redraw when this drawing's own data changed (saves of *other*
@@ -248,9 +277,12 @@ const Drawing = Node.create({
                     mount.className = 'drawing-live-mount';
                     dom.appendChild(mount);
                     dom.appendChild(handle); // resizing stays available while drawing
+                    dom.appendChild(expandBtn);
                     return mount;
                 },
+                isExpanded: () => expanded,
                 leave() {
+                    applyExpanded(false);
                     live = false;
                     dom.classList.remove('is-live');
                     render();
@@ -292,8 +324,7 @@ const Drawing = Node.create({
                 // (keys, pointer, clipboard) — this is the keyboard isolation.
                 stopEvent: e => handle.contains(e.target) || (live && dom.contains(e.target)),
                 ignoreMutation: () => true,
-                destroy() { drawingSession.release(ctx); unsubscribe(); revoke(); },
-            };
+                destroy() { applyExpanded(false); drawingSession.release(ctx); unsubscribe(); revoke(); },            };
         };
     },
 

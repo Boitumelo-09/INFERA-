@@ -51,6 +51,9 @@ const sceneVersion = elements => elements.reduce((sum, el) => sum + el.version, 
 
 /* Reports into the same save-status pill the note autosave uses. */
 function setPill(state) {
+    // Normal path: report to the shared status in editor-api.js. The code below
+    // is only a fallback if that script hasn't loaded.
+    if (window.__inferaReportSaveStatus) { window.__inferaReportSaveStatus('drawing', state); return; }
     const pill = document.getElementById('editorSaveStatus');
     if (!pill) return;
     const states = {
@@ -130,6 +133,9 @@ async function doSave(s) {
 
         const { updatedAt } = await res.json();
         s.savedVersion = version;
+        // A drawing edit is a content edit for the activity log (see editor-api.js)
+        window.__inferaDrawingRevision = (window.__inferaDrawingRevision || 0) + 1;
+        if (document.visibilityState === 'hidden') window.__inferaLogEditIfChanged?.();
         s.ctx.onSaved({ id: s.ctx.drawingId, mode: s.ctx.mode, previewSvg, updatedAt });
         setPill('saved');
         return true;
@@ -219,6 +225,59 @@ function buildElement(s, initialData) {
 }
 
 /* ─── Public session API ───────────────────────────────────────── */
+/* Desktop layout only (tall canvases): Excalidraw pins its styles panel
+   (.App-menu__left) to the left, covering the drawing. Hide it and show it on
+   demand via our own palette button instead. The button only exists while
+   Excalidraw is actually rendering that panel, so the compact layout (which
+   has no such panel) never gets one. The button lives on the card, not inside
+   the React-managed mount, so React can't wipe it. */
+function setupPropsPanelToggle(ctx, mountEl) {
+    const card = ctx.dom;
+    const PANEL = '.App-menu__left';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'drawing-props-toggle';
+    btn.title = 'Stroke & style';
+    btn.setAttribute('aria-label', 'Stroke and style options');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.hidden = true;
+    btn.innerHTML = '<i class="bi bi-palette2"></i>';
+    card.appendChild(btn);
+
+    const setOpen = open => {
+        card.classList.toggle('props-open', open);
+        btn.setAttribute('aria-pressed', String(open));
+    };
+    const sync = () => {
+        const has = !!mountEl.querySelector(PANEL);
+        btn.hidden = !has;
+        if (!has) setOpen(false);
+    };
+
+    const observer = new MutationObserver(sync);
+    observer.observe(mountEl, { childList: true, subtree: true });
+    sync();
+
+    const onToggle = () => setOpen(!card.classList.contains('props-open'));
+    // Only a press on the drawing surface itself closes it — presses on the panel's
+    // own popovers (colour pickers etc.) must not, or their anchor would vanish.
+    const onPointerDown = e => { if (e.target instanceof HTMLCanvasElement) setOpen(false); };
+    const onKeyDown = e => { if (e.key === 'Escape') setOpen(false); };
+
+    btn.addEventListener('click', onToggle);
+    mountEl.addEventListener('pointerdown', onPointerDown, true);
+    mountEl.addEventListener('keydown', onKeyDown);
+
+    return () => {
+        observer.disconnect();
+        mountEl.removeEventListener('pointerdown', onPointerDown, true);
+        mountEl.removeEventListener('keydown', onKeyDown);
+        btn.remove();
+        card.classList.remove('props-open');
+    };
+}
+
 export const drawingSession = {
     isActive: () => !!active,
 
@@ -270,12 +329,23 @@ export const drawingSession = {
             const ro = new ResizeObserver(() => clampViewport(s));
             ro.observe(mountEl);
             s.cleanup.push(() => ro.disconnect());
+            s.cleanup.push(setupPropsPanelToggle(ctx, mountEl));
 
+            // The library is hidden, so its "0" shortcut must not open it invisibly.
+            // Listening on the card in the capture phase runs before Excalidraw sees the key.
+            const blockLibraryShortcut = e => {
+                if (e.key !== '0' || e.ctrlKey || e.metaKey || e.altKey) return; // Ctrl/Cmd+0 = reset zoom, keep it
+                if (e.target instanceof Element && e.target.closest('textarea, input, [contenteditable="true"]')) return; // typing text
+                e.stopPropagation();
+            };
+            ctx.dom.addEventListener('keydown', blockLibraryShortcut, true);
+            s.cleanup.push(() => ctx.dom.removeEventListener('keydown', blockLibraryShortcut, true));
             // Click outside the drawing (that isn't Excalidraw UI / undo-redo) → leave + save
             const onPointerDown = e => {
                 const t = e.target;
                 if (!(t instanceof Element) || ctx.dom.contains(t) || t.closest(KEEP_ACTIVE_SELECTOR)) return;
-                this.deactivate().then(ok => {
+                // Full screen: the top bar (save pill, Back link) stays usable without collapsing the canvas
+                if (ctx.isExpanded?.() && t.closest('.editor-topbar')) return;                this.deactivate().then(ok => {
                     if (!ok) toast('Couldn’t save the drawing yet — it’s still open. Click outside again to retry.', 'error');
                 });
             };
@@ -292,6 +362,10 @@ export const drawingSession = {
             document.addEventListener('visibilitychange', onVisibility);
             s.cleanup.push(() => document.removeEventListener('visibilitychange', onVisibility));
 
+            // Same reasoning as editor-api.js: pagehide is the reliable "leaving" signal on Safari/back-nav
+            const onPageHide = () => save(s);
+            window.addEventListener('pagehide', onPageHide);
+            s.cleanup.push(() => window.removeEventListener('pagehide', onPageHide));
             notify();
         } finally {
             activating = false;
@@ -316,6 +390,16 @@ export const drawingSession = {
             return true;
         })().finally(() => { closing = null; });
         return closing;
+    },
+
+    /* The canvas changed size/position (expand/collapse): let Excalidraw re-measure. */
+    refresh() {
+        requestAnimationFrame(() => {
+            if (!active) return;
+            active.api?.refresh?.();
+            clampViewport(active);
+            active.ctx.dom.querySelector('.excalidraw')?.focus?.({ preventScroll: true });
+        });
     },
 
     /* Called when a drawing node is removed from the document while live. */
