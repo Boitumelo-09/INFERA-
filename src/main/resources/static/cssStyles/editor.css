@@ -728,3 +728,28 @@ body.drawing-expanded { overflow: hidden; }
     position: fixed; left: 64px; top: calc(var(--topbar-h) + 16px); z-index: 96;
 }
 .drawing-node.is-expanded .drawing-resize-handle { display: none; }
+/* ═══════════════════════════════════════
+   HANDWRITING PAGE
+═══════════════════════════════════════ */
+/* Excalidraw renders into its own host so the paper layer can sit behind it */
+.drawing-react-host { position: absolute; inset: 0; z-index: 1; }
+
+.hw-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.hw-page { position: absolute; left: 0; top: 0; transform-origin: 0 0; box-shadow: 0 2px 18px rgba(0,0,0,0.35); }
+.hw-lines { position: absolute; left: 0; right: 0; bottom: 0; }
+.hw-margin { position: absolute; top: 0; bottom: 0; width: 1.5px; }
+
+/* Transparent canvas so the paper shows through (Excalidraw's own surface is cleared
+   by viewBackgroundColor:'transparent'; this only removes the container's background) */
+.drawing-live-mount[data-mode="HANDWRITING"] .excalidraw { background: transparent !important; }
+/* Declared so tooling can resolve it; handwriting sets the real value from JS */
+.drawing-live-mount { --hw-clip: none; }
+/* Static preview: the page shown at page-width, top-aligned — the same framing the
+   live canvas opens with, so entering doesn't jump. A taller card reveals more of the page. */
+.drawing-node[data-mode="handwriting"] .drawing-preview-img { height: auto; }
+/* Handwriting: every Excalidraw canvas (static, interactive and the in-progress
+   stroke's) is clipped to the visible part of the page via a variable set in JS */
+.drawing-live-mount[data-mode="HANDWRITING"] .excalidraw canvas { clip-path: var(--hw-clip, none); }
+/* Handwriting: the text tool's live editing box is plain DOM, not a canvas, so it needs
+   the same page clip (its container spans the canvas area, so the coordinates match) */
+.drawing-live-mount[data-mode="HANDWRITING"] .excalidraw-textEditorContainer { clip-path: var(--hw-clip, none); }

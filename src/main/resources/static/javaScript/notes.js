@@ -113,7 +113,7 @@ function openViewNoteModal(row) {
     $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
     $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
 
-    renderNoteContent(content);
+    renderNoteContent(content, row.dataset.id);
     renderResourcesForRow(row);
 
     const tagList = (row.dataset.tags || '').split(',').filter(Boolean);
@@ -648,7 +648,11 @@ function waitForViewRenderer() {
     });
 }
 
-async function renderNoteContent(raw) {
+let viewRenderSeq = 0; // lets a slow drawing fetch notice that another note has been opened since
+
+async function renderNoteContent(raw, noteId) {
+    const renderSeq = ++viewRenderSeq;
+    revokeViewDrawingUrls();
     const bodyEl = $('#viewNoteContent');
     const clean = raw === 'null' || !raw ? '' : raw;
 
@@ -664,7 +668,74 @@ async function renderNoteContent(raw) {
     const renderer = await waitForViewRenderer();
     const html = renderer.render(clean);
     bodyEl.innerHTML = DOMPurify.sanitize(html);
+    hydrateDrawings(bodyEl, noteId, renderSeq); // fills the drawing placeholders; doesn't block the text
 
     $$('pre code', bodyEl).forEach(block => hljs.highlightElement(block));
 }
 
+/* ───────────────────────────────────────────────────────────────────
+   DRAWINGS IN THE VIEW MODAL (read-only)
+   generateHTML only emits the drawing node's placeholder <div>; the
+   preview images are filled in here from the drawings API.
+─────────────────────────────────────────────────────────────────── */
+let viewDrawingUrls = [];
+
+function revokeViewDrawingUrls() {
+    viewDrawingUrls.forEach(u => URL.revokeObjectURL(u));
+    viewDrawingUrls = [];
+}
+viewNoteModalEl?.addEventListener('hidden.bs.modal', revokeViewDrawingUrls);
+
+function drawingPlaceholderHtml(mode, text) {
+    const icon = mode === 'HANDWRITING' ? 'bi-journal-text' : 'bi-brush';
+    return `<div class="view-drawing-placeholder"><i class="bi ${icon}"></i><span>${escapeHtml(text)}</span></div>`;
+}
+
+async function hydrateDrawings(bodyEl, noteId, renderSeq) {
+    const nodes = $$('div[data-type="drawing"]', bodyEl);
+    if (!nodes.length || !noteId) return; // no drawings → no request at all
+
+    // Size the placeholders straight away so the layout doesn't jump when previews arrive.
+    // 240–1200 / default 480 mirror the editor's limits.
+    nodes.forEach(node => {
+        const height = Math.min(1200, Math.max(240, Number(node.dataset.height) || 480));
+        node.classList.add('view-drawing');
+        node.style.height = height + 'px';
+        node.innerHTML = drawingPlaceholderHtml(node.dataset.mode, 'Loading drawing…');
+    });
+
+    let summaries = null;
+    try {
+        const res = await fetch(`/api/notes/${noteId}/drawings`, { headers: { Accept: 'application/json' } });
+        if (res.ok) summaries = new Map((await res.json()).map(s => [s.id, s]));
+    } catch {
+        // falls through to the "could not be loaded" state below
+    }
+
+    if (renderSeq !== viewRenderSeq) return; // a different note was opened meanwhile
+
+    nodes.forEach(node => {
+        const mode = node.dataset.mode;
+        if (!summaries) { node.innerHTML = drawingPlaceholderHtml(mode, 'Drawing could not be loaded'); return; }
+
+        const summary = summaries.get(Number(node.dataset.drawingId));
+        if (!summary) { node.innerHTML = drawingPlaceholderHtml(mode, 'Drawing not found'); return; }
+
+        if (!summary.previewSvg) {
+            node.innerHTML = drawingPlaceholderHtml(
+                summary.mode, summary.mode === 'HANDWRITING' ? 'Empty handwriting page' : 'Empty drawing');
+            return;
+        }
+
+        // <img> + blob URL: an SVG loaded as an image can't run scripts or fetch anything external
+        const url = URL.createObjectURL(new Blob([summary.previewSvg], { type: 'image/svg+xml' }));
+        viewDrawingUrls.push(url);
+        const img = document.createElement('img');
+        img.alt = summary.mode === 'HANDWRITING' ? 'Handwriting page' : 'Drawing';
+        img.draggable = false;
+        img.src = url;
+        node.textContent = '';
+        node.appendChild(img);
+        if (summary.mode === 'HANDWRITING') node.style.height = 'auto'; // a page shows whole, at its natural proportions
+    });
+}

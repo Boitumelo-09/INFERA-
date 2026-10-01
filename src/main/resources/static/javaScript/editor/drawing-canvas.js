@@ -10,7 +10,16 @@ const EXCALIDRAW_VERSION = '0.18.0';
 const BASE = `https://esm.sh/@excalidraw/excalidraw@${EXCALIDRAW_VERSION}/dist/prod/`;
 const KEEP_KEYALIVE_BYTES = 60000; // keepalive requests are capped at ~64KB by browsers
 const SAVE_DEBOUNCE_MS = 1200;
-const SCROLL_MARGIN = 0.5; // pannable area = drawing bounds + this fraction of a viewport per side
+const EXPORT_PAD = 16;
+/* Handwriting: one fixed ruled page, in scene units */
+const PAGE_W = 680, PAGE_H = 960;
+const HW_LINE = 32, HW_FIRST_LINE = 96, HW_MARGIN_X = 64;
+const HW_COLORS = {
+    light: { paper: '#fbfaf4', line: '#c8d3e6', margin: '#f2b7b7' },
+    dark:  { paper: '#1f232b', line: '#343c4b', margin: '#5b3a3f' },
+};
+const HW_FALLBACK_INSET = { top: 72, bottom: 0 }; // used until Excalidraw's real toolbar can be measured
+const SCROLL_MARGIN = 0.5;// pannable area = drawing bounds + this fraction of a viewport per side
 /* Clicks on these never leave the canvas: Excalidraw's own UI (including
    its portalled dialogs/menus) and the toolbar's undo/redo buttons. */
 const KEEP_ACTIVE_SELECTOR = [
@@ -87,13 +96,14 @@ async function renderPreview(s, elements, appState, files) {
     const svg = await s.lib.ex.exportToSvg({
         elements,
         appState: {
-            exportBackground: true,
+            exportBackground: s.mode !== 'HANDWRITING', // handwriting brings its own paper
             viewBackgroundColor: appState.viewBackgroundColor,
             exportWithDarkMode: s.theme === 'dark',
         },
         files,
-        exportPadding: 16,
+        exportPadding: EXPORT_PAD,
     });
+    if (s.mode === 'HANDWRITING') return composeHandwritingPreview(s, svg, elements);
     return new XMLSerializer().serializeToString(svg);
 }
 
@@ -157,7 +167,10 @@ function clampViewport(s) {
     const elements = s.api.getSceneElements();
 
     let x0, y0, x1, y1;
-    if (elements.length) {
+    if (s.mode === 'HANDWRITING') {
+        // A handwriting drawing is a fixed page: its bounds are the page, not the content
+        x0 = 0; y0 = 0; x1 = PAGE_W; y1 = PAGE_H;
+    } else if (elements.length) {
         const [minX, minY, maxX, maxY] = s.lib.ex.getCommonBounds(elements);
         x0 = minX - Vw * SCROLL_MARGIN; x1 = maxX + Vw * SCROLL_MARGIN;
         y0 = minY - Vh * SCROLL_MARGIN; y1 = maxY + Vh * SCROLL_MARGIN;
@@ -167,21 +180,158 @@ function clampViewport(s) {
 
     const st = s.api.getAppState();
     // Can't zoom out past the point where the whole page fits in view
-    const zoom = Math.max(st.zoom.value, Math.min(Vw / (x1 - x0), Vh / (y1 - y0)), 0.1);
-    const vw = Vw / zoom, vh = Vh / zoom; // visible size in scene units
+    const ins = s.mode === 'HANDWRITING' ? (s.insets || HW_FALLBACK_INSET) : { top: 0, bottom: 0 };
+    const VhEff = Vh - ins.top - ins.bottom; // the part of the viewport not under Excalidraw's toolbars
+    const zoom = Math.max(st.zoom.value, Math.min(Vw / (x1 - x0), VhEff / (y1 - y0)), 0.1);
 
+    const vw = Vw / zoom, vh = VhEff / zoom; // visible size in scene units
     // Keep the visible rect inside the page; if it's larger than the page, centre it
     const fit = (start, size, lo, hi) =>
         size >= hi - lo ? lo + (hi - lo - size) / 2 : Math.min(Math.max(start, lo), hi - size);
     const scrollX = -fit(-st.scrollX, vw, x0, x1);
-    const scrollY = -fit(-st.scrollY, vh, y0, y1);
-
+    const scrollY = ins.top / zoom - fit(-st.scrollY + ins.top / zoom, vh, y0, y1);
     if (Math.abs(scrollX - st.scrollX) < 0.5 && Math.abs(scrollY - st.scrollY) < 0.5
         && Math.abs(zoom - st.zoom.value) < 0.001) return;
 
     s.clamping = true; // our own correction re-triggers onScrollChange; ignore that echo
     s.api.updateScene({ appState: { scrollX, scrollY, zoom: { value: zoom } } });
+    syncPageLayer(s, scrollX, scrollY, zoom);
     setTimeout(() => { s.clamping = false; }, 0);
+}
+
+/* ─── Handwriting page ─────────────────────────────────────────── */
+
+/* Where to put the view so the page appears the way the static preview does:
+   inline = fitted to width, top of the page; expanded = whole page, centred. */
+function pageView(Vw, Vh, expanded, inset = { top: 0, bottom: 0 }) {
+    const availH = Math.max(Vh - inset.top - inset.bottom, 1); // viewport minus Excalidraw's own toolbars
+    const zoom = expanded ? Math.min(Vw / PAGE_W, availH / PAGE_H) : Vw / PAGE_W;
+    const pageLeft = (Vw - PAGE_W * zoom) / 2;                                       // screen x of the page's left edge
+    const pageTop = expanded ? inset.top + (availH - PAGE_H * zoom) / 2 : inset.top; // screen y of the page's top edge
+    return { zoom, scrollX: pageLeft / zoom, scrollY: pageTop / zoom };
+}
+
+function fitPageView(s) {
+    const el = s.ctx.dom.querySelector('.excalidraw');
+    if (!s.api || !el || !el.clientWidth || !el.clientHeight) return;
+    s.insets = measureInsets(s);
+    const v = pageView(el.clientWidth, el.clientHeight, !!s.ctx.isExpanded?.(), s.insets);
+    s.clamping = true;
+    s.api.updateScene({ appState: { scrollX: v.scrollX, scrollY: v.scrollY, zoom: { value: v.zoom } } });
+    syncPageLayer(s, v.scrollX, v.scrollY, v.zoom);
+    setTimeout(() => { s.clamping = false; }, 0);
+}
+/* The paper + ruled lines are plain DOM behind a transparent canvas, moved with
+   the same transform Excalidraw uses: screen = (scene + scroll) * zoom. */
+function buildPageLayer(theme) {
+    const c = HW_COLORS[theme] || HW_COLORS.dark;
+    const layer = document.createElement('div');
+    layer.className = 'hw-layer';
+
+    const page = document.createElement('div');
+    page.className = 'hw-page';
+    page.style.width = PAGE_W + 'px';
+    page.style.height = PAGE_H + 'px';
+    page.style.backgroundColor = c.paper;
+
+    const lines = document.createElement('div');
+    lines.className = 'hw-lines';
+    lines.style.top = (HW_FIRST_LINE - HW_LINE) + 'px';
+    lines.style.backgroundImage =
+        `repeating-linear-gradient(to bottom, transparent 0, transparent ${HW_LINE - 1.5}px, ` +
+        `${c.line} ${HW_LINE - 1.5}px, ${c.line} ${HW_LINE}px)`;
+
+    const margin = document.createElement('div');
+    margin.className = 'hw-margin';
+    margin.style.left = HW_MARGIN_X + 'px';
+    margin.style.backgroundColor = c.margin;
+
+    page.append(lines, margin);
+    layer.appendChild(page);
+    return { layer, page };
+}
+
+function syncPageLayer(s, scrollX, scrollY, zoom) {
+    if (!s.pageEl) return;
+    const z = zoom?.value ?? zoom;
+    const { layer, page } = s.pageEl;
+    page.style.transform = `translate(${scrollX * z}px, ${scrollY * z}px) scale(${z})`;
+
+    const root = s.ctx.dom.querySelector('.excalidraw');
+    const Vh = root?.clientHeight || 0;
+    const ins = s.insets || HW_FALLBACK_INSET;
+
+    // What stays visible: the page, minus the strip under Excalidraw's toolbar
+    const l = scrollX * z, r = (scrollX + PAGE_W) * z;
+    const t = Math.max(scrollY * z, ins.top);
+    const b = Math.min((scrollY + PAGE_H) * z, Vh ? Vh - ins.bottom : Infinity);
+
+    // Paper: cut at the toolbar edge so the page scrolls below the bar, not behind it
+    layer.style.clipPath = `inset(${ins.top}px 0 ${ins.bottom}px 0)`;
+
+    // Ink: expose the same rectangle as a CSS variable. Every Excalidraw canvas reads it
+    // (see editor.css), including ones created later, like the in-progress stroke's.
+    // A clipped-out area also receives no pointer events, so nothing starts outside.
+    layer.parentElement?.style.setProperty(
+        '--hw-clip', `polygon(${l}px ${t}px, ${r}px ${t}px, ${r}px ${b}px, ${l}px ${b}px)`);
+}
+/* Saved preview = paper + lines + the exported strokes, cropped to the page. */
+function composeHandwritingPreview(s, exported, elements) {
+    const c = HW_COLORS[s.theme] || HW_COLORS.dark;
+    const ns = 'http://www.w3.org/2000/svg';
+    const make = (tag, attrs) => {
+        const el = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+        return el;
+    };
+
+    const root = make('svg', { viewBox: `0 0 ${PAGE_W} ${PAGE_H}`, width: PAGE_W, height: PAGE_H });
+    root.appendChild(make('rect', { width: PAGE_W, height: PAGE_H, fill: c.paper }));
+    for (let y = HW_FIRST_LINE; y < PAGE_H; y += HW_LINE) {
+        root.appendChild(make('line', { x1: 0, y1: y, x2: PAGE_W, y2: y, stroke: c.line, 'stroke-width': 1.5 }));
+    }
+    root.appendChild(make('line', {
+        x1: HW_MARGIN_X, y1: 0, x2: HW_MARGIN_X, y2: PAGE_H, stroke: c.margin, 'stroke-width': 1.5,
+    }));
+
+    // The export draws the strokes at (padding - minX) inside its own viewBox;
+    // put that box back at the content's real position on the page.
+    const [minX, minY] = s.lib.ex.getCommonBounds(elements);
+    exported.setAttribute('x', String(minX - EXPORT_PAD));
+    exported.setAttribute('y', String(minY - EXPORT_PAD));
+    root.appendChild(exported);
+
+    return new XMLSerializer().serializeToString(root);
+}
+
+/* Excalidraw floats its toolbar over the canvas. Measure it so the page starts clear of it:
+   below a top toolbar (desktop layout) or above a bottom one (compact layout). */
+function measureInsets(s) {
+    const root = s.ctx.dom.querySelector('.excalidraw');
+    const bar = root?.querySelector('.App-toolbar');
+    if (!root || !bar) return HW_FALLBACK_INSET;
+    const r = root.getBoundingClientRect(), b = bar.getBoundingClientRect();
+    if (!b.height) return HW_FALLBACK_INSET;
+    const GAP = 12;
+    return b.top - r.top < r.height / 2
+        ? { top: Math.ceil(b.bottom - r.top + GAP), bottom: 0 }
+        : { top: 0, bottom: Math.ceil(r.bottom - b.top + GAP) };
+}
+
+/* Card resized or layout flipped (compact <-> desktop): re-fit if the toolbar moved, otherwise just re-sync the clip */
+function relayoutHandwriting(s) {
+    if (!s.api) return;
+    const next = measureInsets(s), prev = s.insets || HW_FALLBACK_INSET;
+    if (Math.abs(next.top - prev.top) > 2 || Math.abs(next.bottom - prev.bottom) > 2) { fitPageView(s); return; }
+    const st = s.api.getAppState();
+    syncPageLayer(s, st.scrollX, st.scrollY, st.zoom);
+}
+
+/* The toolbar's real size is only known once Excalidraw has rendered: refine the opening view then */
+function settleHandwritingView(s, tries = 0) {
+    if (active !== s) return;
+    if (s.api && s.ctx.dom.querySelector('.excalidraw .App-toolbar')) { fitPageView(s); return; }
+    if (tries < 90) requestAnimationFrame(() => settleHandwritingView(s, tries + 1));
 }
 
 function onSceneChange(s, elements) {
@@ -206,7 +356,10 @@ function buildElement(s, initialData) {
                 s.home = { x: -st.scrollX, y: -st.scrollY }; // entry view, used while the canvas is empty
             },
             onChange: elements => onSceneChange(s, elements),
-            onScrollChange: () => clampViewport(s),
+            onScrollChange: (scrollX, scrollY, zoom) => {
+                syncPageLayer(s, scrollX, scrollY, zoom);
+                clampViewport(s);
+            },
             theme: s.theme,
             autoFocus: true,
             UIOptions: {
@@ -313,21 +466,50 @@ export const drawingSession = {
             }
 
             const mountEl = ctx.enter();
+            const mode = data.mode || ctx.mode;
+
+            // React renders into its own host element so the handwriting paper layer can sit
+            // beside it (React clears its container on first render).
+            const host = document.createElement('div');
+            host.className = 'drawing-react-host';
+            mountEl.dataset.mode = mode;
+            mountEl.appendChild(host);
+
+            if (mode === 'HANDWRITING') {
+                // Decide the opening view now, so Excalidraw starts there instead of jumping
+                const view = pageView(Math.max(mountEl.clientWidth, 1), Math.max(mountEl.clientHeight, 1), !!ctx.isExpanded?.(), HW_FALLBACK_INSET);                initialData = {
+                    ...initialData,
+                    appState: {
+                        ...(initialData.appState || {}),
+                        viewBackgroundColor: 'transparent',
+                        scrollX: view.scrollX, scrollY: view.scrollY, zoom: { value: view.zoom },
+                    },
+                    scrollToContent: false,
+                };
+            }
             const s = {
                 ctx, lib, theme: appTheme(), api: null, timer: null,
-                home: { x: 0, y: 0 }, clamping: false,
-                root: lib.createRoot(mountEl),
+                home: { x: 0, y: 0 }, clamping: false, mode,
+                root: lib.createRoot(host),
                 chain: Promise.resolve(),
                 savedVersion: sceneVersion(initialData.elements || []),
                 lastVersion: sceneVersion(initialData.elements || []),
                 cleanup: [],
             };
             active = s;
+            if (mode === 'HANDWRITING') {
+                const v = initialData.appState;
+                s.pageEl = buildPageLayer(s.theme);
+                mountEl.insertBefore(s.pageEl.layer, host);
+                syncPageLayer(s, v.scrollX, v.scrollY, v.zoom);
+            }
             s.root.render(buildElement(s, initialData));
-
+            if (mode === 'HANDWRITING') settleHandwritingView(s);
             // Resizing the card changes the viewport, so re-check the bounds
-            const ro = new ResizeObserver(() => clampViewport(s));
-            ro.observe(mountEl);
+            const ro = new ResizeObserver(() => {
+                if (s.mode === 'HANDWRITING') relayoutHandwriting(s);
+                clampViewport(s);
+            });            ro.observe(mountEl);
             s.cleanup.push(() => ro.disconnect());
             s.cleanup.push(setupPropsPanelToggle(ctx, mountEl));
 
@@ -397,6 +579,7 @@ export const drawingSession = {
         requestAnimationFrame(() => {
             if (!active) return;
             active.api?.refresh?.();
+            if (active.mode === 'HANDWRITING') fitPageView(active);
             clampViewport(active);
             active.ctx.dom.querySelector('.excalidraw')?.focus?.({ preventScroll: true });
         });
