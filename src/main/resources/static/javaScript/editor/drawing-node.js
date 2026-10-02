@@ -7,7 +7,7 @@
 
 import { Node, mergeAttributes } from 'https://esm.sh/@tiptap/core@2.11.5';
 import { Plugin, PluginKey }     from 'https://esm.sh/@tiptap/pm@2.11.5/state';
-import { drawingSession } from './drawing-canvas.js';
+import { drawingSession, MAX_PAGES } from './drawing-canvas.js';
 /* ─── API helpers ──────────────────────────────────────────────── */
 const DEFAULT_HEIGHT = 480;
 const MIN_HEIGHT = 240;
@@ -16,6 +16,11 @@ export const clampHeight = v => {
     if (v == null || v === '') return DEFAULT_HEIGHT;
     const n = Math.round(Number(v));
     return Number.isFinite(n) ? Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, n)) : DEFAULT_HEIGHT;
+};
+
+export const clampPages = v => {
+    const n = Math.round(Number(v));
+    return Number.isFinite(n) ? Math.min(MAX_PAGES, Math.max(1, n)) : 1;
 };
 
 function csrfHeaders() {
@@ -92,6 +97,10 @@ const Drawing = Node.create({
                 parseHTML: el => clampHeight(el.getAttribute('data-height')),
                 renderHTML: a => ({ 'data-height': a.height }),
             },
+            pages: {
+                default: 1,
+                parseHTML: el => clampPages(el.getAttribute('data-pages')),
+                renderHTML: a => ({ 'data-pages': a.pages }),            },
         };
     },
 
@@ -281,7 +290,18 @@ const Drawing = Node.create({
                     return mount;
                 },
                 isExpanded: () => expanded,
-                leave() {
+                get pages() { return clampPages(current.attrs.pages); },
+                setPages(n) {
+                    const pos = getPos();
+                    const pages = clampPages(n);
+                    if (typeof pos !== 'number' || pages === clampPages(current.attrs.pages)) return;
+                    // Kept out of the note's undo history, so undoing text can't silently drop a page
+                    editor.view.dispatch(
+                        editor.view.state.tr
+                            .setNodeMarkup(pos, undefined, { ...current.attrs, pages })
+                            .setMeta('addToHistory', false)
+                    );
+                },                leave() {
                     applyExpanded(false);
                     live = false;
                     dom.classList.remove('is-live');

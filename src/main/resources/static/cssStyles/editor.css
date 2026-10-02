@@ -735,7 +735,8 @@ body.drawing-expanded { overflow: hidden; }
 .drawing-react-host { position: absolute; inset: 0; z-index: 1; }
 
 .hw-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.hw-page { position: absolute; left: 0; top: 0; transform-origin: 0 0; box-shadow: 0 2px 18px rgba(0,0,0,0.35); }
+.hw-stack { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.hw-page { position: absolute; left: 0; box-shadow: 0 2px 18px rgba(0,0,0,0.35); }
 .hw-lines { position: absolute; left: 0; right: 0; bottom: 0; }
 .hw-margin { position: absolute; top: 0; bottom: 0; width: 1.5px; }
 
@@ -753,3 +754,23 @@ body.drawing-expanded { overflow: hidden; }
 /* Handwriting: the text tool's live editing box is plain DOM, not a canvas, so it needs
    the same page clip (its container spans the canvas area, so the coordinates match) */
 .drawing-live-mount[data-mode="HANDWRITING"] .excalidraw-textEditorContainer { clip-path: var(--hw-clip, none); }
+
+
+
+/* Handwriting: add / delete page, left of the expand button */
+.drawing-page-btn {
+    position: absolute; top: 12px; z-index: 6;
+    width: 32px; height: 32px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--secondary); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--muted); font-size: 0.9rem; cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.drawing-page-add { right: 52px; }
+.drawing-page-del { right: 92px; }
+.drawing-page-btn:hover:not(:disabled) { color: var(--text); border-color: var(--ws-color, var(--accent)); }
+.drawing-page-del:hover:not(:disabled) { color: #f87171; border-color: #f87171; }
+.drawing-page-btn:disabled { opacity: 0.4; cursor: default; }
+.drawing-node.is-expanded .drawing-page-btn { position: fixed; top: calc(var(--topbar-h) + 16px); z-index: 96; }
+.drawing-node.is-expanded .drawing-page-add { right: 56px; }
+.drawing-node.is-expanded .drawing-page-del { right: 96px; }
