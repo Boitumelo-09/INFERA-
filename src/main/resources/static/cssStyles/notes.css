@@ -89,7 +89,7 @@
     align-items: center;
     gap: 7px;
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 99px;
     padding: 7px 16px;
     font-size: 0.8rem;
@@ -173,6 +173,7 @@
     background: var(--card);
     border: 1px solid transparent;
     border-radius: var(--radius);
+    overflow: clip;
 }
 
 .note-row-item:first-child {
@@ -192,7 +193,7 @@
     padding: 16px 20px;
     cursor: pointer;
     /*transition: background 0.18s;*/
-    border-bottom: 1px groove var(--border);
+    border-bottom: 1px groove transparent;
     position: relative;
     transition: transform .22s cubic-bezier(.2, .8, .2, 1), border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
 }
@@ -201,8 +202,9 @@
 .note-row-item:hover {
     transform: translateY(-2px);
     border-bottom-color: var(--ws-color, var(--accent));
-    background: linear-gradient(-187deg, rgba(255, 255, 255, .04) 90%, color-mix(in srgb, var(--ws-color, var(--accent)) 45%, transparent));
+    /*background: linear-gradient(-187deg, rgba(255, 255, 255, .04) 90%, color-mix(in srgb, var(--ws-color, var(--accent)) 45%, transparent));*/
     /*box-shadow: 0 8px 20px rgba(0,0,0,.25),inset 0 0 0 1px var(--ws-color, var(--accent));*/
+    background: var(--secondary);
 }
 
 .note-row-item.menu-active {
@@ -1146,7 +1148,7 @@
 }
 
 [data-theme="light"] #viewNoteDialog.theater-mode .view-note-body {
-    background: var(--secondary);
+    background: transparent;
     border-radius: 15px;
     padding-inline: 10px;
 }
@@ -1502,3 +1504,29 @@
 #viewNoteDialog.theater-mode .view-note-body:hover {
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
+/* ═══════════════════════════════════════
+   DRAWINGS IN THE VIEW MODAL (read-only)
+═══════════════════════════════════════ */
+.view-drawing {
+    /* margin: 16px 0; */
+    /* border: 1px solid var(--border); */
+    border-radius: 10px;
+    overflow: hidden;
+    /* background: rgba(255,255,255,0.03); */
+}
+[data-theme="light"] .view-drawing { background: transparent; }
+.view-drawing img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 0; }
+.view-drawing-placeholder {
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+    color: var(--muted); font-size: 0.8rem;
+}
+.view-drawing-placeholder i { font-size: 1.6rem; opacity: 0.7; }
+.view-drawing[data-mode="HANDWRITING"] .view-drawing-placeholder {
+    background-image: repeating-linear-gradient(
+            to bottom, transparent 0, transparent 31px,
+            color-mix(in srgb, var(--muted) 28%, transparent) 31px,
+            color-mix(in srgb, var(--muted) 28%, transparent) 32px);
+}
+.view-drawing[data-mode="HANDWRITING"] img { height: auto; }

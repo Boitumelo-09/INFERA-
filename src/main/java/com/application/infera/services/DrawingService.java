@@ -23,7 +23,7 @@ public class DrawingService {
     // Scenes with embedded images get big, so the cap is generous — it exists
     // to stop abuse, not to constrain normal drawings.
     private static final int MAX_SCENE_CHARS   = 10_000_000;
-    private static final int MAX_PREVIEW_CHARS = 2_000_000;
+    private static final int MAX_PREVIEW_CHARS = 6_000_000;
 
     private final DrawingRepository drawingRepository;
     private final NoteService noteService;
