@@ -6,6 +6,8 @@
    saving and leaving.
 ═══════════════════════════════════════════════════════════════════ */
 
+import { confirmDialog } from './confirm-dialog.js';
+
 const EXCALIDRAW_VERSION = '0.18.0';
 const BASE = `https://esm.sh/@excalidraw/excalidraw@${EXCALIDRAW_VERSION}/dist/prod/`;
 const KEEP_KEYALIVE_BYTES = 60000; // keepalive requests are capped at ~64KB by browsers
@@ -30,6 +32,7 @@ const KEEP_ACTIVE_SELECTOR = [
     '.excalidraw',
     '.excalidraw-modal-container',
     '.excalidraw-contextMenuContainer',
+    '.drawing-confirm',
     '.tiptap-toolbar-btn[data-action="undo"]',
     '.tiptap-toolbar-btn[data-action="redo"]',
 ].join(',');
@@ -103,8 +106,8 @@ async function renderPreview(s, elements, appState, files) {
             exportBackground: s.mode !== 'HANDWRITING', // handwriting brings its own paper
             viewBackgroundColor: appState.viewBackgroundColor,
             exportWithDarkMode: s.theme === 'dark',
-        },
-        files,
+            exportScale: 1, // the default can follow the screen's pixel ratio, which would scale the strokes
+              },files,
         exportPadding: EXPORT_PAD,
     });
     if (s.mode === 'HANDWRITING') return composeHandwritingPreview(s, svg, elements);
@@ -118,7 +121,7 @@ function save(s) {
 }
 
 async function doSave(s) {
-    if (!s.api) return true;
+    if (!s.api || s.closed) return true; // never save from a torn-down canvas: its scene reads back empty
     const version = sceneVersion(s.api.getSceneElementsIncludingDeleted());
     if (version === s.savedVersion && !s.forcePreview) return true;
     // forcePreview: page added/removed, no ink change
@@ -128,8 +131,9 @@ async function doSave(s) {
         const appState = s.api.getAppState();
         const files = s.api.getFiles();
 
-        const sceneJson = s.lib.ex.serializeAsJSON(elements, appState, files, 'local');
-        const previewSvg = elements.length
+        console.log('[drawing] save', { elements: elements.length, pages: s.pages, forcePreview: s.forcePreview });
+        let sceneJson = s.lib.ex.serializeAsJSON(elements, appState, files, 'local');
+        if (s.mode === 'HANDWRITING') sceneJson = withPageCount(sceneJson, s.pages);        const previewSvg = elements.length
             ? await renderPreview(s, elements, appState, files)
             // added-but-empty pages still get a preview (blank pages); a single empty page uses the placeholder
             : (s.mode === 'HANDWRITING' && s.pages > 1 ? composeHandwritingPreview(s, null, []) : '');        const body = JSON.stringify({ sceneJson, previewSvg });
@@ -291,7 +295,7 @@ function syncPageLayer(s, scrollX, scrollY, zoom) {
     // Ink: every Excalidraw canvas (and the text editor) reads this variable, see editor.css.
     // A clipped-out area also receives no pointer events.
     layer.parentElement?.style.setProperty('--hw-clip', rects.length ? `path('${rects.join(' ')}')` : 'inset(100%)');
-}
+    updatePageIndicator(s, pageIndexAt(s, scrollY, z));}
 
 /* Saved preview = every page's paper + lines, the gaps left transparent, and the exported
    strokes clipped to the page rectangles. `exported` is null for added-but-empty pages. */
@@ -329,8 +333,14 @@ function composeHandwritingPreview(s, exported, elements) {
         // The export draws strokes at (padding - minX) inside its own viewBox;
         // put that box back at the content's real position in the stack.
         const [minX, minY] = s.lib.ex.getCommonBounds(elements);
-        exported.setAttribute('x', String(minX - EXPORT_PAD));
-        exported.setAttribute('y', String(minY - EXPORT_PAD));
+        // Pin the export's rendered size to its own viewBox: if the two ever differ, the
+        // strokes would be scaled and then clipped at the page edges
+        const vb = (exported.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+        if (vb.length === 4 && vb[2] > 0 && vb[3] > 0) {
+            exported.setAttribute('width', String(vb[2]));
+            exported.setAttribute('height', String(vb[3]));
+        }
+        exported.setAttribute('x', String(minX - EXPORT_PAD));        exported.setAttribute('y', String(minY - EXPORT_PAD));
         const g = make('g', { 'clip-path': 'url(#hw-pages)' });
         g.appendChild(exported);
         root.appendChild(g);
@@ -387,16 +397,20 @@ function contentPageCount(elements) {
 }
 
 /* The page under the middle of the area that isn't covered by Excalidraw's toolbar */
-function currentPageIndex(s) {
+function pageIndexAt(s, scrollY, zoom) {
     const el = s.ctx.dom.querySelector('.excalidraw');
-    if (!s.api || !el) return 0;
-    const st = s.api.getAppState();
+    if (!el) return 0;
     const ins = s.insets || HW_FALLBACK_INSET;
     const centreScreenY = ins.top + (el.clientHeight - ins.top - ins.bottom) / 2;
-    const sceneY = centreScreenY / st.zoom.value - st.scrollY;
+    const sceneY = centreScreenY / zoom - scrollY;
     return Math.min(Math.max(Math.floor(sceneY / PAGE_STEP), 0), s.pages - 1);
 }
 
+function currentPageIndex(s) {
+    if (!s.api) return 0;
+    const st = s.api.getAppState();
+    return pageIndexAt(s, st.scrollY, st.zoom.value);
+}
 function applyPageCount(s, n) {
     s.pages = n;
     const stack = s.pageEl?.stack;
@@ -417,7 +431,7 @@ function syncPageCountFromContent(s) {
     const needed = contentPageCount(s.api.getSceneElements());
     if (needed > s.pages) {
         applyPageCount(s, needed);
-        s.ctx.setPages(needed);
+        // s.ctx.setPages(needed);
         s.forcePreview = true;
     }
 }
@@ -425,7 +439,7 @@ function syncPageCountFromContent(s) {
 function addPage(s) {
     if (!s.api || s.pages >= MAX_PAGES) return;
     applyPageCount(s, s.pages + 1);
-    s.ctx.setPages(s.pages);
+    // s.ctx.setPages(s.pages);
     s.forcePreview = true; // the preview must show the new page even though no ink changed
     fitPageView(s, s.pages - 1);
     save(s);
@@ -433,22 +447,37 @@ function addPage(s) {
 
 /* Removes the page in view (asks first if it has writing), shifts later pages up and returns to
    the previous page. A single remaining page can't be deleted, so it is cleared instead. */
-function deletePage(s) {
-    if (!s.api) return;
+/* Removes the page in view (after an in-app confirmation if it has writing), shifts later pages
+   up and returns to the previous page. A single remaining page can't be deleted, so it is
+   cleared instead. */
+async function deletePage(s) {
+    if (!s.api || s.deleting) return;
     const n = s.pages;
     const idx = currentPageIndex(s);
-    const all = s.api.getSceneElementsIncludingDeleted();
-    const hasInk = all.some(el => !el.isDeleted && pageOfElement(el, n) === idx);
+    const hasInk = s.api.getSceneElementsIncludingDeleted()
+        .some(el => !el.isDeleted && pageOfElement(el, n) === idx);
 
-    if (hasInk) {
-        const msg = n > 1
-            ? `Delete page ${idx + 1}? Everything on it will be removed.`
-            : 'Clear this page? Everything on it will be removed.';
-        if (!window.confirm(msg)) return;
-    } else if (n === 1) {
+    if (!hasInk && n === 1) {
         toast('This page is already empty.');
         return;
     }
+
+    if (hasInk) {
+        s.deleting = true; // a second click while the dialog is open must not delete twice
+        const ok = await confirmDialog({
+            title: n > 1 ? `Delete page ${idx + 1}?` : 'Clear this page?',
+            message: n > 1
+                ? 'Everything on this page will be removed and the pages after it move up. You can undo this right afterwards.'
+                : 'Everything on this page will be removed. You can undo this right afterwards.',
+            confirmText: n > 1 ? 'Delete page' : 'Clear page',
+            danger: true,
+        });
+        s.deleting = false;
+        if (!ok || active !== s || !s.api || s.pages !== n) return; // cancelled, or the session changed meanwhile
+    }
+
+    // Re-read after the dialog so we never act on a stale list
+    const all = s.api.getSceneElementsIncludingDeleted();
 
     // Same version bump Excalidraw applies itself, so the change is picked up and saved
     const bump = (el, patch) => ({
@@ -464,11 +493,16 @@ function deletePage(s) {
         if (n > 1 && p > idx) return bump(el, { y: el.y - PAGE_STEP });
         return el;
     });
+    console.log('[drawing] delete page', {
+        n, idx, total: all.length,
+        deleted: next.filter((el, i) => el.isDeleted && !all[i].isDeleted).length,
+        shifted: next.filter((el, i) => el.y !== all[i].y).length,
+    });
     s.api.updateScene({ elements: next, captureUpdate: s.lib.ex.CaptureUpdateAction?.IMMEDIATELY });
 
     if (n > 1) {
         applyPageCount(s, n - 1);
-        s.ctx.setPages(n - 1);
+        // s.ctx.setPages(n - 1);
         fitPageView(s, Math.max(idx - 1, 0));
     }
     s.forcePreview = true;
@@ -489,9 +523,15 @@ function setupPageControls(s) {
     const delBtn = make('drawing-page-del', 'bi-file-earmark-x');
     addBtn.addEventListener('click', () => addPage(s));
     delBtn.addEventListener('click', () => deletePage(s));
-    s.pageControls = { addBtn, delBtn };
+
+    const indicator = document.createElement('div');
+    indicator.className = 'drawing-page-indicator';
+    indicator.setAttribute('aria-live', 'polite');
+    card.appendChild(indicator);
+
+    s.pageControls = { addBtn, delBtn, indicator };
     refreshPageControls(s);
-    return () => { addBtn.remove(); delBtn.remove(); s.pageControls = null; };
+    return () => { addBtn.remove(); delBtn.remove(); indicator.remove(); s.pageControls = null; };
 }
 
 function refreshPageControls(s) {
@@ -503,9 +543,32 @@ function refreshPageControls(s) {
     c.addBtn.setAttribute('aria-label', c.addBtn.title);
     c.delBtn.title = s.pages > 1 ? 'Delete this page' : 'Clear this page';
     c.delBtn.setAttribute('aria-label', c.delBtn.title);
+    updatePageIndicator(s, s.shownPage || 0);
 }
 
-function onSceneChange(s, elements) {    const v = sceneVersion(elements);
+/* "2 / 5" — hidden while there is only one page */
+function updatePageIndicator(s, idx) {
+    const el = s.pageControls?.indicator;
+    if (!el) return;
+    const page = Math.min(idx, s.pages - 1);
+    s.shownPage = page;
+    el.hidden = s.pages <= 1;
+    const text = `${page + 1} / ${s.pages}`;
+    if (el.textContent !== text) {
+        el.textContent = text;
+        el.title = `Page ${page + 1} of ${s.pages}`;
+    }
+}
+/* The page count travels with the scene, so what was saved and what reopens can never disagree.
+   Appended as a top-level key (Excalidraw ignores unknown ones) without re-parsing a big scene. */
+function withPageCount(sceneJson, pages) {
+    const end = sceneJson.lastIndexOf('}');
+    if (end < 0) return sceneJson;
+    return `${sceneJson.slice(0, end).replace(/\s+$/, '')},\n  "incaptur": { "pages": ${pages} }\n}`;
+}
+
+function onSceneChange(s, elements) {
+    const v = sceneVersion(elements);
     if (v === s.lastVersion) return;      // pan/zoom/selection only — nothing to save
     s.lastVersion = v;
     clearTimeout(s.timer);
@@ -624,10 +687,13 @@ export const drawingSession = {
             }
 
             let initialData = { scrollToContent: false };
+            let storedPages = null; // page count saved inside the drawing itself (handwriting)
             if (data.sceneJson) {
                 try {
                     // restore() validates/normalises saved scenes before they reach the canvas
-                    initialData = { ...lib.ex.restore(JSON.parse(data.sceneJson), null, null), scrollToContent: true };
+                    const saved = JSON.parse(data.sceneJson);
+                    storedPages = Number.isInteger(saved.incaptur?.pages) ? saved.incaptur.pages : null;
+                    initialData = { ...lib.ex.restore(saved, null, null), scrollToContent: true };
                 } catch (err) {
                     // Never open a blank canvas over data we couldn't read — it would overwrite it.
                     toast('This drawing could not be read, so it was left untouched.', 'error');
@@ -639,13 +705,15 @@ export const drawingSession = {
             const mode = data.mode || ctx.mode;
             // Never fewer pages than the content needs (the stored count could be out of step)
             const startPages = mode === 'HANDWRITING'
-                ? Math.min(MAX_PAGES, Math.max(ctx.pages || 1, contentPageCount(initialData.elements || [])))
+                // The drawing's own saved count wins; the note's attribute is only the fallback for older drawings
+                ? Math.min(MAX_PAGES, Math.max(storedPages ?? ctx.pages ?? 1, contentPageCount(initialData.elements || [])))
                 : 1;
             // React renders into its own host element so the handwriting paper layer can sit
             // beside it (React clears its container on first render).
             const host = document.createElement('div');
             host.className = 'drawing-react-host';
             mountEl.dataset.mode = mode;
+            console.log('[drawing] open', { mode, ctxPages: ctx.pages, storedPages, startPages });
             mountEl.appendChild(host);
 
             if (mode === 'HANDWRITING') {
@@ -673,7 +741,7 @@ export const drawingSession = {
             if (mode === 'HANDWRITING') {
                 const v = initialData.appState;
                 s.pageEl = buildPageLayer(s.theme, s.pages);
-                if (s.pages > (ctx.pages || 1)) ctx.setPages(s.pages);
+                // if (s.pages > (ctx.pages || 1)) ctx.setPages(s.pages);
                 // content reached further than the stored count
                 mountEl.insertBefore(s.pageEl.layer, host);
                 syncPageLayer(s, v.scrollX, v.scrollY, v.zoom);
@@ -735,18 +803,27 @@ export const drawingSession = {
     /* Saves, unmounts, swaps back to the static preview. Resolves false
        (and stays live) if the save failed — no silent data loss. */
     deactivate({ silent = false } = {}) {
+        console.trace('[drawing] deactivate', { silent });
         if (!active) return Promise.resolve(true);
         if (closing) return closing;
         const s = active;
         closing = (async () => {
             clearTimeout(s.timer);
+            syncPageCountFromContent(s); // never crop content that sits beyond the stored page count
             const ok = await save(s);
             if (!ok) return false;
             s.cleanup.forEach(fn => fn());
+            s.closed = true; // from here on the scene reads back empty: no further saves
             s.root.unmount();
             active = null;
-            if (!silent) s.ctx.leave();
-            notify();
+            if (!silent) {
+                s.ctx.leave();
+                // The note is only touched once the canvas is gone, never while it's live
+                if (s.mode === 'HANDWRITING') {
+                    console.log('[drawing] leave: storing page count', s.pages);
+                    s.ctx.setPages(s.pages);
+                }
+            }            notify();
             return true;
         })().finally(() => { closing = null; });
         return closing;

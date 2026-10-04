@@ -4,6 +4,7 @@ import com.application.infera.dtos.responses.DrawingSummaryResponse;
 import com.application.infera.models.Drawing;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
+import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,6 @@ public interface DrawingRepository extends JpaRepository<Drawing, Long> {
 
     // Used by NoteService.deleteNote to clear drawings before the note row goes
     List<Drawing> findByNote(Note note);
+
+    List<Drawing> findDrawingByNote_Workspace(Workspace noteWorkspace);
 }

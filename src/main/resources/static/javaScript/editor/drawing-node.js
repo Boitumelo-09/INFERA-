@@ -163,6 +163,9 @@ const Drawing = Node.create({
                 if (live) setExpanded(true);
             });
 
+            const pagesBadge = document.createElement('div');
+            pagesBadge.className = 'drawing-pages-badge';
+
             const handle = document.createElement('div');
             handle.className = 'drawing-resize-handle';
             handle.setAttribute('role', 'separator');
@@ -257,8 +260,12 @@ const Drawing = Node.create({
                 }
                 // render() clears the node, so the handle is re-attached each time.
                 // No handle in read-only surfaces (View modal).
-                if (editor.isEditable) { dom.appendChild(handle); dom.appendChild(expandBtn); }
-            };
+                const pageCount = clampPages(current.attrs.pages);
+                if (isHand && pageCount > 1) {
+                    pagesBadge.innerHTML = `<i class="bi bi-files"></i> ${pageCount} pages`;
+                    dom.appendChild(pagesBadge); // only shown on the static card; the live canvas has its own indicator
+                }
+                if (editor.isEditable) { dom.appendChild(handle); dom.appendChild(expandBtn); }            };
 
             // Only redraw when this drawing's own data changed (saves of *other*
             // drawings must not reload this preview image).
@@ -334,17 +341,17 @@ const Drawing = Node.create({
                     if (updated.type !== current.type) return false;
                     const idChanged = updated.attrs.drawingId !== current.attrs.drawingId;
                     const heightChanged = updated.attrs.height !== current.attrs.height;
+                    const pagesChanged = updated.attrs.pages !== current.attrs.pages;
                     current = updated;
                     if (heightChanged) applyHeight(current.attrs.height);
-                    if (idChanged) render();
-                    return true;
+                    if (idChanged || pagesChanged) render(); // render() does nothing while the canvas is live                    return true;
                 },
                 // Keep ProseMirror from treating handle drags/keys as editor input
                 // While live, ProseMirror must ignore every event from inside the canvas
                 // (keys, pointer, clipboard) — this is the keyboard isolation.
                 stopEvent: e => handle.contains(e.target) || (live && dom.contains(e.target)),
                 ignoreMutation: () => true,
-                destroy() { applyExpanded(false); drawingSession.release(ctx); unsubscribe(); revoke(); },            };
+                destroy() { console.trace('[drawing] node view destroyed'); applyExpanded(false); drawingSession.release(ctx); unsubscribe(); revoke(); },            };
         };
     },
 

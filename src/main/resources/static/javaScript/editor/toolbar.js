@@ -240,7 +240,9 @@ export function renderToolbar(editor, mountEl) {
     const tablePicker = buildTableInsertControl(editor);
     const drawingPicker = buildDrawingInsertControl(editor);
     const tableBar = buildTableContextBar(editor);
-    mountEl.insertAdjacentElement('afterend', tableBar.el);    GROUPS.forEach((group, gi) => {
+    // mountEl.insertAdjacentElement('afterend', tableBar.el);
+
+    GROUPS.forEach((group, gi) => {
         if (gi > 0) {
             const divider = document.createElement('span');
             divider.className = 'tiptap-toolbar-divider';
@@ -276,6 +278,9 @@ export function renderToolbar(editor, mountEl) {
         }
     });
 
+
+    // Table actions live inside the sticky toolbar, so they stay on screen while the cursor is in a table
+    mountEl.appendChild(tableBar.el);
 
     function syncState() {
         Object.entries(ACTIVE_CHECK).forEach(([action, check]) => {

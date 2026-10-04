@@ -21,7 +21,12 @@ export function buildTableContextBar(editor) {
         btn.className = 'table-context-btn' + (a.danger ? ' danger' : '');
         btn.title = a.title;
         btn.innerHTML = `<i class="bi ${a.icon}"></i>`;
-        btn.addEventListener('click', () => a.run(editor));
+        btn.addEventListener('click', () => {
+            // Hand focus back to the editor first, without scrolling. If it doesn't have focus,
+            // Tiptap's .focus() on iOS/Safari focuses the whole editor element and the page jumps to the top.
+            editor.view.focus();
+            a.run(editor);
+        });
         el.appendChild(btn);
     });
 
@@ -52,6 +57,8 @@ export function buildTableInsertControl(editor) {
     popover.querySelector('.tiptap-table-insert-btn').addEventListener('click', () => {
         const rows = Math.min(20, Math.max(1, parseInt(rowsInput.value, 10) || 1));
         const cols = Math.min(10, Math.max(1, parseInt(colsInput.value, 10) || 1));
+        // Same reason: focus the editor without scrolling first. The insert then scrolls the new table into view.
+        editor.view.focus();
         editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
         wrap.classList.remove('open');
     });

@@ -439,8 +439,22 @@
 .tiptap-table-picker.open .tiptap-table-popover { opacity: 1; visibility: visible; transform: none; }
 .tiptap-table-popover label { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--muted); gap: 10px; }
 .tiptap-table-popover input[type="number"] { width: 60px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 0.82rem; }
-.tiptap-table-insert-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 7px; padding: 6px 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-.tiptap-table-insert-btn:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+.tiptap-table-insert-btn {
+    background: transparent;
+    border: 1px solid var(--ws-color);
+    color: var(--text);
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tiptap-table-insert-btn:hover {
+    background: color-mix(in srgb, var(--ws-color) 12%, transparent);
+}
 
 .ProseMirror table { border-collapse: collapse; width: 100%; margin: 16px 0; overflow: hidden; }
 .ProseMirror table td, .ProseMirror table th { border: 1px solid var(--border); padding: 8px 10px; vertical-align: top; min-width: 80px; }
@@ -774,3 +788,87 @@ body.drawing-expanded { overflow: hidden; }
 .drawing-node.is-expanded .drawing-page-btn { position: fixed; top: calc(var(--topbar-h) + 16px); z-index: 96; }
 .drawing-node.is-expanded .drawing-page-add { right: 56px; }
 .drawing-node.is-expanded .drawing-page-del { right: 96px; }
+/* ═══════════════════════════════════════
+   CONFIRM DIALOG
+═══════════════════════════════════════ */
+.drawing-confirm {
+    position: fixed; inset: 0; z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+    animation: drawingConfirmIn 0.15s ease-out;
+}
+@keyframes drawingConfirmIn { from { opacity: 0; } to { opacity: 1; } }
+.drawing-confirm-box {
+    width: 100%; max-width: 380px;
+    background: var(--secondary); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+.drawing-confirm-title {
+    margin: 0 0 8px; font-family: var(--font-display);
+    font-size: 1.05rem; font-weight: 700; color: var(--text);
+}
+.drawing-confirm-msg { margin: 0 0 20px; font-size: 0.88rem; line-height: 1.55; color: var(--muted); }
+.drawing-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.drawing-confirm-btn {
+    padding: 8px 16px; border-radius: 8px;
+    background: none; border: 1px solid var(--border); color: var(--text);
+    font-size: 0.84rem; font-weight: 600; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+.drawing-confirm-btn:hover { background: rgba(255,255,255,0.06); }
+.drawing-confirm-btn:focus-visible { outline: 2px solid var(--ws-color, var(--accent)); outline-offset: 2px; }
+.drawing-confirm-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.drawing-confirm-btn.primary.danger { background: #ef4444; border-color: #ef4444; }
+.drawing-confirm-btn.primary:hover { filter: brightness(1.08); }
+
+/*
+═══════════════════════════════════════
+   HANDWRITING: CARD BADGE + PAGE INDICATOR
+═══════════════════════════════════════
+*/
+.drawing-pages-badge {
+    position: absolute; left: 12px; bottom: 22px; z-index: 6;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 99px;
+    background: color-mix(in srgb, var(--secondary) 88%, transparent);
+    border: 1px solid var(--border);
+    color: var(--muted); font-size: 0.74rem; font-weight: 600;
+    pointer-events: none;
+}
+.drawing-page-indicator {
+    position: absolute; right: 132px; top: 12px; z-index: 6;
+    height: 32px; padding: 0 12px;
+    display: flex; align-items: center;
+    background: var(--secondary); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--muted); font-family: var(--font-mono); font-size: 0.76rem;
+    pointer-events: none;
+}
+.drawing-page-indicator[hidden] { display: none; }
+.drawing-node.is-expanded .drawing-page-indicator {
+    position: fixed; right: 136px; top: calc(var(--topbar-h) + 16px); z-index: 96;
+}
+/* Hidden toolbar popovers (colour / table / drawing) still take up layout space. Near the right
+   edge of a narrow screen they stick out and widen the whole page, which pushes fixed UI such as
+   the scroll buttons off-screen. Clip sideways overflow at the page container. Unlike `hidden`,
+   `clip` doesn't create a scroll container, so the sticky toolbar and fixed overlays keep working. */
+.editor-page { overflow-x: clip; }
+
+/* Older browsers without overflow:clip (Safari < 16) */
+@supports not (overflow: clip) {
+    html, body.editor-body { overflow-x: hidden; }
+}
+/* Table actions sit inside the sticky toolbar: no separate card, just a divided group.
+   Visibility is still controlled by .table-context-bar / .visible. */
+.tiptap-toolbar .table-context-bar {
+    margin: 0 0 0 5px;
+    padding: 0 0 0 8px;
+    background: none;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    width: auto;
+    gap: 3px;
+    align-items: center;
+}

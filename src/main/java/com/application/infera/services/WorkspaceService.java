@@ -8,10 +8,7 @@ import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
-import com.application.infera.repositories.ActivityRepository;
-import com.application.infera.repositories.NoteRepository;
-import com.application.infera.repositories.ResourceRepository;
-import com.application.infera.repositories.WorkspaceRepository;
+import com.application.infera.repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +23,7 @@ public class WorkspaceService {
     private final NoteRepository noteRepository;
     private final ResourceRepository resourceRepository;
     private final ActivityRepository activityRepository;
+    private final DrawingRepository drawingRepository;
 
 
     // Create a new workspace linked to the logged-in user
@@ -87,15 +85,16 @@ public class WorkspaceService {
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = getWorkspaceForUser(id, user);
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
-
+        var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
+        drawingRepository.deleteAll(wsDrawings);
         for (var note : wsNotes) {
             resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
             note.getTags().clear();
         }
         noteRepository.saveAll(wsNotes);
         noteRepository.deleteAll(wsNotes);
-
         activityRepository.deleteAll(activityRepository.findByWorkspace(workspace));
+
 
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
