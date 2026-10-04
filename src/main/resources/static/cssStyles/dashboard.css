@@ -423,7 +423,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 10px;
+    padding: 5px 2px;
     margin: 10px 10px 0;
     background: rgba(255,255,255,0.03);
     border-radius: 10px;
