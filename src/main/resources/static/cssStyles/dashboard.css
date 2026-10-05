@@ -91,7 +91,7 @@ button { font-family: var(--font-body); }
     background: var(--secondary);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid var(--border);
+    border-right: 1px solid transparent;
     display: flex;
     flex-direction: column;
     z-index: 200;
@@ -114,7 +114,7 @@ html.no-sb-transition .sidebar ~ .main-wrapper { transition: none !important; }
     align-items: center;
     justify-content: center;
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 50%;
     color: var(--muted);
     font-size: 0.9rem;
@@ -544,7 +544,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .topbar-icon-btn {
     width: 36px; height: 36px;
     border-radius: 8px;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     background: rgba(255,255,255,0.03);
     color: var(--muted);
     display: flex; align-items: center; justify-content: center;
