@@ -69,6 +69,7 @@ document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.st
 
 const nav = document.getElementById('topbar');
 window.addEventListener('scroll', () => {
+    if (!nav) return; // pages without this top bar (the editor page) have nothing to update
     if (window.scrollY > 30) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
 }, { passive: true });

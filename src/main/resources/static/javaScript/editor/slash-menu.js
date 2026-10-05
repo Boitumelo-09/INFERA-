@@ -59,6 +59,13 @@ export function buildTableInsertControl(editor) {
         const cols = Math.min(10, Math.max(1, parseInt(colsInput.value, 10) || 1));
         // Same reason: focus the editor without scrolling first. The insert then scrolls the new table into view.
         editor.view.focus();
+        // If a node is selected (e.g. a drawing card), insertTable would replace it. Add an empty
+        // paragraph after the node and put the cursor there, so the table goes after the node.
+        const { selection } = editor.state;
+        if (selection.node) {
+            const after = selection.to;
+            editor.chain().insertContentAt(after, { type: 'paragraph' }).setTextSelection(after + 1).run();
+        }
         editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run();
         wrap.classList.remove('open');
     });

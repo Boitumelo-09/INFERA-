@@ -258,7 +258,7 @@
     z-index: 10;
     background: var(--secondary);
     padding: 6px 2px;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: 4px;
     width: fit-content;
 }
@@ -802,7 +802,7 @@ body.drawing-expanded { overflow: hidden; }
 @keyframes drawingConfirmIn { from { opacity: 0; } to { opacity: 1; } }
 .drawing-confirm-box {
     width: 100%; max-width: 380px;
-    background: var(--secondary); border: 1px solid var(--border); border-radius: 14px;
+    background: var(--secondary); border: 1px solid transparent; border-radius: 14px;
     padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
 }
 .drawing-confirm-title {
@@ -818,8 +818,14 @@ body.drawing-expanded { overflow: hidden; }
     transition: background 0.15s, border-color 0.15s;
 }
 .drawing-confirm-btn:hover { background: rgba(255,255,255,0.06); }
-.drawing-confirm-btn:focus-visible { outline: 2px solid var(--ws-color, var(--accent)); outline-offset: 2px; }
-.drawing-confirm-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.drawing-confirm-btn:focus-visible { outline: 1px solid var(--ws-color); outline-offset: 1px; }
+
+.drawing-confirm-btn.primary {
+    background: color-mix(in srgb, var(--ws-color) 15%, transparent);
+    border-color: var(--ws-color);
+    color: var(--text);
+}
+
 .drawing-confirm-btn.primary.danger { background: #ef4444; border-color: #ef4444; }
 .drawing-confirm-btn.primary:hover { filter: brightness(1.08); }
 
@@ -872,3 +878,48 @@ body.drawing-expanded { overflow: hidden; }
     gap: 3px;
     align-items: center;
 }
+/* Drag grip + move buttons: top-left of a static card (the live canvas hides them) */
+.drawing-move-cluster {
+    position: absolute; left: 12px; top: 12px; z-index: 6;
+    display: flex; gap: 6px;
+    opacity: 0; transition: opacity 0.15s;
+}
+.drawing-node:hover .drawing-move-cluster,
+.drawing-node.ProseMirror-selectednode .drawing-move-cluster,
+.drawing-move-cluster:focus-within { opacity: 1; }
+@media (hover: none) { .drawing-move-cluster { opacity: 1; } }
+
+.drawing-grip, .drawing-move-btn {
+    width: 32px; height: 32px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--secondary); border: 1px solid transparent; border-radius: 8px;
+    color: var(--muted); font-size: 0.9rem; cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.drawing-grip { cursor: grab; }
+.drawing-grip:active { cursor: grabbing; }
+.drawing-grip:hover, .drawing-move-btn:hover { color: var(--text); border-color: var(--ws-color, var(--accent)); }
+/* Small screens: the card's own buttons (expand, add/delete page, page number) would sit on top of
+   Excalidraw's toolbar. Reserve a 48px strip above the editor for them and push the editor down.
+   (A media query rather than a container query: container-type would trap the fixed full-screen overlay.) */
+@media (max-width: 780px) {
+    .drawing-node.is-live::before {
+        content: ''; position: absolute; left: 0; right: 0; top: 0; height: 48px; z-index: 5;
+        background: var(--bg);
+        border-bottom: 1px solid transparent;
+        pointer-events: none;
+    }
+    .drawing-node.is-live:not(.is-expanded) .drawing-live-mount { top: 48px; }
+    .drawing-node.is-live:not(.is-expanded) .drawing-props-toggle { top: 64px; } /* stays level with Excalidraw's menu button */
+
+    /* Full screen: the strip sits under the top bar and covers the page behind it */
+    .drawing-node.is-expanded::before { position: fixed; top: var(--topbar-h); height: 48px; z-index: 95; background: var(--bg); }
+    .drawing-node.is-expanded .drawing-live-mount { top: calc(var(--topbar-h) + 48px); }
+    .drawing-node.is-expanded .drawing-expand-btn,
+    .drawing-node.is-expanded .drawing-page-btn,
+    .drawing-node.is-expanded .drawing-page-indicator { top: calc(var(--topbar-h) + 8px); }
+    .drawing-node.is-expanded .drawing-props-toggle { top: calc(var(--topbar-h) + 64px); }
+}
+.drawing-delete-btn { margin-left: 6px; } /* a gap so it isn't hit by accident next to the move buttons */
+.drawing-delete-btn:hover { color: #f87171; border-color: #f87171; }
+.tiptap-toolbar-btn[data-action="clearNote"]:hover:not(:disabled) { color: #f87171; }
