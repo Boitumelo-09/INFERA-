@@ -6,7 +6,7 @@
 ═══════════════════════════════════════════════════════════════════ */
 
 import { Node, mergeAttributes } from 'https://esm.sh/@tiptap/core@2.11.5';
-import { Plugin, PluginKey }     from 'https://esm.sh/@tiptap/pm@2.11.5/state';
+import { Plugin, PluginKey, NodeSelection }  from 'https://esm.sh/@tiptap/pm@2.11.5/state';
 import { drawingSession, MAX_PAGES } from './drawing-canvas.js';
 /* ─── API helpers ──────────────────────────────────────────────── */
 const DEFAULT_HEIGHT = 480;
@@ -68,12 +68,38 @@ export const drawingStore = {
 };
 
 /* ─── Tiptap node ──────────────────────────────────────────────── */
+/* Drawings are top-level blocks. Anything that lands one inside a list, quote or table cell
+   is lifted out to just after that container. */
+function drawingTopLevelGuard() {
+    return new Plugin({
+        key: new PluginKey('drawingTopLevelGuard'),
+        appendTransaction(transactions, _old, newState) {
+            if (!transactions.some(t => t.docChanged)) return null;
+            const tr = newState.tr;
+            let changed = false;
+            for (let guard = 0; guard < 50; guard++) {
+                // Always take the LAST nested drawing: lifting from the end keeps the original order
+                let found = null;
+                tr.doc.descendants((node, pos) => {
+                    if (node.type.name === 'drawing' && tr.doc.resolve(pos).depth > 0) found = { node, pos };
+                });
+                if (!found) break;
+                const after = tr.doc.resolve(found.pos).after(1); // end of the top-level container
+                tr.insert(after, found.node);                     // after the container (after found.pos, so it stays valid)
+                tr.delete(found.pos, found.pos + found.node.nodeSize);
+                changed = true;
+            }
+            return changed ? tr : null;
+        },
+    });
+}
+
 const Drawing = Node.create({
     name: 'drawing',
     group: 'block',
     atom: true,
     selectable: true,
-    draggable: false,
+    draggable: true,
 
     addOptions() {
         // View modal (Step 4) can override this with its own note id.
@@ -112,8 +138,15 @@ const Drawing = Node.create({
     addCommands() {
         return {
             // Trailing paragraph so the cursor never gets stranded after the node
-            insertDrawing: attrs => ({ commands }) =>
-                commands.insertContent([{ type: this.name, attrs }, { type: 'paragraph' }]),
+            insertDrawing: attrs => ({ state, chain }) => {
+                const content = [{ type: this.name, attrs }, { type: 'paragraph' }];
+                const { selection } = state;
+                // A selected node (e.g. another drawing) would be replaced: insert after it instead
+                if (selection.node) return chain().insertContentAt(selection.to, content).run();
+                // Inside a list, quote or table cell: go after that container, as a top-level block
+                if (selection.$from.depth > 1) return chain().insertContentAt(selection.$from.after(1), content).run();
+                return chain().insertContent(content).run();
+            },
         };
     },
 
@@ -162,6 +195,66 @@ const Drawing = Node.create({
                 if (!live) await drawingSession.activate(ctx); // from a static preview: open first, then expand
                 if (live) setExpanded(true);
             });
+
+            /* ─── Move: drag grip (mouse/pen) + up/down buttons (touch, keyboard) ─── */
+            const moveDrawing = dir => {
+                const pos = getPos();
+                if (typeof pos !== 'number') return;
+                const { state } = editor;
+                const $pos = state.doc.resolve(pos);
+                const parent = $pos.parent;
+                const index = $pos.index();
+                const target = index + dir;
+                if (target < 0 || target >= parent.childCount) return; // already first / last
+                const node = parent.child(index);
+                const sibling = parent.child(target);
+                // After deleting the node, the next sibling sits at `pos`; the previous one ends at `pos`
+                const insertAt = dir < 0 ? pos - sibling.nodeSize : pos + sibling.nodeSize;
+                const tr = state.tr.delete(pos, pos + node.nodeSize).insert(insertAt, node);
+                tr.setSelection(NodeSelection.create(tr.doc, insertAt)).scrollIntoView();
+                editor.view.dispatch(tr);
+            };
+
+            const moveCluster = document.createElement('div');
+            moveCluster.className = 'drawing-move-cluster';
+
+            // A <div>, not a <button>: Firefox won't start a drag from a button
+            const grip = document.createElement('div');
+            grip.className = 'drawing-grip';
+            grip.title = 'Drag to move';
+            grip.setAttribute('aria-label', 'Drag to move drawing');
+            grip.innerHTML = '<i class="bi bi-grip-vertical"></i>';
+            moveCluster.appendChild(grip);
+
+            [[-1, 'bi-chevron-up', 'Move up'], [1, 'bi-chevron-down', 'Move down']].forEach(([dir, icon, label]) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'drawing-move-btn';
+                b.title = label;
+                b.setAttribute('aria-label', label);
+                b.innerHTML = `<i class="bi ${icon}"></i>`;
+                b.addEventListener('click', e => { e.stopPropagation(); moveDrawing(dir); });
+                moveCluster.appendChild(b);
+            });
+
+            // Delete: one click, no confirmation. One undo step, and the drawing's data is kept, so Undo restores it
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'drawing-move-btn drawing-delete-btn';
+            deleteBtn.title = 'Delete drawing';
+            deleteBtn.setAttribute('aria-label', 'Delete drawing');
+            deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+            deleteBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                const pos = getPos();
+                if (typeof pos !== 'number') return;
+                editor.view.dispatch(editor.view.state.tr.delete(pos, pos + current.nodeSize).scrollIntoView());
+                window.showToast?.('Drawing deleted. Use Undo to bring it back.');
+            });
+            moveCluster.appendChild(deleteBtn);
+
+            const pagesBadge = document.createElement('div');
+            pagesBadge.className = 'drawing-pages-badge';
 
             const handle = document.createElement('div');
             handle.className = 'drawing-resize-handle';
@@ -257,8 +350,12 @@ const Drawing = Node.create({
                 }
                 // render() clears the node, so the handle is re-attached each time.
                 // No handle in read-only surfaces (View modal).
-                if (editor.isEditable) { dom.appendChild(handle); dom.appendChild(expandBtn); }
-            };
+                const pageCount = clampPages(current.attrs.pages);
+                if (isHand && pageCount > 1) {
+                    pagesBadge.innerHTML = `<i class="bi bi-files"></i> ${pageCount} pages`;
+                    dom.appendChild(pagesBadge); // only shown on the static card; the live canvas has its own indicator
+                }
+                if (editor.isEditable) { dom.appendChild(handle); dom.appendChild(expandBtn); dom.appendChild(moveCluster); }          };
 
             // Only redraw when this drawing's own data changed (saves of *other*
             // drawings must not reload this preview image).
@@ -318,7 +415,14 @@ const Drawing = Node.create({
 
             // Second line of defence: a native drag must never start from a drawing
             // card. It shows a ghost of the page and, before entering, could move the node.
-            dom.addEventListener('dragstart', e => { e.preventDefault(); e.stopPropagation(); });
+            // Native drag only ever starts from the grip, and never while the canvas is live
+            // (that's what caused the ghost-page drag earlier)
+            let gripDown = false;
+            dom.addEventListener('pointerdown', e => { gripDown = !!e.target.closest?.('.drawing-grip'); }, true);
+            dom.addEventListener('dragstart', e => {
+                if (live || !gripDown) { e.preventDefault(); e.stopPropagation(); }
+            });
+            dom.addEventListener('dragend', () => { gripDown = false; });
             dom.addEventListener('selectstart', e => {
                 if (!live) return;
                 const el = e.target instanceof Element ? e.target : e.target?.parentElement;
@@ -334,17 +438,17 @@ const Drawing = Node.create({
                     if (updated.type !== current.type) return false;
                     const idChanged = updated.attrs.drawingId !== current.attrs.drawingId;
                     const heightChanged = updated.attrs.height !== current.attrs.height;
+                    const pagesChanged = updated.attrs.pages !== current.attrs.pages;
                     current = updated;
                     if (heightChanged) applyHeight(current.attrs.height);
-                    if (idChanged) render();
-                    return true;
+                    if (idChanged || pagesChanged) render(); // render() does nothing while the canvas is live                    return true;
                 },
                 // Keep ProseMirror from treating handle drags/keys as editor input
                 // While live, ProseMirror must ignore every event from inside the canvas
                 // (keys, pointer, clipboard) — this is the keyboard isolation.
                 stopEvent: e => handle.contains(e.target) || (live && dom.contains(e.target)),
                 ignoreMutation: () => true,
-                destroy() { applyExpanded(false); drawingSession.release(ctx); unsubscribe(); revoke(); },            };
+                destroy() { console.trace('[drawing] node view destroyed'); applyExpanded(false); drawingSession.release(ctx); unsubscribe(); revoke(); },            };
         };
     },
 
@@ -353,6 +457,7 @@ const Drawing = Node.create({
        duplicates. Step 3 can replace this with a server-side clone. */
     addProseMirrorPlugins() {
         return [
+            drawingTopLevelGuard(),
             new Plugin({
                 key: new PluginKey('drawingUniqueGuard'),
                 appendTransaction(transactions, _old, newState) {
@@ -375,5 +480,21 @@ const Drawing = Node.create({
         ];
     },
 });
+
+/* Select a drawing and bring it to the middle of the screen (clear of the sticky toolbar).
+   Used right after inserting one, whatever the mode. */
+export function revealDrawing(editor, drawingId) {
+    let found = null;
+    editor.state.doc.descendants((node, pos) => {
+        if (found == null && node.type.name === 'drawing' && node.attrs.drawingId === drawingId) found = pos;
+    });
+    if (found == null) return;
+
+    editor.view.dispatch(editor.state.tr.setSelection(NodeSelection.create(editor.state.doc, found)));
+    // After the browser has laid the new card out
+    requestAnimationFrame(() => {
+        editor.view.nodeDOM(found)?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+    });
+}
 
 export default Drawing;

@@ -7,8 +7,9 @@
 ═══════════════════════════════════════════════════════════════════ */
 
 import { buildTableInsertControl, buildTableContextBar } from './slash-menu.js';
-import { createDrawing, drawingStore } from './drawing-node.js';
+import { createDrawing, drawingStore, revealDrawing } from './drawing-node.js';
 import { drawingSession } from './drawing-canvas.js';
+import { confirmDialog } from './confirm-dialog.js';
 const GROUPS = [
     [
         { action: 'bold',      icon: 'bi-type-bold',          title: 'Bold (Ctrl+B)' },
@@ -42,6 +43,9 @@ const GROUPS = [
     [
         { action: 'undo', icon: 'bi-arrow-counterclockwise', title: 'Undo (Ctrl+Z)' },
         { action: 'redo', icon: 'bi-arrow-clockwise',        title: 'Redo (Ctrl+Shift+Z)' },
+    ],
+    [
+        { action: 'clearNote', icon: 'bi-eraser', title: 'Clear note' },
     ],
 ];
 const COLORS = [
@@ -158,6 +162,7 @@ function buildDrawingInsertControl(editor) {
                 const created = await createDrawing(mode);
                 drawingStore.put(created);
                 editor.chain().focus().insertDrawing({ drawingId: created.id, mode: created.mode }).run();
+                revealDrawing(editor, created.id);
             } catch (err) {
                 window.showToast?.('Could not create the drawing. Please try again.', 'error');
             } finally {
@@ -180,7 +185,26 @@ function buildDrawingInsertControl(editor) {
     return { el: wrap };
 }
 
+/* Replaces the whole document with one empty paragraph. A normal transaction, so one Ctrl+Z
+   restores everything, drawings included: their data is kept in the database, only the blocks go. */
+async function clearNote(editor) {
+    if (editor.isEmpty) { window.showToast?.('The note is already empty.'); return; }
+    const ok = await confirmDialog({
+        title: 'You\'re just about to clear the note. ',
+        message: 'Everything in the note will be removed: text, tables and drawings. You can undo this right afterwards.',
+        confirmText: 'Clear',
+        danger: true,
+    });
+    if (!ok) return;
+    editor.chain().focus().command(({ tr, state }) => {
+        tr.replaceWith(0, state.doc.content.size, state.schema.nodes.paragraph.create());
+        return true;
+    }).run();
+    window.showToast?.('Note cleared. Use Undo to bring it back.');
+}
+
 const COMMANDS = {
+    clearNote: e => clearNote(e),
     bold:        e => e.chain().focus().toggleBold().run(),
     italic:      e => e.chain().focus().toggleItalic().run(),
     underline:   e => e.chain().focus().toggleUnderline().run(),
@@ -235,12 +259,20 @@ export function renderToolbar(editor, mountEl) {
     mountEl.innerHTML = '';
     mountEl.classList.add('tiptap-toolbar');
 
+    // Toolbar buttons must not take focus from the editor (selection stays, no scroll jump on iOS).
+    // Real inputs (the table rows/columns fields) still need focus, so they're excluded.
+    mountEl.addEventListener('mousedown', e => {
+        if (e.target.closest('button') && !e.target.closest('input, textarea, select')) e.preventDefault();
+    });
+
     const buttons = {};
     const colorPicker = buildColorPicker(editor);
     const tablePicker = buildTableInsertControl(editor);
     const drawingPicker = buildDrawingInsertControl(editor);
     const tableBar = buildTableContextBar(editor);
-    mountEl.insertAdjacentElement('afterend', tableBar.el);    GROUPS.forEach((group, gi) => {
+    // mountEl.insertAdjacentElement('afterend', tableBar.el);
+
+    GROUPS.forEach((group, gi) => {
         if (gi > 0) {
             const divider = document.createElement('span');
             divider.className = 'tiptap-toolbar-divider';
@@ -277,6 +309,9 @@ export function renderToolbar(editor, mountEl) {
     });
 
 
+    // Table actions live inside the sticky toolbar, so they stay on screen while the cursor is in a table
+    mountEl.appendChild(tableBar.el);
+
     function syncState() {
         Object.entries(ACTIVE_CHECK).forEach(([action, check]) => {
             buttons[action]?.classList.toggle('is-active', !!check(editor));
@@ -286,6 +321,7 @@ export function renderToolbar(editor, mountEl) {
         const drawing = drawingSession.isActive();
         if (buttons.undo) buttons.undo.disabled = !drawing && !editor.can().undo();
         if (buttons.redo) buttons.redo.disabled = !drawing && !editor.can().redo();
+        if (buttons.clearNote) buttons.clearNote.disabled = editor.isEmpty;
         colorPicker.sync();
         tablePicker.sync();
         tableBar.sync();
