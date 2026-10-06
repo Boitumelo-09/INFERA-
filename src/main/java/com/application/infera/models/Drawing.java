@@ -35,6 +35,11 @@ public class Drawing {
 
     @Column(columnDefinition = "TEXT")   // SVG export of the scene, generated client-side on save
     private String previewSvg;
+    // Set when no saved version of the note references this drawing any more, cleared if it is
+    // referenced again. Rows are only deleted once this is older than the grace period (see
+    // DrawingCleanupService), so undoing a deleted block never points at a missing row.
+    private LocalDateTime orphanedAt;
+
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
