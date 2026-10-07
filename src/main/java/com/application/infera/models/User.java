@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import com.application.infera.enums.Role;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -67,7 +65,5 @@ public class User {
         updatedAt = LocalDateTime.now();
 
     }
-
-
-
+    
 }

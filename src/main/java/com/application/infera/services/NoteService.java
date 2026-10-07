@@ -10,6 +10,7 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.NoteRepository;
 import com.application.infera.repositories.ResourceRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.application.infera.util.TiptapTextExtractor;
 import com.application.infera.repositories.DrawingRepository;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class NoteService {
 
@@ -28,6 +30,7 @@ public class NoteService {
     private final ActivityService activityService;
     private final ResourceRepository resourceRepository;
     private final DrawingRepository drawingRepository;
+    private final DrawingCleanupService drawingCleanupService;
 
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
@@ -157,6 +160,13 @@ public class NoteService {
         }
 
         noteRepository.save(note);
+        // Housekeeping: mark / expire drawings that no saved version of the note references any more.
+        // It must never be able to fail a save.
+        try {
+            drawingCleanupService.reconcile(note.getId(), note.getDocumentJson());
+        } catch (RuntimeException e) {
+            log.warn("Drawing cleanup failed for note {}", note.getId(), e);
+        }
         if (workspaceChanged) {
             activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
         }

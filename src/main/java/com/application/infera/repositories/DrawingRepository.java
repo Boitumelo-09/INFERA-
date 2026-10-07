@@ -6,10 +6,13 @@ import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +36,25 @@ public interface DrawingRepository extends JpaRepository<Drawing, Long> {
     List<Drawing> findByNote(Note note);
 
     List<Drawing> findDrawingByNote_Workspace(Workspace noteWorkspace);
+
+
+    // ── Orphan housekeeping (see DrawingCleanupService) ──
+    // Bulk statements on purpose: they skip @PreUpdate, so marking a drawing never bumps its
+    // updatedAt (which the editor uses to decide when a preview changed).
+
+    // IDs only: sceneJson / previewSvg can be huge and must not be loaded on every autosave
+    @Query("SELECT d.id FROM Drawing d WHERE d.note.id = :noteId")
+    List<Long> findIdsByNoteId(@Param("noteId") Long noteId);
+
+    @Modifying
+    @Query("UPDATE Drawing d SET d.orphanedAt = NULL WHERE d.note.id = :noteId AND d.id IN :ids AND d.orphanedAt IS NOT NULL")
+    int clearOrphanMark(@Param("noteId") Long noteId, @Param("ids") Collection<Long> ids);
+
+    @Modifying
+    @Query("UPDATE Drawing d SET d.orphanedAt = :now WHERE d.note.id = :noteId AND d.id IN :ids AND d.orphanedAt IS NULL")
+    int markOrphaned(@Param("noteId") Long noteId, @Param("ids") Collection<Long> ids, @Param("now") LocalDateTime now);
+
+    @Modifying
+    @Query("DELETE FROM Drawing d WHERE d.note.id = :noteId AND d.id IN :ids AND d.orphanedAt < :cutoff")
+    int deleteExpiredOrphans(@Param("noteId") Long noteId, @Param("ids") Collection<Long> ids, @Param("cutoff") LocalDateTime cutoff);
 }

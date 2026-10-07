@@ -37,7 +37,7 @@ public class NoteController {
 
         List<Note> notes = noteService.getNotesForUser(user);
 
-        model.addAttribute("pageTitle", "Notes — INCAPTUR");
+        model.addAttribute("pageTitle", "Notes | incaptur");
         model.addAttribute("user", user);
         model.addAttribute("notes", notes);
         model.addAttribute("noteCount", notes.size());
