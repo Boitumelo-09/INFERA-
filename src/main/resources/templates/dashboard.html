@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/static/cssStyles/dashboard.css" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" href="/static/cssStyles/notes.css" th:href="@{/cssStyles/notes.css}" />
     <link rel="stylesheet" href="/static/cssStyles/app.css" th:href="@{/cssStyles/app.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard-home.css}" />
 <!--    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/f.ico}" th:sizes="512x512" />-->
     <link rel="apple-touch-icon" sizes="180x180" href="/app_resources/favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/app_resources/favicon_io/favicon-32x32.png">
@@ -242,178 +243,249 @@
 
     <!-- ─── PAGE CONTENT ─────────────────────────────────────────── -->
     <main class="page-content" id="pageContent">
-
         <!-- ── DASHBOARD HOME ─────────────────────────────────────── -->
-        <section class="dash-home" id="pageDashboard">
+        <section class="dash-home dx" id="pageDashboard">
 
-            <!-- Greeting -->
-            <div class="dash-greeting">
-                <div>
-                    <!-- th:text="'Good ' + ${timeOfDay} + ', ' + ${user.firstName} + '.'" -->
-<!--                    <h1 th:text="'Good' + ${timeOfDay} + + ', ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText">Hello, User.</h1>-->
-                    <h1 th:text="'Good morning, ' + ${user.firstName} + '.'" class="greeting-title" id="greetingText"></h1>
-                    <p class="greeting-sub">See your ideas from a bird's-eye view.</p>
+            <!-- Today at a glance: date · clock · weather, one horizontal line above the greeting -->
+            <div class="dx-strip" role="group" aria-label="Date, time and weather">
+                <div class="dx-strip-item">
+                    <span class="dx-strip-day" id="dxWeekday"></span>
+                    <span id="dxDate"></span>
                 </div>
-                <div class="greeting-date" id="greetingDate">
-
-                </div>
-            </div>
-
-            <!-- ── STAT CARDS ──────────────────────────────────────── -->
-            <div class="stats-grid">
-
-                <div class="stat-card">
-                    <div class="sc-top">
-                        <div class="sc-icon ws"><i class="bi bi-folder2-open"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyWorkspaces}"></span>&nbsp;this week</div>
-                    </div>
-                    <!-- th:text="${workspaceCount}" -->
-                    <div th:text="${workspaceCount}" class="sc-value" th:data-count="${workspaceCount}"></div>
-                    <div class="sc-label">Workspaces</div>
+                <span class="dx-strip-sep" aria-hidden="true"></span>
+                <div class="dx-strip-item">
+                    <span class="dx-clock" id="dxClock"></span>
                 </div>
 
-                <div class="stat-card">
-                    <div class="sc-top">
-                        <div class="sc-icon notes"><i class="bi bi-journal-text"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyNotes}"></span>&nbsp;this week</div>
-                    </div>
-                    <!-- th:text="${noteCount}" -->
-                    <div th:text="${notesCount}" class="sc-value" th:data-count="${notesCount}">0</div>
-                    <div class="sc-label">Notes</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="sc-top">
-                        <div class="sc-icon resources"><i class="bi bi-link-45deg"></i></div>
-                        <div class="sc-trend up"><i class="bi bi-arrow-up-short"></i>+<span th:text="${weeklyResources}"></span>&nbsp;this week</div>
-                    </div>
-                    <!--  -->
-                    <div th:text="${resourceCount}" class="sc-value" th:data-count="${resourceCount}">0</div>
-                    <div class="sc-label">Resources</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="sc-top">
-                        <div class="sc-icon tags"><i class="bi bi-tags"></i></div>
-                       
-                    </div>
-                    <!--  -->
-                    <div th:text="${tagCount}" class="sc-value" th:data-count="${tagCount}"></div>
-                    <div class="sc-label">Tags</div>
-                </div>
-
-            </div>
-
-            <!-- ── MAIN GRID ──────────────────────────────────────── -->
-            <div class="dash-grid">
-
-                <!-- Recent Notes -->
-                <div class="dash-panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title"><i class="bi bi-journal-text"></i> Recent Notes</h2>
-                        <button class="panel-action" data-page="notes">View all</button>
-                    </div>
-                    <div class="panel-body notes-scroll">
-                        <!--  -->   <div th:if="${#lists.isEmpty(notes)}" class="text-center py-8 text-muted" style="color: #ea580c;">
-                        <i class="bi bi-folder-x fs-5"></i>
-                        <p class="mt-2 mb-0">No Notes.</p>
-                    </div>
-                        <div th:each="note : ${notes}" class="note-row" th:data-note-id="${note.id}">
-                            <div class="note-row-left">
-                                <div class="note-ws-dot"   th:style="'--ws-color:' + ${note.workspace.color}"></div>
-                                <div>
-                                    <!-- " -->
-                                    <div th:text="${note.getTitle()}" class="note-row-title">Spring Security Config</div>
-                                    <!--  -->
-                                    <div th:text="${note.workspace.name}" class="note-row-meta">Java Backend · <span class="note-tag">#security</span> <span class="note-tag">#spring</span></div>
-                                </div>
-                            </div>
-
-                            <span style="display: inline"><span class="note-row-date" th:data-datetime="${note.updatedAt}" th:text="${#temporals.format(note.updatedAt, 'dd MMM, HH:mm')}">2h ago</span></span> </div>
-
-                    </div>
-                </div>
-
-                <!-- Right column -->
-                <div class="dash-right-col">
-
-                    <!-- Workspaces panel -->
-                    <div class="dash-panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="bi bi-folder2-open"></i> Workspaces</h2>
-                            <button class="panel-action" data-page="workspaces">Manage</button>
-                        </div>
-                        <div  class="panel-body ws-scroll">
-                            <div th:if="${#lists.isEmpty(workspaces)}" class="text-center py-4 text-muted" style="color: #ea580c;">
-                                <i class="bi bi-folder-x fs-3"></i>
-                                <p class="mt-2 mb-0">No Workspace.</p>
-                            </div>
-                            <div th:each="ws : ${workspaces}" class="ws-card" th:data-workspace="${ws.id}">
-                                <div class="ws-card-bar" style="--ws-color:#ea580c;" th:style="'--ws-color:' + ${ws.color} + ';'"></div>
-
-                                <div class="ws-card-body">
-                                    <div th:text="${ws.name}"  class="ws-card-name"></div>
-
-                                    <!-- th:text="${ws.noteCount} + ' notes'" -->
-                                    <div  class="ws-card-count"> <span th:text="${wsNoteCount.get(ws.id) ?: 0} + ' notes'"></span> · <span th:text="${workspaceResourceCount.get(ws.id) ?: 0} + ' resources'"></span></div>                                </div>
-                                <i class="bi bi-chevron-right ws-card-arrow"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick stats / Activity sparkline -->
-                    <div class="dash-panel">
-                        <div class="panel-header">
-                            <h2 class="panel-title"><i class="bi bi-bar-chart-line"></i> Activity This Week</h2>
-                        </div>
-                        <div class="panel-body">
-                            <div class="activity-chart-wrap" id="activityChartWrap" aria-label="Activity this week" th:data-values="${dailyActivityCounts}">
-                                <svg id="activityChartSvg" viewBox="0 0 700 160" preserveAspectRatio="none"></svg>
-                                <div class="chart-tooltip" id="chartTooltip"></div>
-                            </div>
-                            <div class="activity-legend">
-                                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                            </div>
-                            <div class="activity-summary mt-3">
-                  <span class="as-item"><i class="bi bi-journal-plus"></i>
-                      <span  th:text="${weeklyNotes} + ' notes this week'"></span>
-
-                  </span>
-                                <span class="as-item"><i class="bi bi-link"></i>
-                                   <span th:text="${weeklyResources} + ' resources'"></span>
-
-                  </span>
-                            </div>
-                        </div>
-                    </div>
-
+                <!-- states: loading | ready | empty | error (set by dashboard-home.js) -->
+                <div class="dx-strip-item dx-weather" id="dxWeather" data-state="loading" th:data-location="${user.location}">
+                    <span class="dx-wx-ready">
+                        <strong class="dx-wx-temp" id="dxWxTemp"></strong>
+                        <span class="dx-wx-desc" id="dxWxDesc"></span>
+                        <span class="dx-wx-sub" id="dxWxPlace"></span>
+                        <span class="dx-wx-sub dx-wx-meta" id="dxWxMeta"></span>
+                    </span>
+                    <span class="dx-wx-note dx-wx-loading">Checking the sky…</span>
+                    <span class="dx-wx-note dx-wx-empty"><a th:href="@{/profile}">Add your location</a> to see today's weather</span>
+                    <span class="dx-wx-note dx-wx-error">Weather isn't available right now</span>
                 </div>
             </div>
 
-            <!-- ── ACTIVITY FEED ──────────────────────────────────── -->
-            <div class="dash-panel mt-4">
-                <div class="panel-header">
-                    <h2 class="panel-title"><i class="bi bi-clock-history"></i> Recent Activity</h2>
-                    <button class="panel-action" data-page="activity">View all</button>
-                </div>
-                <div class="panel-body activity-feed activity-feed-scroll">
-                    <!-- th:each="act : ${recentActivities}" -->
-                    <div th:if="${#lists.isEmpty(recentActivities)}" class="text-center py-4 text-muted" style="color: #ea580c;">
-                        <i class="bi bi-clock-history fs-3"></i>
-                        <p class="mt-2 mb-0">No activity yet.</p>
-                    </div>
-                    <div class="activity-item" th:each="activity : ${recentActivities}">
-                        <div class="act-icon" th:classappend="${activity.type.cssClass}">
-                            <i class="bi" th:classappend="${activity.type.icon}"></i>
+            <!-- Greeting + capture (left), today's to-do (right) -->
+            <div class="dx-hero">
+
+                <div class="dx-hero-main">
+                    <h1 class="dx-greeting" id="dxGreeting"
+                        th:data-name="${user.firstName}"
+                        th:text="${#strings.isEmpty(user.firstName)} ? 'Hello.' : |Hello, ${user.firstName}.|">Hello.</h1>
+                    <p class="dx-tagline">Capture what's on your mind. Keep moving.</p>
+
+                    <!-- Quick capture: type a title, press Enter, the new-note modal opens with it filled in -->
+                    <form class="dx-capture" id="dxCaptureForm" autocomplete="off"
+                          th:data-has-workspaces="${!#lists.isEmpty(workspaces)}">
+                        <label class="dx-capture-label" for="dxCaptureInput">What's worth capturing today?</label>
+                        <div class="dx-capture-bar">
+                            <input type="text" id="dxCaptureInput" maxlength="150" placeholder="Give your thought a title…" />
+                            <button type="submit" class="dx-btn">
+                                <i class="bi bi-plus-lg" aria-hidden="true"></i> New note
+                            </button>
                         </div>
-                        <div class="act-body">
-                            <div class="act-text" th:text="${activity.type.label} + ' '"><strong th:text="${activity.targetName}">Name</strong></div>
-                            <div class="act-time" th:data-datetime="${activity.createdAt}" th:text="${#temporals.format(activity.createdAt, 'dd MMM yyyy, HH:mm')}">Today</div>
+                        <div class="dx-capture-foot">
+                            <span>Start with a thought, an idea, a task or anything you don't want to lose.</span>
+                            <button type="button" class="dx-btn-ghost dx-btn-sm" data-bs-toggle="modal" data-bs-target="#newWorkspaceModal">
+                                <i class="bi bi-folder-plus" aria-hidden="true"></i> add a workspace
+                            </button>
                         </div>
-                        <span class="act-workspace" th:if="${activity.workspace != null}" th:style="'--ws-color:' + ${activity.workspace.color}" th:text="${activity.workspace.name}">Workspace</span>
-                    </div>
+                        <p class="dx-capture-hint" th:if="${#lists.isEmpty(workspaces)}">Notes live inside a workspace, so create one first.</p>
+                    </form>
                 </div>
+
+                <!-- Today's focus: a small to-do. Kept in this browser for 24 hours until the backend exists
+                     (see FOCUS STORE in dashboard-home.js). -->
+                <section class="dx-panel dx-focus" id="dxFocus" th:data-user-id="${user.id}" aria-labelledby="dxFocusTitle">
+                    <div class="dx-panel-head">
+                        <div>
+                            <h2 class="dx-panel-title" id="dxFocusTitle">Today's focus</h2>
+                            <p class="dx-panel-sub">What matters today?</p>
+                        </div>
+                        <span class="dx-count" id="dxFocusCount" aria-live="polite"></span>
+                    </div>
+                    <div class="dx-focus-body">
+                        <div class="dx-progress" id="dxFocusProgress" hidden><span id="dxFocusBar"></span></div>
+                        <ul class="dx-todos" id="dxTodoList"></ul>
+                        <p class="dx-todo-empty" id="dxTodoEmpty">Nothing planned yet. Add the one thing that matters.</p>
+                        <form class="dx-todo-form" id="dxTodoForm" autocomplete="off">
+                            <input type="text" id="dxTodoInput" maxlength="100"
+                                   placeholder="Add something for today" aria-label="Add a task for today" />
+                            <button type="submit" class="dx-btn-ghost">Add</button>
+                        </form>
+                    </div>
+                </section>
             </div>
+
+            <!-- Continue + recently captured -->
+            <div class="dx-main">
+
+                <section class="dx-panel dx-continue" aria-labelledby="dxContinueTitle" id="specialContinue">
+                    <div class="dx-panel-head">
+                        <h2 class="dx-panel-title" id="dxContinueTitle">Pick up where you left off</h2>
+                    </div>
+
+                    <a class="dx-continue-link" th:if="${latestNote != null}"
+                       th:href="@{/notes/{id}/edit(id=${latestNote.id})}">
+                        <h3 class="dx-continue-title" th:text="${latestNote.title}" th:style="'--ws-color:' + ${latestNote.workspace.color}">Note title</h3>
+                        <p class="dx-continue-preview" th:unless="${#strings.isEmpty(latestNote.plainText)}"
+                           th:text="${#strings.abbreviate(latestNote.plainText, 280)}">A short preview of the note…</p>
+                        <p class="dx-continue-preview is-blank" th:if="${#strings.isEmpty(latestNote.plainText)}">Nothing written yet. The page is waiting.</p>
+                        <div class="dx-continue-foot">
+                            <div class="dx-meta">
+                                <span class="dx-pill" th:style="'--ws-color:' + ${latestNote.workspace.color}"
+                                      th:text="${latestNote.workspace.name}">Workspace</span>
+                                <span class="dx-time" th:data-dx-time="${latestNote.updatedAt}"
+                                      th:text="${#temporals.format(latestNote.updatedAt, 'dd MMM, HH:mm')}">12m ago</span>
+                            </div>
+                            <span class="dx-cta">Continue writing <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+                        </div>
+                    </a>
+
+                    <p class="dx-empty" th:if="${latestNote == null}">Nothing captured yet. Your most recent note will wait for you here.</p>
+                </section>
+
+                <section class="dx-panel dx-recent" aria-labelledby="dxRecentTitle" >
+                    <div class="dx-panel-head">
+                        <h2 class="dx-panel-title" id="dxRecentTitle">Recently captured</h2>
+                        <a class="dx-action" th:href="@{/notes}">All notes</a>
+                    </div>
+
+                    <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}">
+                        <li th:each="n : ${recentNotes}">
+                            <a class="dx-row" th:href="@{/notes(view=${n.id})}" th:style="'--ws-color:' + ${n.workspace.color}">
+                                <span class="dx-dot" aria-hidden="true"></span>
+                                <span class="dx-row-main">
+                                    <span class="dx-row-title" th:text="${n.title}">Note title</span>
+                                    <span class="dx-row-sub" th:text="${n.workspace.name}">Workspace</span>
+                                </span>
+                                <span class="dx-row-time" th:data-dx-time="${n.updatedAt}"
+                                      th:text="${#temporals.format(n.updatedAt, 'dd MMM')}">1h ago</span>
+                            </a>
+                        </li>
+                    </ol>
+                    <p class="dx-empty" th:if="${#lists.isEmpty(recentNotes)}">Notes you capture next will gather here.</p>
+                </section>
+            </div>
+
+            <!-- Areas (workspaces) + right rail -->
+            <div class="dx-lower">
+
+                <section class="dx-panel dx-areas" aria-labelledby="dxAreasTitle">
+                    <div class="dx-panel-head">
+                        <div>
+
+                            <p class="dx-panel-sub">The places your thinking lives</p>
+                        </div>
+                        <a class="dx-action" th:href="@{/workspaces}">Manage</a>
+                    </div>
+
+                    <div class="dx-rows" th:unless="${#lists.isEmpty(workspaces)}">
+                        <a class="dx-row" th:each="ws : ${workspaces}"
+                           th:href="@{/notes(workspace=${ws.id})}"
+                           th:style="'--ws-color:' + ${ws.color}">
+                            <span class="dx-dot" aria-hidden="true"></span>
+                            <span class="dx-row-main">
+                                <span class="dx-row-title" th:text="${ws.name}">Workspace</span>
+                                <span class="dx-row-sub" th:unless="${#strings.isEmpty(ws.description)}" th:text="${ws.description}">Description</span>
+                            </span>
+                            <span class="dx-count-pill" th:with="c=${wsNoteCount.get(ws.id) ?: 0}"
+                                  th:text="${c == 1 ? '1 note' : c + ' notes'}">12 notes</span>
+                            <i class="bi bi-chevron-right dx-chevron" aria-hidden="true"></i>
+                        </a>
+                    </div>
+
+                    <p class="dx-empty" th:if="${#lists.isEmpty(workspaces)}">No areas yet. A workspace gives your notes a home.</p>
+                </section>
+
+                <aside class="dx-rail">
+
+                    <!-- Pinned thought — FUTURE: needs a `pinned` flag on Note and a `pinnedNote`
+                         model attribute from DashboardController. Hidden until that attribute exists. -->
+                    <section class="dx-panel dx-pinned" th:if="${pinnedNote != null}" aria-labelledby="dxPinnedTitle">
+                        <div class="dx-panel-head">
+                            <h2 class="dx-panel-title" id="dxPinnedTitle">Pinned thought</h2>
+                            <a class="dx-action" th:href="@{/notes(view=${pinnedNote.id})}">Open note</a>
+                        </div>
+                        <blockquote class="dx-pinned-quote"
+                                    th:text="${#strings.isEmpty(pinnedNote.plainText) ? pinnedNote.title : #strings.abbreviate(pinnedNote.plainText, 160)}">A pinned idea</blockquote>
+                    </section>
+
+                    <!-- Unfinished thoughts — real: recently edited notes with little or no text -->
+                    <section class="dx-panel" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle" id="specialCaptured">
+                        <div class="dx-panel-head">
+                            <div>
+                                <h2 class="dx-panel-title" id="dxUnfinishedTitle">Unfinished thoughts</h2>
+                                <p class="dx-panel-sub">You started these. They might be worth returning to.</p>
+                            </div>
+                        </div>
+                        <div class="dx-rows">
+                            <a class="dx-row" th:each="n : ${unfinishedNotes}"
+                               th:href="@{/notes/{id}/edit(id=${n.id})}"
+                               th:style="'--ws-color:' + ${n.workspace.color}">
+                                <span class="dx-dot" aria-hidden="true"></span>
+                                <span class="dx-row-main">
+                                    <span class="dx-row-title" th:text="${n.title}">Note title</span>
+                                    <span class="dx-row-sub" th:text="${n.workspace.name}">Workspace</span>
+                                </span>
+                                <span class="dx-row-time" th:data-dx-time="${n.updatedAt}"
+                                      th:text="${#temporals.format(n.updatedAt, 'dd MMM')}">2d ago</span>
+                            </a>
+                        </div>
+                    </section>
+
+                    <!-- Recently viewed — FUTURE: needs a lastViewedAt on Note (set when the view modal / editor
+                         opens) and a `recentlyViewed` list attribute. Hidden until that attribute exists. -->
+                    <section class="dx-panel" th:unless="${#lists.isEmpty(recentlyViewed)}" aria-labelledby="dxViewedTitle">
+                        <div class="dx-panel-head">
+                            <h2 class="dx-panel-title" id="dxViewedTitle">viewed recently</h2>
+                        </div>
+                        <div class="dx-rows">
+                            <a class="dx-row" th:each="n : ${recentlyViewed}"
+                               th:href="@{/notes(view=${n.id})}"
+                               th:style="'--ws-color:' + ${n.workspace.color}">
+                                <span class="dx-dot" aria-hidden="true"></span>
+                                <span class="dx-row-main">
+                                    <span class="dx-row-title" th:text="${n.title}">Note title</span>
+                                    <span class="dx-row-sub" th:text="${n.workspace.name}">Workspace</span>
+                                </span>
+                            </a>
+                        </div>
+                    </section>
+
+                </aside>
+            </div>
+
+            <!-- A little history -->
+            <section class="dx-panel dx-history" aria-labelledby="dxHistoryTitle">
+                <div class="dx-panel-head">
+                    <h2 class="dx-panel-title" id="dxHistoryTitle">history</h2>
+                    <a class="dx-action" th:href="@{/activity}">view all</a>
+                </div>
+
+                <ol class="dx-timeline" th:unless="${#lists.isEmpty(recentActivities)}">
+                    <li class="dx-tl-item" th:each="activity, stat : ${recentActivities}"
+                        th:if="${stat.index < 6}" th:classappend="${activity.type.cssClass}">
+                        <span class="dx-tl-dot" aria-hidden="true"></span>
+                        <span class="dx-tl-text">
+                            <span th:text="${activity.type.label}">Created note</span>
+                            <strong th:text="${activity.targetName}">Name</strong>
+                        </span>
+                        <span class="dx-tl-ws" th:if="${activity.workspace != null}"
+                              th:style="'--ws-color:' + ${activity.workspace.color}"
+                              th:text="${activity.workspace.name}">Workspace</span>
+                        <span class="dx-tl-time" th:data-dx-time="${activity.createdAt}"
+                              th:text="${#temporals.format(activity.createdAt, 'dd MMM, HH:mm')}">Today</span>
+                    </li>
+                </ol>
+                <p class="dx-empty" th:if="${#lists.isEmpty(recentActivities)}">Nothing here yet. What you capture will leave a trail.</p>
+            </section>
 
         </section>
         <!-- end #pageDashboard -->
@@ -507,48 +579,43 @@
 <!-- ═══════════════════════════════════════════════════════════════
      QUICK NOTE MODAL
 ════════════════════════════════════════════════════════════════ -->
-<div class="modal fade infera-modal" id="quickNoteModal" tabindex="-1" aria-labelledby="quickNoteLabel" aria-hidden="true">
+<div class="modal fade infera-modal" id="dxNewNoteModal" tabindex="-1" aria-labelledby="dxNewNoteLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="quickNoteLabel">New Note</h5>
+                <h5 class="modal-title" id="dxNewNoteLabel">New Note</h5>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
-            <!--  -->
-            <form th:action="@{/notes}" th:method="post" id="quickNoteForm">
+            <form th:action="@{/notes}" method="post" id="dxNewNoteForm">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="modal-body">
-
                     <div class="form-group mb-3">
-                        <input type="text" id="noteTitle" name="title" class="form-input note-title-input" placeholder="Note title..." required />
+                        <input type="text" id="dxNoteTitle" name="title" class="form-input note-title-input"
+                               placeholder="Note title..." required maxlength="150" />
                     </div>
                     <div class="form-group mb-3">
-                        <select id="noteWorkspace" name="workspaceId" class="form-input form-select-custom">
-                            <!--  -->
-                            <option th:each="ws : ${workspaces}" th:text="${ws.name}" th:value="${ws.id}">Java Backend</option>
+                        <label class="form-label-custom" for="dxNoteWorkspace">Workspace</label>
+                        <select id="dxNoteWorkspace" name="workspaceId" class="form-input form-select-custom" required>
+                            <option th:each="ws : ${workspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace</option>
                         </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <textarea id="noteContent" name="content" class="form-input form-textarea note-content-input" rows="7" placeholder="Start writing..."></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label-custom">Tags <span class="optional-label">(optional)</span></label>
-                        <div class="tag-input-wrap" id="quickNoteTagWrap">
-                            <div class="tag-chips" id="quickNoteTagChips"></div>
-                            <input type="text" id="quickNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
-                            <div class="tag-suggestions" id="quickNoteTagSuggestions"></div>
+                        <div class="tag-input-wrap" id="dxNoteTagWrap">
+                            <div class="tag-chips" id="dxNoteTagChips"></div>
+                            <input type="text" id="dxNoteTagsInput" class="tag-text-input" placeholder="Add a tag..." autocomplete="off" />
+                            <div class="tag-suggestions" id="dxNoteTagSuggestions"></div>
                         </div>
-                        <input type="hidden" id="quickNoteTags" name="tags" />
+                        <input type="hidden" id="dxNoteTags" name="tags" />
                     </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Discard</button>
-                    <button type="submit" class="btn-modal-accent" id="noteSubmitBtn">
-                        <span class="btn-text"><i class="bi bi-floppy"></i> Save note</span>
-                        <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    <button type="submit" class="btn-modal-accent" id="dxNoteSubmit">
+                        <span class="btn-text"><i class="bi bi-pencil-square"></i> Start writing</span>
                     </button>
-                </div>
                 </div>
             </form>
         </div>
@@ -606,6 +673,7 @@
 
 <script th:src="@{/javaScript/dashboard.js}"></script>
 <script th:src="@{/javaScript/utility.js}"></script>
+<script th:src="@{/javaScript/dashboard-home.js}"></script>
 
 </body>
 </html>

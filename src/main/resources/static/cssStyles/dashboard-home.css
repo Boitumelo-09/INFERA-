@@ -1,0 +1,610 @@
+/* ═══════════════════════════════════════════════════════════════════
+   INCAPTUR — dashboard-home.css
+   Main dashboard body only. Every rule is scoped under .dx, so the
+   sidebar and topbar (styled in dashboard.css) are never touched.
+
+   Load order in dashboard.html: dashboard.css → notes.css → app.css
+   → dashboard-home.css  (last, so it wins ties against the theme-wide
+   `button:hover` rules in dashboard.css).
+
+   Dimensions follow the rest of the app:
+     panels  var(--radius) 12px · header padding 16px 20px · 20px gaps
+     buttons 8px · fields 9px · chips/strip 10px · pills 99px
+   Colours all come from the theme variables, so default, dark and
+   light each keep their own accent.
+═════════════════════════════════════════════════════════════════════ */
+
+.dx {
+    --dx-gap: 20px;
+    --dx-hover: color-mix(in srgb, var(--text) 4%, transparent);
+    --dx-accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding-bottom: 48px;
+}
+
+/* Bootstrap's reboot gives headings, paragraphs and lists margins and padding.
+   :where() keeps this reset at single-class specificity so components below
+   can override it just by coming later. */
+.dx :where(h1, h2, h3, p, ol, ul, blockquote) { margin: 0; padding: 0; }
+.dx :where(ol, ul) { list-style: none; }
+.dx a { color: inherit; text-decoration: none; }
+.dx [hidden] { display: none !important; }
+
+.dx :is(a, button, input):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Neutralise the theme-wide lift/glow on every <button> (dark/light blocks in
+   dashboard.css): this page should feel calm. */
+.dx button:hover,
+.dx button:active { transform: none; box-shadow: none; }
+
+/* ─── Buttons — same language as .btn-topbar-accent (8px, accent outline) ─ */
+.dx button.dx-btn,
+.dx a.dx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+.dx button.dx-btn:hover,
+.dx a.dx-btn:hover {  border-color: var(--accent); }
+
+.dx button.dx-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border:none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 800;
+    line-height: 1.5;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.dx button.dx-btn-ghost:hover {
+    
+    color: var(--text);
+}
+.dx button.dx-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+.dx button.dx-btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+
+/* ─── Today at a glance: date · clock · weather ────────────────── */
+.dx-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    margin-bottom: 30px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+.dx-strip-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    font-size: 0.94rem;
+    color: var(--muted);
+}
+.dx-strip-day { color: var(--text); font-weight: 600; }
+.dx-strip-sep { align-self: stretch; width: 1px; background: var(--border); }
+
+.dx-clock {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+.dx-clock small { margin-left: 3px; font-size: 0.72em; color: var(--muted); }
+
+/* Weather sits at the right end of the strip */
+.dx-weather { margin-left: auto; }
+.dx-wx-ready, .dx-wx-loading, .dx-wx-empty, .dx-wx-error { display: none; }
+.dx-weather[data-state="ready"]   .dx-wx-ready   { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.dx-weather[data-state="loading"] .dx-wx-loading,
+.dx-weather[data-state="empty"]   .dx-wx-empty,
+.dx-weather[data-state="error"]   .dx-wx-error   { display: inline; }
+
+.dx-wx-temp {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+.dx-wx-desc { color: var(--text); }
+.dx-wx-sub { color: var(--muted); font-size: 0.8rem; }
+.dx-wx-meta { font-family: var(--font-mono); font-size: 0.72rem; }
+.dx-wx-note { font-size: 0.8rem; color: var(--muted); }
+.dx-wx-note a { color: var(--accent); font-weight: 600; }
+.dx-wx-note a:hover { text-decoration: underline; }
+
+/* ─── Hero: greeting + capture, with today's to-do beside it ───── */
+.dx-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 28px 40px;
+    align-items: start;
+    margin-bottom: 32px;
+}
+
+.dx-greeting {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+.dx-name { color: var(--accent); }
+
+.dx-tagline {
+    margin-top: 10px;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+/* Quick capture */
+.dx-capture { margin-top: 28px; }
+.dx-capture-label {
+    display: block;
+    margin-bottom: 10px;
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.dx-capture-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 5px 5px 16px;
+    background: var(--card);
+    border: 1px solid transparent;
+    border-radius: 9px;
+    transition: border-color 0.2s ease;
+}
+.dx-capture-bar:focus-within { border-color: var(--accent); }
+.dx .dx-capture-bar input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    outline: none;
+}
+.dx .dx-capture-bar input::placeholder { color: var(--muted); }
+.dx-capture-foot {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--muted);
+}
+.dx-capture-hint { margin-top: 8px; font-size: 0.8rem; color: var(--accent); }
+
+/* ─── Panels — same dimensions as the app's existing panels ────── */
+.dx-panel {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+#specialContinue,#specialCaptured{
+
+    border: 1px solid transparent;
+}
+
+
+.dx-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid transparent;
+}
+.dx-panel-title {
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text);
+}
+.dx-panel-sub { margin-top: 2px; font-size: 0.78rem; line-height: 1.4; color: var(--muted); }
+
+.dx .dx-action {
+    margin-right: -8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+.dx .dx-action:hover { background: var(--dx-accent-soft); }
+
+.dx-empty { padding: 22px 20px; font-size: 0.86rem; line-height: 1.6; color: var(--muted); }
+
+/* ─── Today's focus: a small to-do, tinted with the accent ─────── */
+.dx-focus {
+    background: transparent;
+    border-color: transparent;
+}
+
+.dx-focus .dx-panel-head {
+    border-bottom-color: transparent;
+}
+
+.dx-count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+.dx-focus-body { padding: 4px 20px 18px; }
+.dx-progress {
+    height: 3px;
+    margin: 14px 0 4px;
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--text) 10%, transparent);
+    overflow: hidden;
+}
+.dx-progress span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 99px;
+    background: limegreen;
+    transition: width 0.3s ease;
+}
+
+.dx-todo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid transparent;
+}
+.dx-todo:last-child { border-bottom: 0; }
+.dx-todo label {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 0;
+    cursor: pointer;
+}
+.dx-todo input { position: absolute; opacity: 0; width: 0; height: 0; }
+.dx-check {
+    position: relative;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border: 1.5px solid var(--muted);
+    border-radius: 5px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.dx-check::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1.5px;
+    width: 4px;
+    height: 9px;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.15s ease;
+}
+.dx-todo input:checked + .dx-check { background: limegreen; border-color: mediumseagreen; }
+.dx-todo input:checked + .dx-check::after { transform: rotate(45deg) scale(1); }
+.dx-todo input:focus-visible + .dx-check { outline: 2px solid var(--text); outline-offset: 2px; }
+.dx-todo label:hover .dx-check { border-color: var(--bg); }
+
+.dx-todo-text {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    transition: color 0.15s ease;
+}
+.dx-todo.is-done .dx-todo-text {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+
+.dx button.dx-todo-x {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.dx-todo:hover .dx-todo-x,
+.dx button.dx-todo-x:focus-visible { opacity: 1; }
+.dx button.dx-todo-x:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+@media (hover: none) { .dx button.dx-todo-x { opacity: 0.7; } }
+
+.dx-todo-empty { padding: 16px 0 4px; font-size: 0.86rem; line-height: 1.5; color: var(--muted); }
+
+.dx-todo-form { display: flex; gap: 8px; margin-top: 14px; }
+.dx .dx-todo-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    background: var(--secondary);
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.86rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+.dx .dx-todo-form input:focus { border-color: var(--accent); }
+.dx .dx-todo-form input::placeholder { color: var(--muted); }
+.dx .dx-todo-form input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ─── Two-column rows (main + lower share one grid so edges align) ─ */
+.dx-main,
+.dx-lower {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--dx-gap);
+    margin-bottom: var(--dx-gap);
+}
+.dx-rail { display: flex; flex-direction: column; gap: var(--dx-gap); min-width: 0; }
+
+/* ─── Continue where you left off ──────────────────────────────── */
+.dx-continue-link { display: block; padding: 24px 24px 22px; }
+.dx-continue-title {
+    margin-bottom: 12px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease;
+}
+.dx-continue-link:hover .dx-continue-title { color: var(--ws-color); }
+.dx-continue-preview {
+    max-width: 62ch;
+    margin-bottom: 20px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.dx-continue-preview.is-blank { font-style: italic; }
+.dx-continue-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.dx-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+/* Workspace pill — same recipe as the activity feed's .act-workspace */
+.dx-pill {
+    padding: 2px 10px;
+    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 28%, transparent);
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 12%, transparent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ws-color, var(--accent));
+    white-space: nowrap;
+}
+.dx-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+.dx-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--muted);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.dx-cta i { transition: transform 0.2s ease; }
+.dx-continue-link:hover .dx-cta {
+    background: color-mix(in srgb, var(--accent-hover) 10%, transparent);
+    color: var(--text);
+}
+.dx-continue-link:hover .dx-cta i { transform: translateX(3px); }
+
+/* ─── Rows: recent notes, areas, rail lists ────────────────────── */
+.dx-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid transparent;
+    transition: background 0.18s ease;
+}
+.dx-rows > .dx-row:last-child,
+.dx-rows > li:last-child > .dx-row { border-bottom: 0; }
+.dx-row:hover { background: var(--dx-hover); }
+
+.dx-dot {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--ws-color, var(--accent));
+}
+.dx-row-main { flex: 1; min-width: 0; }
+.dx-row-title {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.18s ease;
+}
+.dx-row:hover .dx-row-title { color: var(--ws-color, var(--accent)); }
+.dx-row-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dx-row-time {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.dx-count-pill {
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.dx-chevron {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.5;
+    transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease;
+}
+
+.dx-row:hover .dx-chevron { opacity: 1; color: var(--ws-color); transform: translateX(2px); }
+
+/* ─── Pinned thought ───────────────────────────────────────────── */
+.dx-pinned-quote {
+    padding: 18px 20px 20px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+.dx-pinned-quote::before { content: "\201C"; margin-right: 2px; color: var(--accent); }
+.dx-pinned-quote::after  { content: "\201D"; margin-left: 2px; color: var(--accent); }
+
+/* ─── A little history ─────────────────────────────────────────── */
+.dx-history { margin-top: 0; }
+.dx-timeline { margin: 14px 20px 14px 24px; border-left: 1px solid var(--border); }
+.dx-tl-item {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 9px 0 9px 22px;
+}
+.dx-tl-dot {
+    position: absolute;
+    left: -4.5px;
+    top: 1.05rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--muted);
+}
+.dx-tl-item.created .dx-tl-dot,
+.dx-tl-item.ws-created .dx-tl-dot,
+.dx-tl-item.resource .dx-tl-dot { background: var(--accent); border-color: var(--accent); }
+.dx-tl-item.danger { opacity: 0.6; }
+.dx-tl-text { flex: 1; min-width: 0; font-size: 0.86rem; color: var(--muted); overflow-wrap: anywhere; }
+.dx-tl-text strong { font-weight: 600; color: var(--text); }
+.dx-tl-ws {
+    padding: 2px 10px;
+    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 28%, transparent);
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--ws-color, var(--accent)) 12%, transparent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ws-color, var(--accent));
+    white-space: nowrap;
+}
+.dx-tl-time { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 991px) {
+    .dx-hero,
+    .dx-main,
+    .dx-lower { grid-template-columns: minmax(0, 1fr); }
+    .dx-hero { gap: 28px; }
+}
+
+@media (max-width: 640px) {
+    .dx-strip { gap: 6px 14px; padding: 10px 14px; }
+    .dx-strip-sep { display: none; }
+    .dx-weather { margin-left: 0; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--border); }
+    .dx-continue-link { padding: 20px 18px 18px; }
+    .dx-tl-ws { display: none; }
+    .dx-panel-head { padding: 14px 16px; }
+    .dx-row { padding: 12px 16px; }
+    .dx-focus-body { padding: 4px 16px 16px; }
+}
+
+@media (max-width: 480px) {
+    .dx-capture-bar { padding-left: 12px; }
+    .dx button.dx-btn { padding: 9px 14px; }
+    .dx-count-pill { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dx *, .dx *::before, .dx *::after { transition: none !important; }
+}

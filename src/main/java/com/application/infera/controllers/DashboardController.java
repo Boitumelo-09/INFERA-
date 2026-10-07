@@ -1,5 +1,6 @@
 package com.application.infera.controllers;
 
+import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.services.*;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,7 +46,8 @@ public class DashboardController {
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
-        model.addAttribute("notes",noteService.getNotesForUser(user));
+        List<Note> allNotes = noteService.getNotesForUser(user);
+        model.addAttribute("notes", allNotes);
         model.addAttribute("wsNoteCount",noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tagCount",tagService.countTagsForUser(user));
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
@@ -54,6 +57,25 @@ public class DashboardController {
         model.addAttribute("weeklyWorkspaces", activityService.countWeeklyByPrefix(user, "WORKSPACE_"));
         model.addAttribute("dailyActivityCounts", activityService.getWeeklyDailyCounts(user));
         model.addAttribute("recentActivities", activityService.getRecentActivities(user, 10));
+
+        // ── Dashboard home: continue / recent / unfinished ──
+        // allNotes is already newest-edited first; archived notes shouldn't be surfaced here.
+        List<Note> liveNotes = allNotes.stream().filter(n -> !n.isArchived()).toList();
+        Note latestNote = liveNotes.isEmpty() ? null : liveNotes.get(0);
+
+        List<Note> recentNotes = liveNotes.stream().skip(1).limit(5).toList();
+
+        LocalDateTime unfinishedSince = LocalDateTime.now().minusDays(14);
+        List<Note> unfinishedNotes = liveNotes.stream()
+                .filter(n -> latestNote == null || !n.getId().equals(latestNote.getId()))
+                .filter(n -> n.getUpdatedAt().isAfter(unfinishedSince))
+                .filter(n -> n.getPlainText() == null || n.getPlainText().trim().length() < 60)
+                .limit(3)
+                .toList();
+
+        model.addAttribute("latestNote", latestNote);
+        model.addAttribute("recentNotes", recentNotes);
+        model.addAttribute("unfinishedNotes", unfinishedNotes);
         return "dashboard";
     }
 
