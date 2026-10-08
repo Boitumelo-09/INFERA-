@@ -247,29 +247,44 @@
         <section class="dash-home dx" id="pageDashboard">
 
             <!-- Today at a glance: date · clock · weather, one horizontal line above the greeting -->
-            <div class="dx-strip" role="group" aria-label="Date, time and weather">
-                <div class="dx-strip-item">
-                    <span class="dx-strip-day" id="dxWeekday"></span>
-                    <span id="dxDate"></span>
-                </div>
-                <span class="dx-strip-sep" aria-hidden="true"></span>
-                <div class="dx-strip-item">
-                    <span class="dx-clock" id="dxClock"></span>
+            <!-- Today at a glance: date + clock (left), weather (right), above the greeting -->
+            <section class="dx-today" aria-label="Date, time and weather">
+
+                <div class="dx-today-time">
+                    <div class="dx-today-day" id="dxWeekday"></div>
+                    <div class="dx-today-date" id="dxDate"></div>
+                    <div class="dx-clock" id="dxClock"></div>
                 </div>
 
                 <!-- states: loading | ready | empty | error (set by dashboard-home.js) -->
-                <div class="dx-strip-item dx-weather" id="dxWeather" data-state="loading" th:data-location="${user.location}">
-                    <span class="dx-wx-ready">
-                        <strong class="dx-wx-temp" id="dxWxTemp"></strong>
-                        <span class="dx-wx-desc" id="dxWxDesc"></span>
-                        <span class="dx-wx-sub" id="dxWxPlace"></span>
-                        <span class="dx-wx-sub dx-wx-meta" id="dxWxMeta"></span>
-                    </span>
-                    <span class="dx-wx-note dx-wx-loading">Checking the sky…</span>
-                    <span class="dx-wx-note dx-wx-empty"><a th:href="@{/profile}">Add your location</a> to see today's weather</span>
-                    <span class="dx-wx-note dx-wx-error">Weather isn't available right now</span>
+                <div class="dx-weather" id="dxWeather" data-state="loading" th:data-location="${user.location}">
+                    <div class="dx-wx-ready">
+                        <div class="dx-wx-main">
+                            <span class="dx-wx-icon" id="dxWxIcon" aria-hidden="true"></span>
+                            <div class="dx-wx-temp" id="dxWxTemp"></div>
+                            <div class="dx-wx-summary">
+                                <div class="dx-wx-desc" id="dxWxDesc"></div>
+                                <div class="dx-wx-place" id="dxWxPlace"></div>
+                            </div>
+                            <div class="dx-wx-range">
+                                <div><span>High</span><strong id="dxWxHigh"></strong></div>
+                                <div><span>Low</span><strong id="dxWxLow"></strong></div>
+                            </div>
+                        </div>
+                        <dl class="dx-wx-stats">
+                            <div><dt>Feels like</dt><dd id="dxWxFeels"></dd></div>
+                            <div><dt>Humidity</dt><dd id="dxWxHumidity"></dd></div>
+                            <div><dt>Wind</dt><dd id="dxWxWind"></dd></div>
+                            <div><dt>Chance of rain</dt><dd id="dxWxRain"></dd></div>
+                            <div><dt>Sunrise</dt><dd id="dxWxSunrise"></dd></div>
+                            <div><dt>Sunset</dt><dd id="dxWxSunset"></dd></div>
+                        </dl>
+                    </div>
+                    <p class="dx-wx-note dx-wx-loading">Checking the sky…</p>
+                    <p class="dx-wx-note dx-wx-empty"><a th:href="@{/profile}">Add your location</a> to see today's weather.</p>
+                    <p class="dx-wx-note dx-wx-error">Weather isn't available right now.</p>
                 </div>
-            </div>
+            </section>
 
             <!-- Greeting + capture (left), today's to-do (right) -->
             <div class="dx-hero">
