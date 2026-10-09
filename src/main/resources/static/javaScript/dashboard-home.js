@@ -57,7 +57,7 @@
     // Built from nodes (not innerHTML) so a name can never be parsed as markup
     function renderGreeting(period) {
         greetingEl.textContent = '';
-        greetingEl.append(`Good ${period}`);
+        greetingEl.append(`${period}`);
         if (firstName) {
             const name = document.createElement('span');
             name.className = 'dx-name';
@@ -173,21 +173,51 @@
         }
     }
 
+    // Bootstrap Icons; an array means [day, night]
+    const WEATHER_ICONS = {
+        0: ['bi-sun', 'bi-moon-stars'],
+        1: ['bi-cloud-sun', 'bi-cloud-moon'],
+        2: ['bi-cloud-sun', 'bi-cloud-moon'],
+        3: 'bi-clouds',
+        45: 'bi-cloud-fog2', 48: 'bi-cloud-fog2',
+        51: 'bi-cloud-drizzle', 53: 'bi-cloud-drizzle', 55: 'bi-cloud-drizzle',
+        56: 'bi-cloud-sleet', 57: 'bi-cloud-sleet',
+        61: 'bi-cloud-rain', 63: 'bi-cloud-rain', 65: 'bi-cloud-rain-heavy',
+        66: 'bi-cloud-sleet', 67: 'bi-cloud-sleet',
+        71: 'bi-cloud-snow', 73: 'bi-cloud-snow', 75: 'bi-cloud-snow', 77: 'bi-snow2',
+        80: 'bi-cloud-rain', 81: 'bi-cloud-rain', 82: 'bi-cloud-rain-heavy',
+        85: 'bi-cloud-snow', 86: 'bi-cloud-snow',
+        95: 'bi-cloud-lightning-rain', 96: 'bi-cloud-lightning-rain', 99: 'bi-cloud-lightning-rain'
+    };
+    function weatherIcon(code, isDay) {
+        const icon = WEATHER_ICONS[code] || 'bi-thermometer-half';
+        return Array.isArray(icon) ? icon[isDay ? 0 : 1] : icon;
+    }
+    const compass = deg => ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round((deg || 0) / 45) % 8];
+    const hhmm = iso => (iso && iso.length >= 16 ? iso.slice(11, 16) : '–');   // "2026-10-08T05:41" → "05:41"
+
     function renderWeather(w) {
-        q('#dxWxTemp').textContent  = `${w.temp}°`;
-        q('#dxWxDesc').textContent  = WEATHER_CODES[w.code] || 'Weather';
-        q('#dxWxPlace').textContent = w.place;
-        q('#dxWxMeta').textContent  = `H ${w.high}° · L ${w.low}° · ${w.wind} km/h`;
+        q('#dxWxIcon').className       = `dx-wx-icon bi ${weatherIcon(w.code, w.isDay)}`;
+        q('#dxWxTemp').textContent     = `${w.temp}°`;
+        q('#dxWxDesc').textContent     = WEATHER_CODES[w.code] || 'Weather';
+        q('#dxWxPlace').textContent    = w.place;
+        q('#dxWxHigh').textContent     = `${w.high}°`;
+        q('#dxWxLow').textContent      = `${w.low}°`;
+        q('#dxWxFeels').textContent    = `${w.feels}°`;
+        q('#dxWxHumidity').textContent = `${w.humidity}%`;
+        q('#dxWxWind').textContent     = `${w.wind} km/h ${compass(w.windDir)}`;
+        q('#dxWxRain').textContent     = w.rain == null ? '–' : `${w.rain}%`;
+        q('#dxWxSunrise').textContent  = hhmm(w.sunrise);
+        q('#dxWxSunset').textContent   = hhmm(w.sunset);
         setWeatherState('ready');
     }
-
     async function loadWeather() {
         if (!wxEl) return;
 
         const location = (wxEl.dataset.location || '').trim();
         if (!location) { setWeatherState('empty'); return; }
 
-        const cacheKey = 'incaptur:weather:' + location.toLowerCase();
+        const cacheKey = 'incaptur:weather:v2:' + location.toLowerCase();
         const cached = readCache(cacheKey);
         if (cached) { renderWeather(cached); return; }
 
@@ -203,17 +233,24 @@
             const wx = await fetchJson(
                 'https://api.open-meteo.com/v1/forecast' +
                 `?latitude=${hit.latitude}&longitude=${hit.longitude}` +
-                '&current=temperature_2m,weather_code,wind_speed_10m' +
-                '&daily=temperature_2m_max,temperature_2m_min' +
+                '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,is_day' +
+                '&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_probability_max' +
                 '&timezone=auto&forecast_days=1');
 
             const data = {
                 place: hit.name,
                 temp: Math.round(wx.current.temperature_2m),
+                feels: Math.round(wx.current.apparent_temperature),
+                humidity: Math.round(wx.current.relative_humidity_2m),
                 code: wx.current.weather_code,
+                isDay: wx.current.is_day === 1,
                 wind: Math.round(wx.current.wind_speed_10m),
+                windDir: wx.current.wind_direction_10m,
                 high: Math.round(wx.daily.temperature_2m_max[0]),
-                low:  Math.round(wx.daily.temperature_2m_min[0])
+                low:  Math.round(wx.daily.temperature_2m_min[0]),
+                rain: (wx.daily.precipitation_probability_max || [])[0] ?? null,
+                sunrise: wx.daily.sunrise[0],
+                sunset: wx.daily.sunset[0]
             };
             writeCache(cacheKey, data);
             renderWeather(data);
