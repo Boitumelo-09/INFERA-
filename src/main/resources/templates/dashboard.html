@@ -298,7 +298,7 @@
                     <!-- Quick capture: type a title, press Enter, the new-note modal opens with it filled in -->
                     <form class="dx-capture" id="dxCaptureForm" autocomplete="off"
                           th:data-has-workspaces="${!#lists.isEmpty(workspaces)}">
-                        <label class="dx-capture-label" for="dxCaptureInput">What's worth capturing today?</label>
+                        <label class="dx-capture-label" for="dxCaptureInput">you just need to captur it...</label>
                         <div class="dx-capture-bar">
                             <input type="text" id="dxCaptureInput" maxlength="150" placeholder="Give your thought a title…" />
                             <button type="submit" class="dx-btn">
@@ -321,7 +321,7 @@
                     <div class="dx-panel-head">
                         <div>
                             <h2 class="dx-panel-title" id="dxFocusTitle">Today's focus</h2>
-                            <p class="dx-panel-sub">What matters today?</p>
+                            <p class="dx-panel-sub">What get you locked in today?</p>
                         </div>
                         <span class="dx-count" id="dxFocusCount" aria-live="polite"></span>
                     </div>
@@ -369,7 +369,7 @@
                 <section class="dx-panel dx-recent" aria-labelledby="dxRecentTitle" >
                     <div class="dx-panel-head">
                         <h2 class="dx-panel-title" id="dxRecentTitle">Recently captured</h2>
-                        <a class="dx-action" th:href="@{/notes}">All notes</a>
+                        <a class="dx-action" th:href="@{/notes}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
                     <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}">
@@ -396,9 +396,9 @@
                     <div class="dx-panel-head">
                         <div>
 
-                            <p class="dx-panel-sub">The places your thinking lives</p>
+                            <p class="dx-panel-sub">Your workspaces</p>
                         </div>
-                        <a class="dx-action" th:href="@{/workspaces}">Manage</a>
+                        <a class="dx-action" th:href="@{/workspaces}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
                     <div class="dx-rows" th:unless="${#lists.isEmpty(workspaces)}">
@@ -416,7 +416,7 @@
                         </a>
                     </div>
 
-                    <p class="dx-empty" th:if="${#lists.isEmpty(workspaces)}">No areas yet. A workspace gives your notes a home.</p>
+                    <p class="dx-empty" th:if="${#lists.isEmpty(workspaces)}">A workspace gives your notes a home.</p>
                 </section>
 
                 <aside class="dx-rail">
@@ -436,7 +436,7 @@
                     <section class="dx-panel" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle" id="specialCaptured">
                         <div class="dx-panel-head">
                             <div>
-                                <h2 class="dx-panel-title" id="dxUnfinishedTitle">Unfinished thoughts</h2>
+                                <h2 class="dx-panel-title" id="dxUnfinishedTitle">unfinished business</h2>
                                 <p class="dx-panel-sub">You started these. They might be worth returning to.</p>
                             </div>
                         </div>
@@ -481,7 +481,7 @@
             <section class="dx-panel dx-history" aria-labelledby="dxHistoryTitle">
                 <div class="dx-panel-head">
                     <h2 class="dx-panel-title" id="dxHistoryTitle">history</h2>
-                    <a class="dx-action" th:href="@{/activity}">view all</a>
+                    <a class="dx-action" th:href="@{/activity}"><i class="bi bi-arrow-up-right"></i></a>
                 </div>
 
                 <ol class="dx-timeline" th:unless="${#lists.isEmpty(recentActivities)}">

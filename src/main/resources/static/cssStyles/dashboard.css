@@ -60,7 +60,6 @@ body {
     font-size: 0.9rem;
     line-height: 1.65;
     overflow-x: hidden;
-    cursor: none;
 }
 
 
@@ -196,29 +195,6 @@ html.sb-collapsed .sidebar-user, .sidebar.collapsed .sidebar-user {
 }
 
 html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active::before { left: 0; }
-/* ─── CUSTOM CURSOR ─────────────────── */
-.cursor-dot, .cursor-ring {
-    position: fixed; top: 0; left: 0;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.3s;
-}
-
-.cursor-dot {
-    width: 7px;
-    height: 7px;
-    background: var(--accent);
-    box-shadow: 0 0 0 1.5px var(--accent);
-}
-
-.cursor-ring {
-    width: 32px; height: 32px;
-    border: 1.5px solid var(--accent);
-    transition: transform 0.12s ease, width 0.2s, height 0.2s, border-color 0.2s;
-    box-shadow: 0 0 0 1.5px var(--accent);
-}
 
 /* Logo row */
 .sidebar-logo {
