@@ -1,2 +1,5 @@
-# INCaptur
-Personal Knowledge &amp; Research Vault Web Application. 
+# incaptur
+
+## captur ideas
+
+### Ramsay Bolton
