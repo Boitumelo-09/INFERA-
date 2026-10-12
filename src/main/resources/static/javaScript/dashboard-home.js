@@ -149,7 +149,29 @@
     };
 
     const wxEl = q('#dxWeather');
-    const setWeatherState = state => { if (wxEl) wxEl.dataset.state = state; };
+    const skyPanel = wxEl ? wxEl.closest('.dx-today') : null;
+
+    function setWeatherState(state) {
+        if (!wxEl) return;
+        wxEl.dataset.state = state;
+        // No weather (loading / empty / error) → back to the default sky
+        if (state !== 'ready' && skyPanel) {
+            delete skyPanel.dataset.sky;
+            delete skyPanel.dataset.night;
+        }
+    }
+
+    // Group Open-Meteo weather codes into the few skies the CSS knows about
+    function skyFor(code) {
+        if (code === 0) return 'clear';
+        if (code === 1 || code === 2) return 'partly';
+        if (code === 3) return 'cloud';
+        if (code === 45 || code === 48) return 'fog';
+        if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'rain';
+        if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'snow';
+        if (code >= 95) return 'storm';
+        return 'default';
+    }
 
     function readCache(key) {
         try {
@@ -198,6 +220,10 @@
 
     function renderWeather(w) {
         q('#dxWxIcon').className       = `dx-wx-icon bi ${weatherIcon(w.code, w.isDay)}`;
+        if (skyPanel) {
+            skyPanel.dataset.sky   = skyFor(w.code);
+            skyPanel.dataset.night = w.isDay ? 'false' : 'true';
+        }
         q('#dxWxTemp').textContent     = `${w.temp}°`;
         q('#dxWxDesc').textContent     = WEATHER_CODES[w.code] || 'Weather';
         q('#dxWxPlace').textContent    = w.place;

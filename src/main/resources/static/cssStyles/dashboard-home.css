@@ -94,13 +94,37 @@
     margin-bottom: 20px;
     background: linear-gradient(
             115deg,
-            color-mix(in srgb, #0ea5e9 16%, var(--card)) 0%,
-            color-mix(in srgb, #14b8a6 9%, var(--card)) 48%,
-            color-mix(in srgb, var(--accent) 16%, var(--card)) 100%
+            color-mix(in srgb, var(--sky-a, #0ea5e9) var(--sky-mix-a, 16%), var(--card)) 0%,
+            color-mix(in srgb, var(--sky-b, #14b8a6) var(--sky-mix-b, 9%), var(--card)) 48%,
+            color-mix(in srgb, var(--sky-c, var(--accent)) var(--sky-mix-c, 16%), var(--card)) 100%
     );
    
     border-radius: var(--radius);
     overflow: hidden;
+}
+
+/* Skies: JS sets data-sky (from the weather code) and data-night on .dx-today */
+.dx-today[data-sky="clear"]  { --sky-a: #0ea5e9; --sky-b: #38bdf8; --sky-c: #f59e0b; }
+.dx-today[data-sky="partly"] { --sky-a: #38bdf8; --sky-b: #94a3b8; --sky-c: #f59e0b; }
+.dx-today[data-sky="cloud"]  { --sky-a: #94a3b8; --sky-b: #64748b; --sky-c: #94a3b8; }
+.dx-today[data-sky="fog"]    { --sky-a: #94a3b8; --sky-b: #cbd5e1; --sky-c: #94a3b8; }
+.dx-today[data-sky="rain"]   { --sky-a: #64748b; --sky-b: #0284c7; --sky-c: #475569; }
+.dx-today[data-sky="snow"]   { --sky-a: #7dd3fc; --sky-b: #cbd5e1; --sky-c: #93c5fd; }
+.dx-today[data-sky="storm"]  { --sky-a: #334155; --sky-b: #475569; --sky-c: #ca8a04; }
+
+/* After dark: deeper tones. Only on the dark-UI themes, because the light theme
+   uses dark text and needs the sky to stay pale to remain readable. */
+:root:not([data-theme="light"]) .dx-today[data-night="true"] {
+    --sky-mix-a: 30%;
+    --sky-mix-b: 20%;
+    --sky-mix-c: 26%;
+}
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="clear"],
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="partly"] {
+    --sky-a: #1e3a8a; --sky-b: #1e293b; --sky-c: #155e75;
+}
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="cloud"] {
+    --sky-a: #334155; --sky-b: #1e293b; --sky-c: #475569;
 }
 
 .dx-today-time {
@@ -282,14 +306,12 @@
 
 /* ─── Panels — same dimensions as the app's existing panels ────── */
 .dx-panel {
-
     background: transparent;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-  
+    overflow: hidden;
 }
-#specialContinue,#specialCaptured{
-
+.noBorder{
     border: 1px solid transparent;
 }
 
@@ -317,11 +339,11 @@
     border-radius: 6px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--text);
     white-space: nowrap;
     transition: background 0.2s ease;
 }
-.dx .dx-action:hover { background: var(--dx-accent-soft); }
+.dx .dx-action:hover { background: var(--secondary); }
 
 .dx-empty { padding: 22px 20px; font-size: 0.86rem; line-height: 1.6; color: var(--muted); }
 
@@ -528,11 +550,12 @@
     color: var(--text);
 }
 .dx-continue-link:hover .dx-cta i { transform: translateX(3px); }
-
+.heightRestricted{
+    max-height: 280px;
+    overflow-y: scroll;
+}
 /* ─── Rows: recent notes, areas, rail lists ────────────────────── */
 .dx-row {
-
-    overflow-y: scroll;
     display: flex;
     align-items: center;
     gap: 12px;

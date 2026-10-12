@@ -42,7 +42,7 @@ public class DashboardController {
         System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
         System.out.println(".".repeat(50));
-        model.addAttribute("pageTitle","Dashboard | INCAPTUR");
+        model.addAttribute("pageTitle","Dashboard | incaptur");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));

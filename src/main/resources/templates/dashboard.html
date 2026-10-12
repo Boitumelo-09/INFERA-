@@ -341,7 +341,7 @@
             <!-- Continue + recently captured -->
             <div class="dx-main">
 
-                <section class="dx-panel dx-continue" aria-labelledby="dxContinueTitle" id="specialContinue">
+                <section class="dx-panel dx-continue noBorder" aria-labelledby="dxContinueTitle" >
                     <div class="dx-panel-head">
                         <h2 class="dx-panel-title" id="dxContinueTitle">Pick up where you left off</h2>
                     </div>
@@ -372,7 +372,7 @@
                         <a class="dx-action" th:href="@{/notes}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
-                    <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}">
+                    <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}" >
                         <li th:each="n : ${recentNotes}">
                             <a class="dx-row" th:href="@{/notes(view=${n.id})}" th:style="'--ws-color:' + ${n.workspace.color}">
                                 <span class="dx-dot" aria-hidden="true"></span>
@@ -401,7 +401,7 @@
                         <a class="dx-action" th:href="@{/workspaces}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
-                    <div class="dx-rows" th:unless="${#lists.isEmpty(workspaces)}">
+                    <div class="dx-rows heightRestricted" th:unless="${#lists.isEmpty(workspaces)}" >
                         <a class="dx-row" th:each="ws : ${workspaces}"
                            th:href="@{/notes(workspace=${ws.id})}"
                            th:style="'--ws-color:' + ${ws.color}">
@@ -433,14 +433,14 @@
                     </section>
 
                     <!-- Unfinished thoughts — real: recently edited notes with little or no text -->
-                    <section class="dx-panel" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle" id="specialCaptured">
+                    <section class="dx-panel noBorder" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle">
                         <div class="dx-panel-head">
                             <div>
                                 <h2 class="dx-panel-title" id="dxUnfinishedTitle">unfinished business</h2>
                                 <p class="dx-panel-sub">You started these. They might be worth returning to.</p>
                             </div>
                         </div>
-                        <div class="dx-rows">
+                        <div class="dx-rows heightRestricted">
                             <a class="dx-row" th:each="n : ${unfinishedNotes}"
                                th:href="@{/notes/{id}/edit(id=${n.id})}"
                                th:style="'--ws-color:' + ${n.workspace.color}">
@@ -478,7 +478,7 @@
             </div>
 
             <!-- A little history -->
-            <section class="dx-panel dx-history" aria-labelledby="dxHistoryTitle">
+            <section class="dx-panel dx-history noBorder" aria-labelledby="dxHistoryTitle">
                 <div class="dx-panel-head">
                     <h2 class="dx-panel-title" id="dxHistoryTitle">history</h2>
                     <a class="dx-action" th:href="@{/activity}"><i class="bi bi-arrow-up-right"></i></a>
