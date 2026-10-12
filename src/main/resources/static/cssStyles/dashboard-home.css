@@ -282,10 +282,11 @@
 
 /* ─── Panels — same dimensions as the app's existing panels ────── */
 .dx-panel {
+
     background: transparent;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
+  
 }
 #specialContinue,#specialCaptured{
 
@@ -530,6 +531,8 @@
 
 /* ─── Rows: recent notes, areas, rail lists ────────────────────── */
 .dx-row {
+
+    overflow-y: scroll;
     display: flex;
     align-items: center;
     gap: 12px;
