@@ -249,7 +249,7 @@
     letter-spacing: -0.02em;
     color: var(--text);
 }
-.dx-name { color: var(--accent); }
+.dx-name { color: var(--accent);  }
 
 .dx-tagline {
     margin-top: 10px;
@@ -404,6 +404,8 @@
     border-radius: 5px;
     transition: background 0.15s ease, border-color 0.15s ease;
 }
+
+
 .dx-check::after {
     content: "";
     position: absolute;
@@ -416,10 +418,23 @@
     transform: rotate(45deg) scale(0);
     transition: transform 0.15s ease;
 }
-.dx-todo input:checked + .dx-check { background: limegreen; border-color: mediumseagreen; }
-.dx-todo input:checked + .dx-check::after { transform: rotate(45deg) scale(1); }
-.dx-todo input:focus-visible + .dx-check { outline: 2px solid var(--text); outline-offset: 2px; }
-.dx-todo label:hover .dx-check { border-color: var(--bg); }
+.dx-todo input:checked + .dx-check {
+    background: limegreen;
+    border-color: transparent;
+}
+
+.dx-todo input:checked + .dx-check::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.dx-todo input:focus-visible + .dx-check {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+.dx-todo label:hover .dx-check {
+    border-color: var(--bg);
+}
 
 .dx-todo-text {
     font-size: 0.9rem;

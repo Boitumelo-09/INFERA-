@@ -75,11 +75,11 @@ button { font-family: var(--font-body); }
 ::-webkit-scrollbar-track { background: transparent; }
 
 ::-webkit-scrollbar-thumb {
-    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    background: color-mix(in srgb, var(--muted) 1%, transparent);
     border-radius: 99px;
 }
 
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--text) 30%, transparent); }
 /* ═══════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════ */

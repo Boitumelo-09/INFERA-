@@ -20,11 +20,11 @@ public interface TodoItemRepository extends JpaRepository<TodoItem, Long> {
     // Ownership-scoped lookup, used before toggle/delete
     Optional<TodoItem> findByIdAndUser(Long id, User user);
 
-    // The "rub off" step: unticked tasks from any day before today. Ticked ones are kept.
+    // The "rub off" step: every task from a day before today, ticked or not.
     // Needs a transaction — the caller (TodoService) provides it.
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("delete from TodoItem t where t.user = :user and t.done = false and t.forDate < :today")
-    int deleteOpenBefore(@Param("user") User user, @Param("today") LocalDate today);
+    @Query("delete from TodoItem t where t.user = :user and t.forDate < :today")
+    int deleteBefore(@Param("user") User user, @Param("today") LocalDate today);
 
     // For your account-deletion cascade (run it inside that method's transaction)
     void deleteByUser(User user);

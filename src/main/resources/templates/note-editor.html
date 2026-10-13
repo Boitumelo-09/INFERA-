@@ -44,7 +44,8 @@
      workspace colour is applied here so the whole page reads as
      "you are inside workspace X" without a breadcrumb trail.
 ════════════════════════════════════════════════════════════════ -->
-<header class="editor-topbar" id="editorTopbar" th:style="'--ws-color:' + ${note.workspace.color}">    <a class="editor-back-link"
+<header class="editor-topbar" id="editorTopbar" th:style="'--ws-color:' + ${note.workspace.color}">
+    <a class="editor-back-link"
        th:href="@{/notes(workspace=${note.workspace.id})}"
        aria-label="Back to notes in this workspace">
         <i class="bi bi-arrow-left"></i>

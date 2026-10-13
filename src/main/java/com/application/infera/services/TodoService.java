@@ -17,8 +17,7 @@ import java.util.List;
  * Rules for the dashboard's daily to-do list:
  *  - a task belongs to one calendar day; the list starts afresh at 00:00
  *  - at most MAX_PER_DAY tasks per user per day
- *  - unticked tasks from an earlier day are deleted the next time the user loads the list
- *  - ticked tasks stay in the table (just no longer shown) until the user deletes them
+ *  - every task from an earlier day (ticked or not) is deleted the next time the user loads the list
  *  - deleting a task removes its row immediately
  *  - no activity logging
  */
@@ -47,7 +46,7 @@ public class TodoService {
     @Transactional
     public List<TodoItem> getToday(User user) {
         LocalDate today = today();
-        todoRepository.deleteOpenBefore(user, today);
+        todoRepository.deleteBefore(user, today);
         return todoRepository.findByUserAndForDateOrderByCreatedAtAsc(user, today);
     }
 
@@ -88,5 +87,9 @@ public class TodoService {
     @Transactional
     public void delete(User user, Long id) {
         todoRepository.findByIdAndUser(id, user).ifPresent(todoRepository::delete);
+    }
+     @Transactional
+    public void deleteAll( User user) {
+        todoRepository.deleteByUser(user);
     }
 }

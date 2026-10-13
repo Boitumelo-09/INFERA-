@@ -15,6 +15,7 @@ public class SettingsService {
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
     private final ProfileService profileService;
+    private final TodoService todoService;
 
     public boolean updateTheme(User user, String theme) {
         if (!theme.equals("default") && !theme.equals("dark") && !theme.equals("light")) return false;
@@ -37,6 +38,7 @@ public class SettingsService {
         activityRepository.deleteAll(activityRepository.findByUserOrderByCreatedAtDesc(user));
         workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));
         profileService.deleteAvatar(user);
+        todoService.deleteAll(user);
         userRepository.delete(user);
 
     }
