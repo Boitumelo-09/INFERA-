@@ -321,7 +321,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 16px 20px;
+    padding: 10px 40px;
     border-bottom: 1px solid transparent;
 }
 .dx-panel-title {
@@ -339,11 +339,11 @@
     border-radius: 6px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--muted);
     white-space: nowrap;
-    transition: background 0.2s ease;
+    transition: color 0.2s ease;
 }
-.dx .dx-action:hover { background: var(--secondary); }
+.dx .dx-action:hover { color: var(--text); }
 
 .dx-empty { padding: 22px 20px; font-size: 0.86rem; line-height: 1.6; color: var(--muted); }
 

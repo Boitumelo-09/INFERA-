@@ -63,7 +63,7 @@ public class DashboardController {
         List<Note> liveNotes = allNotes.stream().filter(n -> !n.isArchived()).toList();
         Note latestNote = liveNotes.isEmpty() ? null : liveNotes.get(0);
 
-        List<Note> recentNotes = liveNotes.stream().skip(1).limit(5).toList();
+        List<Note> recentNotes = liveNotes.stream().skip(1).limit(4).toList();
 
         LocalDateTime unfinishedSince = LocalDateTime.now().minusDays(14);
         List<Note> unfinishedNotes = liveNotes.stream()
