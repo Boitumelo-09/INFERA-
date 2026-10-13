@@ -288,18 +288,18 @@
     loadWeather();
 
     /* ─────────────────────────────────────────────────────────────
-       TODAY'S FOCUS: a small to-do
-       FOCUS STORE: for now the list lives in localStorage, keyed by
-       user id, and each item expires 24 hours after it was added. It is
-       real persistence, but only on this browser. When the backend
-       exists, replace load() and save() with calls to it (and let the
-       server enforce the 24 hours); nothing else here needs to change.
-    ───────────────────────────────────────────────────────────── */
+   TODAY'S FOCUS: a small to-do, stored on the server
+     · up to 10 tasks per user per day; the day starts afresh at 00:00 (server clock)
+     · unticked tasks are removed by the server once their day is over;
+       ticked ones stay in the database but are no longer shown
+     · deleting a task removes its row immediately
+     · an unticked task turns red in the last 2 hours before the reset
+───────────────────────────────────────────────────────────── */
     const focusRoot = q('#dxFocus');
     if (focusRoot) {
-        const storageKey = 'incaptur:todos:' + (focusRoot.dataset.userId || 'me');
-        const TTL = 24 * 60 * 60 * 1000;
-        const MAX_ITEMS = 8;
+        const URGENT_WINDOW_MS = 2 * 60 * 60 * 1000;
+        const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
         const listEl     = q('#dxTodoList', focusRoot);
         const emptyEl    = q('#dxTodoEmpty', focusRoot);
@@ -309,56 +309,88 @@
         const countEl    = q('#dxFocusCount', focusRoot);
         const progressEl = q('#dxFocusProgress', focusRoot);
         const barEl      = q('#dxFocusBar', focusRoot);
+        const EMPTY_TEXT = emptyEl.textContent;
 
-        // ── store ──
-        function load() {
-            try {
-                const arr = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                const cutoff = Date.now() - TTL;
-                return Array.isArray(arr)
-                    ? arr.filter(t => t && typeof t.text === 'string' && t.createdAt > cutoff)
-                    : [];
-            } catch { return []; }
-        }
-        function save(list) {
-            try { localStorage.setItem(storageKey, JSON.stringify(list)); return true; }
-            catch { return false; }
-        }
+        let items = [];
+        let maxItems = 10;
+        let expiresAt = 0;          // the server's next 00:00, epoch millis
+        let loaded = false;
+        let loadFailed = false;
+        let midnightTimer = null;
 
-        let items = load();
-        const persist = () => {
-            if (!save(items)) toast('Could not save your list on this browser', 'error');
-        };
+        // ── server calls ──
+        async function api(method, path, body) {
+            const headers = { Accept: 'application/json' };
+            if (body !== undefined) headers['Content-Type'] = 'application/json';
+            if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+            const res = await fetch('/api/todos' + path, {
+                method,
+                headers,
+                body: body !== undefined ? JSON.stringify(body) : undefined,
+                credentials: 'same-origin'
+            });
+            if (!res.ok) {
+                const err = new Error('HTTP ' + res.status);
+                err.status = res.status;
+                throw err;
+            }
+            return res.status === 204 ? null : res.json();
+        }
 
         // ── view ──
+        function updateUrgency() {
+            const soon = expiresAt > 0 && expiresAt - Date.now() <= URGENT_WINDOW_MS;
+            qa('.dx-todo', listEl).forEach(li => {
+                const item = items.find(i => String(i.id) === li.dataset.id);
+                const urgent = soon && !!item && !item.done;
+                li.classList.toggle('is-urgent', urgent);
+                li.title = urgent ? 'This clears at midnight' : '';
+                const flag = li.querySelector('.dx-todo-flag');
+                if (flag) flag.hidden = !urgent;
+            });
+        }
+
         function updateSummary() {
-            const done = items.filter(i => i.done).length;
             const total = items.length;
-            emptyEl.hidden = total > 0;
+            const done = items.filter(i => i.done).length;
+            const full = total >= maxItems;
+
+            emptyEl.textContent = loadFailed ? 'Your list couldn\u2019t be loaded.' : EMPTY_TEXT;
+            emptyEl.hidden = !(loadFailed || (loaded && total === 0));
+
             progressEl.hidden = total === 0;
             barEl.style.width = total ? `${(done / total) * 100}%` : '0%';
             countEl.textContent = total ? `${done} of ${total} done` : '';
 
-            const full = total >= MAX_ITEMS;
-            inputEl.disabled = full;
-            addBtn.disabled = full;
-            inputEl.placeholder = full ? 'That\u2019s plenty for one day' : 'Add something for today';
+            inputEl.disabled = !loaded || full;
+            addBtn.disabled = !loaded || full;
+            inputEl.placeholder = full ? `Today\u2019s limit of ${maxItems} reached` : 'Add something for today';
         }
 
         function buildTodo(item) {
             const li = document.createElement('li');
             li.className = 'dx-todo' + (item.done ? ' is-done' : '');
+            li.dataset.id = item.id;
 
             const label = document.createElement('label');
             const box = document.createElement('input');
             box.type = 'checkbox';
             box.checked = !!item.done;
-            const tick = document.createElement('span');
-            tick.className = 'dx-check';
+            const mark = document.createElement('span');
+            mark.className = 'dx-check';
+
+            const body = document.createElement('div');
+            body.className = 'dx-todo-body';
             const text = document.createElement('span');
             text.className = 'dx-todo-text';
             text.textContent = item.text;            // textContent: never parsed as HTML
-            label.append(box, tick, text);
+            const flag = document.createElement('span');
+            flag.className = 'dx-todo-flag';
+            flag.textContent = 'clears at midnight';
+            flag.hidden = true;
+            body.append(text, flag);
+            label.append(box, mark, body);
 
             const remove = document.createElement('button');
             remove.type = 'button';
@@ -366,17 +398,38 @@
             remove.setAttribute('aria-label', `Remove "${item.text}"`);
             remove.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
 
-            box.addEventListener('change', () => {
-                item.done = box.checked;
-                li.classList.toggle('is-done', item.done);
-                persist();
-                updateSummary();
+            // Tick / untick: update the screen straight away, roll back if the server says no
+            box.addEventListener('change', async () => {
+                const prev = item.done;
+                const done = box.checked;
+                const apply = value => {
+                    item.done = value;
+                    box.checked = value;
+                    li.classList.toggle('is-done', value);
+                    updateSummary();
+                    updateUrgency();
+                };
+                apply(done);
+                try {
+                    await api('PATCH', `/${item.id}`, { done });
+                } catch (err) {
+                    apply(prev);
+                    toast('Could not update that task', 'error');
+                    if (err.status === 404) refresh();   // list was stale (e.g. past midnight)
+                }
             });
-            remove.addEventListener('click', () => {
+
+            // Delete: gone from the screen at once; the server deletes the row immediately
+            remove.addEventListener('click', async () => {
                 items = items.filter(i => i.id !== item.id);
-                persist();
                 render();
                 inputEl.focus();
+                try {
+                    await api('DELETE', `/${item.id}`);
+                } catch {
+                    toast('Could not delete that task', 'error');
+                    refresh();                            // put the screen back in sync with the server
+                }
             });
 
             li.append(label, remove);
@@ -387,27 +440,73 @@
             listEl.textContent = '';
             items.forEach(item => listEl.appendChild(buildTodo(item)));
             updateSummary();
+            updateUrgency();
         }
 
-        formEl.addEventListener('submit', e => {
+        // Reload the list shortly after the server's midnight so the dashboard starts afresh
+        function scheduleMidnight() {
+            clearTimeout(midnightTimer);
+            if (!expiresAt) return;
+            const wait = Math.min(Math.max(expiresAt - Date.now() + 1500, 1000), 2000000000);
+            midnightTimer = setTimeout(refresh, wait);
+        }
+
+        function applyList(data) {
+            items = Array.isArray(data.items) ? data.items : [];
+            maxItems = data.max || maxItems;
+            expiresAt = data.expiresAt || 0;
+            loaded = true;
+            loadFailed = false;
+            render();
+            scheduleMidnight();
+        }
+
+        async function refresh() {
+            try {
+                applyList(await api('GET', ''));
+            } catch (err) {
+                console.warn('To-do list unavailable:', err);
+                if (!loaded) { loadFailed = true; updateSummary(); }
+                toast('Could not load today\u2019s tasks', 'error');
+            }
+        }
+
+        formEl.addEventListener('submit', async e => {
             e.preventDefault();
             const text = inputEl.value.trim();
-            if (!text || items.length >= MAX_ITEMS) return;
-            items.push({
-                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-                text,
-                done: false,
-                createdAt: Date.now()
-            });
-            inputEl.value = '';
-            persist();
-            render();
-            inputEl.focus();
+            if (!text || !loaded || items.length >= maxItems) return;
+
+            inputEl.disabled = true;
+            addBtn.disabled = true;
+            try {
+                const created = await api('POST', '', { text });
+                items.push(created);
+                inputEl.value = '';
+                render();
+            } catch (err) {
+                if (err.status === 409) {
+                    toast(`That\u2019s today\u2019s limit of ${maxItems} tasks. Finish or remove one first.`, 'error');
+                    refresh();
+                } else {
+                    toast('Could not add that task', 'error');
+                }
+            } finally {
+                updateSummary();
+                inputEl.focus();
+            }
         });
 
-        render();
-    }
+        // Keep the red state current, and catch up if the laptop slept through midnight
+        setInterval(updateUrgency, 60000);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) return;
+            if (expiresAt && Date.now() >= expiresAt) refresh();
+            else updateUrgency();
+        });
 
+        updateSummary();    // input stays disabled until the first response arrives
+        refresh();
+    }
     /* ─────────────────────────────────────────────────────────────
        NEW NOTE: quick-capture box + modal
        Typing a title in the capture box and pressing Enter opens the

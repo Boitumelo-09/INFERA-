@@ -57,10 +57,10 @@
     line-height: 1.2;
     white-space: nowrap;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 .dx button.dx-btn:hover,
-.dx a.dx-btn:hover {  border-color: var(--accent); }
+.dx a.dx-btn:hover {  color: var(--text) }
 
 .dx button.dx-btn-ghost {
     display: inline-flex;
@@ -278,7 +278,7 @@
     border-radius: 9px;
     transition: border-color 0.2s ease;
 }
-.dx-capture-bar:focus-within { border-color: var(--accent); }
+.dx-capture-bar:focus-within { border-color: var(--text); }
 .dx .dx-capture-bar input {
     flex: 1;
     min-width: 0;
@@ -434,6 +434,20 @@
     text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
 }
 
+/* Text wrapper, so the "clears at midnight" flag can sit under the task */
+.dx-todo-body { flex: 1; min-width: 0; }
+.dx-todo-flag {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: #ef4444;
+}
+/* Unticked task in the last stretch before the midnight reset */
+.dx-todo.is-urgent .dx-todo-text { color: #ef4444; }
+.dx-todo.is-urgent .dx-check,
+.dx-todo.is-urgent label:hover .dx-check { border-color: #ef4444; }
+
 .dx button.dx-todo-x {
     flex-shrink: 0;
     display: grid;
@@ -470,7 +484,7 @@
     outline: none;
     transition: border-color 0.2s ease;
 }
-.dx .dx-todo-form input:focus { border-color: var(--accent); }
+.dx .dx-todo-form input:focus { border-color: var(--text); }
 .dx .dx-todo-form input::placeholder { color: var(--muted); }
 .dx .dx-todo-form input:disabled { opacity: 0.6; cursor: not-allowed; }
 
