@@ -385,7 +385,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .ws-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--ws-color, var(--accent));
+    background: linear-gradient(135deg, var(--ws-color), var(--text));
     flex-shrink: 0;
 }
 .nav-item-btn {
