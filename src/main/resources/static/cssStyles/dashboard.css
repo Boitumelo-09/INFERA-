@@ -400,7 +400,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     align-items: center;
     gap: 10px;
     padding: 5px 2px;
-    margin: 10px 10px 0;
+    margin: 0px 10px 0;
     background: rgba(255,255,255,0.03);
     border-radius: 10px;
     flex-shrink: 0;
