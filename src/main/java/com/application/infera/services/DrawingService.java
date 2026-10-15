@@ -72,4 +72,9 @@ public class DrawingService {
         noteService.touchNote(drawing.getNote());
         return drawing;
     }
+    @Transactional
+    void deleteAllDrawings(User user) {
+      List<Drawing> drawings =  drawingRepository.findAllBy(user);
+      drawingRepository.deleteAll(drawings);
+    }
 }

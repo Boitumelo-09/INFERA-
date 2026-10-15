@@ -57,4 +57,7 @@ public interface DrawingRepository extends JpaRepository<Drawing, Long> {
     @Modifying
     @Query("DELETE FROM Drawing d WHERE d.note.id = :noteId AND d.id IN :ids AND d.orphanedAt < :cutoff")
     int deleteExpiredOrphans(@Param("noteId") Long noteId, @Param("ids") Collection<Long> ids, @Param("cutoff") LocalDateTime cutoff);
+
+
+    List<Drawing> findAllBy(User user);
 }
