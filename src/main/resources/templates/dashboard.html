@@ -247,29 +247,44 @@
         <section class="dash-home dx" id="pageDashboard">
 
             <!-- Today at a glance: date · clock · weather, one horizontal line above the greeting -->
-            <div class="dx-strip" role="group" aria-label="Date, time and weather">
-                <div class="dx-strip-item">
-                    <span class="dx-strip-day" id="dxWeekday"></span>
-                    <span id="dxDate"></span>
-                </div>
-                <span class="dx-strip-sep" aria-hidden="true"></span>
-                <div class="dx-strip-item">
-                    <span class="dx-clock" id="dxClock"></span>
+            <!-- Today at a glance: date + clock (left), weather (right), above the greeting -->
+            <section class="dx-today" aria-label="Date, time and weather">
+
+                <div class="dx-today-time">
+                    <div class="dx-today-day" id="dxWeekday"></div>
+                    <div class="dx-today-date" id="dxDate"></div>
+                    <div class="dx-clock" id="dxClock"></div>
                 </div>
 
                 <!-- states: loading | ready | empty | error (set by dashboard-home.js) -->
-                <div class="dx-strip-item dx-weather" id="dxWeather" data-state="loading" th:data-location="${user.location}">
-                    <span class="dx-wx-ready">
-                        <strong class="dx-wx-temp" id="dxWxTemp"></strong>
-                        <span class="dx-wx-desc" id="dxWxDesc"></span>
-                        <span class="dx-wx-sub" id="dxWxPlace"></span>
-                        <span class="dx-wx-sub dx-wx-meta" id="dxWxMeta"></span>
-                    </span>
-                    <span class="dx-wx-note dx-wx-loading">Checking the sky…</span>
-                    <span class="dx-wx-note dx-wx-empty"><a th:href="@{/profile}">Add your location</a> to see today's weather</span>
-                    <span class="dx-wx-note dx-wx-error">Weather isn't available right now</span>
+                <div class="dx-weather" id="dxWeather" data-state="loading" th:data-location="${user.location}">
+                    <div class="dx-wx-ready">
+                        <div class="dx-wx-main">
+                            <span class="dx-wx-icon" id="dxWxIcon" aria-hidden="true"></span>
+                            <div class="dx-wx-temp" id="dxWxTemp"></div>
+                            <div class="dx-wx-summary">
+                                <div class="dx-wx-desc" id="dxWxDesc"></div>
+                                <div class="dx-wx-place" id="dxWxPlace"></div>
+                            </div>
+                            <div class="dx-wx-range">
+                                <div><span>High</span><strong id="dxWxHigh"></strong></div>
+                                <div><span>Low</span><strong id="dxWxLow"></strong></div>
+                            </div>
+                        </div>
+                        <dl class="dx-wx-stats">
+                            <div><dt>Feels like</dt><dd id="dxWxFeels"></dd></div>
+                            <div><dt>Humidity</dt><dd id="dxWxHumidity"></dd></div>
+                            <div><dt>Wind</dt><dd id="dxWxWind"></dd></div>
+                            <div><dt>Chance of rain</dt><dd id="dxWxRain"></dd></div>
+                            <div><dt>Sunrise</dt><dd id="dxWxSunrise"></dd></div>
+                            <div><dt>Sunset</dt><dd id="dxWxSunset"></dd></div>
+                        </dl>
+                    </div>
+                    <p class="dx-wx-note dx-wx-loading">Checking the sky…</p>
+                    <p class="dx-wx-note dx-wx-empty"><a th:href="@{/profile}">Add your location</a> to see today's weather.</p>
+                    <p class="dx-wx-note dx-wx-error">Weather isn't available right now.</p>
                 </div>
-            </div>
+            </section>
 
             <!-- Greeting + capture (left), today's to-do (right) -->
             <div class="dx-hero">
@@ -278,12 +293,12 @@
                     <h1 class="dx-greeting" id="dxGreeting"
                         th:data-name="${user.firstName}"
                         th:text="${#strings.isEmpty(user.firstName)} ? 'Hello.' : |Hello, ${user.firstName}.|">Hello.</h1>
-                    <p class="dx-tagline">Capture what's on your mind. Keep moving.</p>
+                    <p class="dx-tagline">what's on your mind today?</p>
 
                     <!-- Quick capture: type a title, press Enter, the new-note modal opens with it filled in -->
                     <form class="dx-capture" id="dxCaptureForm" autocomplete="off"
                           th:data-has-workspaces="${!#lists.isEmpty(workspaces)}">
-                        <label class="dx-capture-label" for="dxCaptureInput">What's worth capturing today?</label>
+                        <label class="dx-capture-label" for="dxCaptureInput">you just need to captur it...</label>
                         <div class="dx-capture-bar">
                             <input type="text" id="dxCaptureInput" maxlength="150" placeholder="Give your thought a title…" />
                             <button type="submit" class="dx-btn">
@@ -306,14 +321,14 @@
                     <div class="dx-panel-head">
                         <div>
                             <h2 class="dx-panel-title" id="dxFocusTitle">Today's focus</h2>
-                            <p class="dx-panel-sub">What matters today?</p>
+                            <p class="dx-panel-sub">What's for today? Clears midnight.</p>
                         </div>
                         <span class="dx-count" id="dxFocusCount" aria-live="polite"></span>
                     </div>
                     <div class="dx-focus-body">
                         <div class="dx-progress" id="dxFocusProgress" hidden><span id="dxFocusBar"></span></div>
                         <ul class="dx-todos" id="dxTodoList"></ul>
-                        <p class="dx-todo-empty" id="dxTodoEmpty">Nothing planned yet. Add the one thing that matters.</p>
+                        <p class="dx-todo-empty" id="dxTodoEmpty" hidden>Nothing planned yet. Add the one thing that matters.</p>
                         <form class="dx-todo-form" id="dxTodoForm" autocomplete="off">
                             <input type="text" id="dxTodoInput" maxlength="100"
                                    placeholder="Add something for today" aria-label="Add a task for today" />
@@ -326,7 +341,7 @@
             <!-- Continue + recently captured -->
             <div class="dx-main">
 
-                <section class="dx-panel dx-continue" aria-labelledby="dxContinueTitle" id="specialContinue">
+                <section class="dx-panel dx-continue noBorder" aria-labelledby="dxContinueTitle" >
                     <div class="dx-panel-head">
                         <h2 class="dx-panel-title" id="dxContinueTitle">Pick up where you left off</h2>
                     </div>
@@ -354,10 +369,10 @@
                 <section class="dx-panel dx-recent" aria-labelledby="dxRecentTitle" >
                     <div class="dx-panel-head">
                         <h2 class="dx-panel-title" id="dxRecentTitle">Recently captured</h2>
-                        <a class="dx-action" th:href="@{/notes}">All notes</a>
+                        <a class="dx-action" th:href="@{/notes}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
-                    <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}">
+                    <ol class="dx-rows" th:unless="${#lists.isEmpty(recentNotes)}" >
                         <li th:each="n : ${recentNotes}">
                             <a class="dx-row" th:href="@{/notes(view=${n.id})}" th:style="'--ws-color:' + ${n.workspace.color}">
                                 <span class="dx-dot" aria-hidden="true"></span>
@@ -381,12 +396,12 @@
                     <div class="dx-panel-head">
                         <div>
 
-                            <p class="dx-panel-sub">The places your thinking lives</p>
+                            <p class="dx-panel-sub">Your workspaces</p>
                         </div>
-                        <a class="dx-action" th:href="@{/workspaces}">Manage</a>
+                        <a class="dx-action" th:href="@{/workspaces}"><i class="bi bi-arrow-up-right"></i></a>
                     </div>
 
-                    <div class="dx-rows" th:unless="${#lists.isEmpty(workspaces)}">
+                    <div class="dx-rows heightRestricted" th:unless="${#lists.isEmpty(workspaces)}" >
                         <a class="dx-row" th:each="ws : ${workspaces}"
                            th:href="@{/notes(workspace=${ws.id})}"
                            th:style="'--ws-color:' + ${ws.color}">
@@ -401,7 +416,7 @@
                         </a>
                     </div>
 
-                    <p class="dx-empty" th:if="${#lists.isEmpty(workspaces)}">No areas yet. A workspace gives your notes a home.</p>
+                    <p class="dx-empty" th:if="${#lists.isEmpty(workspaces)}">A workspace gives your notes a home.</p>
                 </section>
 
                 <aside class="dx-rail">
@@ -418,14 +433,14 @@
                     </section>
 
                     <!-- Unfinished thoughts — real: recently edited notes with little or no text -->
-                    <section class="dx-panel" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle" id="specialCaptured">
+                    <section class="dx-panel noBorder" th:unless="${#lists.isEmpty(unfinishedNotes)}" aria-labelledby="dxUnfinishedTitle">
                         <div class="dx-panel-head">
                             <div>
-                                <h2 class="dx-panel-title" id="dxUnfinishedTitle">Unfinished thoughts</h2>
+                                <h2 class="dx-panel-title" id="dxUnfinishedTitle">unfinished business</h2>
                                 <p class="dx-panel-sub">You started these. They might be worth returning to.</p>
                             </div>
                         </div>
-                        <div class="dx-rows">
+                        <div class="dx-rows heightRestricted">
                             <a class="dx-row" th:each="n : ${unfinishedNotes}"
                                th:href="@{/notes/{id}/edit(id=${n.id})}"
                                th:style="'--ws-color:' + ${n.workspace.color}">
@@ -463,10 +478,10 @@
             </div>
 
             <!-- A little history -->
-            <section class="dx-panel dx-history" aria-labelledby="dxHistoryTitle">
+            <section class="dx-panel dx-history noBorder" aria-labelledby="dxHistoryTitle">
                 <div class="dx-panel-head">
                     <h2 class="dx-panel-title" id="dxHistoryTitle">history</h2>
-                    <a class="dx-action" th:href="@{/activity}">view all</a>
+                    <a class="dx-action" th:href="@{/activity}"><i class="bi bi-arrow-up-right"></i></a>
                 </div>
 
                 <ol class="dx-timeline" th:unless="${#lists.isEmpty(recentActivities)}">

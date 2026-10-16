@@ -77,7 +77,7 @@ public class WorkspaceController {
                                   RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
 
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             workspaceService.updateWorkspace(id, workspaceRequest, user);

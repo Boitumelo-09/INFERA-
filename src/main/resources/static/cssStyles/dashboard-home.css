@@ -57,10 +57,10 @@
     line-height: 1.2;
     white-space: nowrap;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 .dx button.dx-btn:hover,
-.dx a.dx-btn:hover {  border-color: var(--accent); }
+.dx a.dx-btn:hover {  color: var(--text) }
 
 .dx button.dx-btn-ghost {
     display: inline-flex;
@@ -87,59 +87,151 @@
 .dx button.dx-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
 .dx button.dx-btn-sm { padding: 6px 12px; font-size: 0.78rem; }
 
-/* ─── Today at a glance: date · clock · weather ────────────────── */
-.dx-strip {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 18px;
-    margin-bottom: 30px;
-    padding: 10px 16px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 10px;
+/* ─── Today at a glance: date + clock (left), weather (right) ──── */
+.dx-today {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    margin-bottom: 20px;
+    background: linear-gradient(
+            115deg,
+            color-mix(in srgb, var(--sky-a, #0ea5e9) var(--sky-mix-a, 16%), var(--card)) 0%,
+            color-mix(in srgb, var(--sky-b, #14b8a6) var(--sky-mix-b, 9%), var(--card)) 48%,
+            color-mix(in srgb, var(--sky-c, var(--accent)) var(--sky-mix-c, 16%), var(--card)) 100%
+    );
+   
+    border-radius: var(--radius);
+    overflow: hidden;
 }
-.dx-strip-item {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    min-width: 0;
-    font-size: 0.94rem;
-    color: var(--muted);
-}
-.dx-strip-day { color: var(--text); font-weight: 600; }
-.dx-strip-sep { align-self: stretch; width: 1px; background: var(--border); }
 
+/* Skies: JS sets data-sky (from the weather code) and data-night on .dx-today */
+.dx-today[data-sky="clear"]  { --sky-a: #0ea5e9; --sky-b: #38bdf8; --sky-c: #f59e0b; }
+.dx-today[data-sky="partly"] { --sky-a: #38bdf8; --sky-b: #94a3b8; --sky-c: #f59e0b; }
+.dx-today[data-sky="cloud"]  { --sky-a: #94a3b8; --sky-b: #64748b; --sky-c: #94a3b8; }
+.dx-today[data-sky="fog"]    { --sky-a: #94a3b8; --sky-b: #cbd5e1; --sky-c: #94a3b8; }
+.dx-today[data-sky="rain"]   { --sky-a: #64748b; --sky-b: #0284c7; --sky-c: #475569; }
+.dx-today[data-sky="snow"]   { --sky-a: #7dd3fc; --sky-b: #cbd5e1; --sky-c: #93c5fd; }
+.dx-today[data-sky="storm"]  { --sky-a: #334155; --sky-b: #475569; --sky-c: #ca8a04; }
+
+/* After dark: deeper tones. Only on the dark-UI themes, because the light theme
+   uses dark text and needs the sky to stay pale to remain readable. */
+:root:not([data-theme="light"]) .dx-today[data-night="true"] {
+    --sky-mix-a: 30%;
+    --sky-mix-b: 20%;
+    --sky-mix-c: 26%;
+}
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="clear"],
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="partly"] {
+    --sky-a: #1e3a8a; --sky-b: #1e293b; --sky-c: #155e75;
+}
+:root:not([data-theme="light"]) .dx-today[data-night="true"][data-sky="cloud"] {
+    --sky-a: #334155; --sky-b: #1e293b; --sky-c: #475569;
+}
+
+.dx-today-time {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    padding: 4px 20px;
+    border-right: 1px solid transparent;
+}
+.dx-today-day {
+    min-height: 1.4em;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.dx-today-date { min-height: 1.4em; margin-top: 2px; font-size: 0.95rem; color: var(--muted); }
 .dx-clock {
+    min-height: 1em;
+    margin-top: 14px;
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: clamp(2.8rem, 6.5vw, 4.6rem);
     font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
     color: var(--text);
     font-variant-numeric: tabular-nums;
 }
-.dx-clock small { margin-left: 3px; font-size: 0.72em; color: var(--muted); }
+.dx-clock small {
+    margin-left: 8px;
+    font-size: 0.32em;
+    letter-spacing: 0;
+    color: var(--muted);
+}
 
-/* Weather sits at the right end of the strip */
-.dx-weather { margin-left: auto; }
+/* Weather */
+.dx-weather {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    padding: 4px 20px;
+    background:transparent;
+}
 .dx-wx-ready, .dx-wx-loading, .dx-wx-empty, .dx-wx-error { display: none; }
-.dx-weather[data-state="ready"]   .dx-wx-ready   { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.dx-weather[data-state="ready"]   .dx-wx-ready,
 .dx-weather[data-state="loading"] .dx-wx-loading,
 .dx-weather[data-state="empty"]   .dx-wx-empty,
-.dx-weather[data-state="error"]   .dx-wx-error   { display: inline; }
+.dx-weather[data-state="error"]   .dx-wx-error { display: block; }
 
-.dx-wx-temp {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 600;
+.dx-wx-main {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+}
+
+.dx-wx-icon {
+    font-size: clamp(2.8rem, 4.6vw, 3.6rem);
+    line-height: 1;
     color: var(--accent);
 }
-.dx-wx-desc { color: var(--text); }
-.dx-wx-sub { color: var(--muted); font-size: 0.8rem; }
-.dx-wx-meta { font-family: var(--font-mono); font-size: 0.72rem; }
-.dx-wx-note { font-size: 0.8rem; color: var(--muted); }
+.dx-wx-temp {
+    font-family: var(--font-display);
+    font-size: clamp(3.2rem, 6.5vw, 4.8rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+}
+.dx-wx-summary { min-width: 0; }
+.dx-wx-desc { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.dx-wx-place { margin-top: 2px; font-size: 0.84rem; color: var(--muted); }
+
+.dx-wx-range { display: flex; gap: 20px; margin-left: auto; }
+.dx-wx-range div { display: flex; flex-direction: column; gap: 2px; }
+.dx-wx-range span { font-size: 0.72rem; color: var(--muted); }
+.dx-wx-range strong { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: var(--text); }
+
+.dx-wx-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /*gap: 14px 20px;*/
+    /*margin: 20px 0 0;*/
+    padding: 18px 0 0;
+    border-top: 1px solid var(--border);
+    margin-bottom: 0;
+}
+.dx-wx-stats dt { margin: 0; font-size: 0.72rem; font-weight: 400; color: var(--muted); }
+
+.dx-wx-stats dd {
+    margin: 2px 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    color: var(--text);
+}
+
+.dx-wx-note { font-size: 0.86rem; color: var(--muted); }
 .dx-wx-note a { color: var(--accent); font-weight: 600; }
 .dx-wx-note a:hover { text-decoration: underline; }
 
+@media (max-width: 860px) {
+    .dx-today { grid-template-columns: minmax(0, 1fr); }
+    .dx-today-time { padding: 22px 20px; border-right: 0; border-bottom: 1px solid var(--border); }
+    .dx-weather { padding: 20px; }
+    .dx-wx-range { margin-left: 0; }
+    .dx-wx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 /* ─── Hero: greeting + capture, with today's to-do beside it ───── */
 .dx-hero {
     display: grid;
@@ -157,7 +249,7 @@
     letter-spacing: -0.02em;
     color: var(--text);
 }
-.dx-name { color: var(--accent); }
+.dx-name { color: var(--accent);  }
 
 .dx-tagline {
     margin-top: 10px;
@@ -186,7 +278,7 @@
     border-radius: 9px;
     transition: border-color 0.2s ease;
 }
-.dx-capture-bar:focus-within { border-color: var(--accent); }
+.dx-capture-bar:focus-within { border-color: var(--text); }
 .dx .dx-capture-bar input {
     flex: 1;
     min-width: 0;
@@ -219,8 +311,7 @@
     border-radius: var(--radius);
     overflow: hidden;
 }
-#specialContinue,#specialCaptured{
-
+.noBorder{
     border: 1px solid transparent;
 }
 
@@ -230,7 +321,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 16px 20px;
+    padding: 10px 40px;
     border-bottom: 1px solid transparent;
 }
 .dx-panel-title {
@@ -248,11 +339,11 @@
     border-radius: 6px;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--muted);
     white-space: nowrap;
-    transition: background 0.2s ease;
+    transition: color 0.2s ease;
 }
-.dx .dx-action:hover { background: var(--dx-accent-soft); }
+.dx .dx-action:hover { color: var(--text); }
 
 .dx-empty { padding: 22px 20px; font-size: 0.86rem; line-height: 1.6; color: var(--muted); }
 
@@ -313,6 +404,8 @@
     border-radius: 5px;
     transition: background 0.15s ease, border-color 0.15s ease;
 }
+
+
 .dx-check::after {
     content: "";
     position: absolute;
@@ -325,10 +418,23 @@
     transform: rotate(45deg) scale(0);
     transition: transform 0.15s ease;
 }
-.dx-todo input:checked + .dx-check { background: limegreen; border-color: mediumseagreen; }
-.dx-todo input:checked + .dx-check::after { transform: rotate(45deg) scale(1); }
-.dx-todo input:focus-visible + .dx-check { outline: 2px solid var(--text); outline-offset: 2px; }
-.dx-todo label:hover .dx-check { border-color: var(--bg); }
+.dx-todo input:checked + .dx-check {
+    background: limegreen;
+    border-color: transparent;
+}
+
+.dx-todo input:checked + .dx-check::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.dx-todo input:focus-visible + .dx-check {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+.dx-todo label:hover .dx-check {
+    border-color: var(--bg);
+}
 
 .dx-todo-text {
     font-size: 0.9rem;
@@ -342,6 +448,20 @@
     text-decoration: line-through;
     text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
 }
+
+/* Text wrapper, so the "clears at midnight" flag can sit under the task */
+.dx-todo-body { flex: 1; min-width: 0; }
+.dx-todo-flag {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: #ef4444;
+}
+/* Unticked task in the last stretch before the midnight reset */
+.dx-todo.is-urgent .dx-todo-text { color: #ef4444; }
+.dx-todo.is-urgent .dx-check,
+.dx-todo.is-urgent label:hover .dx-check { border-color: #ef4444; }
 
 .dx button.dx-todo-x {
     flex-shrink: 0;
@@ -379,7 +499,7 @@
     outline: none;
     transition: border-color 0.2s ease;
 }
-.dx .dx-todo-form input:focus { border-color: var(--accent); }
+.dx .dx-todo-form input:focus { border-color: var(--text); }
 .dx .dx-todo-form input::placeholder { color: var(--muted); }
 .dx .dx-todo-form input:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -446,7 +566,7 @@
     align-items: center;
     gap: 7px;
     padding: 8px 16px;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--ws-color);
     border-radius: 8px;
     font-size: 0.84rem;
     font-weight: 600;
@@ -455,11 +575,14 @@
 }
 .dx-cta i { transition: transform 0.2s ease; }
 .dx-continue-link:hover .dx-cta {
-    background: color-mix(in srgb, var(--accent-hover) 10%, transparent);
+    background: color-mix(in srgb, var(--ws-color) 10%, transparent);
     color: var(--text);
 }
 .dx-continue-link:hover .dx-cta i { transform: translateX(3px); }
-
+.heightRestricted{
+    max-height: 280px;
+    overflow-y: scroll;
+}
 /* ─── Rows: recent notes, areas, rail lists ────────────────────── */
 .dx-row {
     display: flex;
@@ -589,9 +712,7 @@
 }
 
 @media (max-width: 640px) {
-    .dx-strip { gap: 6px 14px; padding: 10px 14px; }
-    .dx-strip-sep { display: none; }
-    .dx-weather { margin-left: 0; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--border); }
+
     .dx-continue-link { padding: 20px 18px 18px; }
     .dx-tl-ws { display: none; }
     .dx-panel-head { padding: 14px 16px; }

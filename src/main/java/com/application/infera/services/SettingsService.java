@@ -15,6 +15,8 @@ public class SettingsService {
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
     private final ProfileService profileService;
+    private final TodoService todoService;
+    private final DrawingService drawingService;
 
     public boolean updateTheme(User user, String theme) {
         if (!theme.equals("default") && !theme.equals("dark") && !theme.equals("light")) return false;
@@ -31,12 +33,14 @@ public class SettingsService {
         var resources = resourceRepository.findByNote_Workspace_UserOrderByCreatedAtDesc(user);
         resourceRepository.deleteAll(resources);
         for (var note : notes) note.getTags().clear();
-
+        
+        drawingService.deleteAllDrawings(user);
         noteRepository.saveAll(notes);
         noteRepository.deleteAll(notes);
         activityRepository.deleteAll(activityRepository.findByUserOrderByCreatedAtDesc(user));
         workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));
         profileService.deleteAvatar(user);
+        todoService.deleteAll(user);
         userRepository.delete(user);
 
     }
