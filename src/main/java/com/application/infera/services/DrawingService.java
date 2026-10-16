@@ -73,8 +73,10 @@ public class DrawingService {
         return drawing;
     }
     @Transactional
-    void deleteAllDrawings(User user) {
-      List<Drawing> drawings =  drawingRepository.findAllBy(user);
+   public void deleteAllDrawings(User user) {
+      List<Drawing> drawings =  drawingRepository.findDrawingsByNote_Workspace_User(user);
       drawingRepository.deleteAll(drawings);
     }
+
+
 }
