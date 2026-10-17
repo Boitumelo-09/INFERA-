@@ -5,6 +5,7 @@ import com.application.infera.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class SettingsService {
         return true;
     }
 
-
+  @Transactional
     public void deleteUser(User user) {
 
         var notes = noteRepository.findByWorkspace_User(user);
