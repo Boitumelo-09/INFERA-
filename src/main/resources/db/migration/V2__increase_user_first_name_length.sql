@@ -1,0 +1,2 @@
+ALTER TABLE users
+ALTER COLUMN first_name TYPE VARCHAR(60);
