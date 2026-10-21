@@ -46,6 +46,7 @@ public class User {
 
     @Column(length = 280)
     private String bio;
+
     @Column(nullable = false)
     private boolean hasSeenWelcome = false;
 

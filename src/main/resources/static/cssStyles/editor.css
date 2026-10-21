@@ -251,7 +251,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 3px;
+    gap: 2px;
     margin-bottom: 18px;
     position: sticky;
     top: calc(var(--topbar-h) + -2px);
@@ -571,21 +571,47 @@
    DRAWINGS — toolbar picker + inline node
 ═══════════════════════════════════════ */
 .tiptap-drawing-picker { position: relative; display: inline-flex; }
+
 .tiptap-drawing-popover {
-    position: absolute; top: 40px; left: 0;
-    background: var(--secondary); border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px; min-width: 210px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-    display: flex; flex-direction: column; gap: 2px;
-    opacity: 0; visibility: hidden; transform: translateY(-6px);
-    transition: opacity 0.18s, transform 0.18s, visibility 0.18s; z-index: 20;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: var(--secondary);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 3px;
+    min-width: 210px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 20;
 }
 .tiptap-drawing-picker.open .tiptap-drawing-popover { opacity: 1; visibility: visible; transform: none; }
+
 .tiptap-drawing-option {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    padding: 8px 10px; background: none; border: none; border-radius: 7px;
-    color: var(--text); text-align: left; cursor: pointer; transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    background: none;
+    border: none;
+    border-radius: 7px;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
 }
-.tiptap-drawing-option:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+.tiptap-drawing-option:hover {
+    background: var(--bg);
+}
+
 .tiptap-drawing-option i { color: var(--ws-color, var(--accent)); font-size: 1.05rem; width: 20px; text-align: center; }
 .drawing-option-text { display: flex; flex-direction: column; line-height: 1.25; }
 .drawing-option-text strong { font-size: 0.85rem; font-weight: 600; }
