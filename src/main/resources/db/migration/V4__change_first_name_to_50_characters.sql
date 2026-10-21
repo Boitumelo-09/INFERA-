@@ -1,0 +1,3 @@
+ALTER TABLE users
+ALTER
+COLUMN first_name TYPE VARCHAR(50) USING (first_name::VARCHAR(50));
