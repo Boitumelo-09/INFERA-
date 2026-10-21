@@ -603,7 +603,7 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--ws-color, var(--accent));
+    background: linear-gradient(285deg, var(--ws-color), black);
 }
 .dx-row-main { flex: 1; min-width: 0; }
 .dx-row-title {

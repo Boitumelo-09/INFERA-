@@ -338,7 +338,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .nav-item i { font-size: 1rem; flex-shrink: 0; }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg);
     color: var(--text);
 }
 [ data-theme="light" ] .nav-item:hover {
@@ -385,7 +385,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .ws-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--ws-color), var(--text));
+    background: linear-gradient(285deg, var(--ws-color), black);
     flex-shrink: 0;
 }
 .nav-item-btn {
