@@ -23,7 +23,7 @@ public class UserController {
         User user = currentUserService.resolve(principal);
         if (user == null) return ResponseEntity.status(401).build();
         userService.markWelcomeSeen(user.getId());
-        System.out.println("User " + user.getId() + " marked welcome seen IN CONTROLLER");
+        System.out.println("User " + user.getFirstName() + " marked welcome seen IN CONTROLLER");
         return ResponseEntity.ok().build();
     }
 }
