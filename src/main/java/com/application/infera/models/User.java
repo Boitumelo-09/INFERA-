@@ -1,7 +1,7 @@
 package com.application.infera.models;
 
-import jakarta.persistence.*;
 import com.application.infera.enums.Role;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -66,5 +66,4 @@ public class User {
         updatedAt = LocalDateTime.now();
 
     }
-    
 }
