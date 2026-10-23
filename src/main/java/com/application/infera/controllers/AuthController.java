@@ -40,7 +40,7 @@ public class AuthController {
 
     @GetMapping
     public String authPage(Model model) {
-        model.addAttribute("pageTitle", "Authenticate — INCAPTUR");
+        model.addAttribute("pageTitle", "authenticate | incaptur");
         return "auth";
     }
 
