@@ -3,14 +3,17 @@ package com.application.infera.services;
 
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.enums.ActivityType;
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
 import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
+import com.application.infera.models.WorkspaceMember;
 import com.application.infera.repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,9 +27,10 @@ public class WorkspaceService {
     private final ResourceRepository resourceRepository;
     private final ActivityRepository activityRepository;
     private final DrawingRepository drawingRepository;
-
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     // Create a new workspace linked to the logged-in user
+    @Transactional
     public void createWorkspace(WorkspaceRequest request, User user) {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
@@ -42,6 +46,13 @@ public class WorkspaceService {
         workspace.setUser(user);  // link to the signed-in user
 
         workspaceRepository.save(workspace);
+
+        // Every workspace has an OWNER membership row, written in the same transaction
+        WorkspaceMember ownerMembership = new WorkspaceMember();
+        ownerMembership.setWorkspace(workspace);
+        ownerMembership.setUser(user);
+        ownerMembership.setRole(WorkspaceRole.OWNER);
+        workspaceMemberRepository.save(ownerMembership);
 
         activityService.log(user, ActivityType.WORKSPACE_CREATED, workspace.getName(), workspace);
 
@@ -94,7 +105,7 @@ public class WorkspaceService {
         noteRepository.saveAll(wsNotes);
         noteRepository.deleteAll(wsNotes);
         activityRepository.deleteAll(activityRepository.findByWorkspace(workspace));
-
+        workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
 
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
