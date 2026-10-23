@@ -27,7 +27,7 @@ public class ActivityController {
         User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/auth";
 
-        model.addAttribute("pageTitle", "Activity — INCAPTUR");
+        model.addAttribute("pageTitle", "activity | incaptur");
         model.addAttribute("user", user);
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
