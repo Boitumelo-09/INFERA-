@@ -17,6 +17,7 @@ public class SettingsService {
     private final ActivityRepository activityRepository;
     private final ProfileService profileService;
     private final TodoService todoService;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
     private final DrawingService drawingService;
 
     public boolean updateTheme(User user, String theme) {
@@ -39,8 +40,8 @@ public class SettingsService {
         noteRepository.saveAll(notes);
         noteRepository.deleteAll(notes);
         activityRepository.deleteAll(activityRepository.findByUserOrderByCreatedAtDesc(user));
-        workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));
-        profileService.deleteAvatar(user);
+      workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByUser(user));
+      workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));        profileService.deleteAvatar(user);
         todoService.deleteAll(user);
         userRepository.delete(user);
 
