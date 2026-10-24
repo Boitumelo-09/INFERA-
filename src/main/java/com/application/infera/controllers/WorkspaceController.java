@@ -39,7 +39,7 @@ public class WorkspaceController {
         if (user == null) return "redirect:/auth";
 
         List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
-        model.addAttribute("pageTitle", "Workspaces — INCAPTUR");
+        model.addAttribute("pageTitle", "workspaces | incaptur");
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());

@@ -34,7 +34,7 @@ public class SettingsController {
 
         boolean isOAuthUser = principal instanceof OAuth2User;
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Settings | incaptur");
+        model.addAttribute("pageTitle", "settings | incaptur");
         model.addAttribute("isOAuthUser", isOAuthUser);
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));

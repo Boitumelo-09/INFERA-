@@ -508,9 +508,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .sidebar-toggle:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
 /* Breadcrumb */
-.breadcrumb { --bs-breadcrumb-divider-color: rgba(148,163,184,0.3); }
+/*.breadcrumb {*/
+/*    --bs-breadcrumb-divider-color: rgba(148, 163, 184, 0.3);*/
+/*}*/
 .breadcrumb-item, .breadcrumb-item + .breadcrumb-item::before {
-    color: var(--muted);
+    color: transparent;
     font-size: 0.82rem;
 }
 .breadcrumb-item.active { color: var(--text); font-weight: 600; }

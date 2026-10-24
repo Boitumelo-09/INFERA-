@@ -33,7 +33,7 @@ public class ProfileController {
         if (user == null) return "redirect:/auth";
 
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Profile | incaptur");
+        model.addAttribute("pageTitle", "profile | incaptur");
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
