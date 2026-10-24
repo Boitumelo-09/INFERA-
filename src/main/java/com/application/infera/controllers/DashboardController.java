@@ -27,6 +27,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal Object principal, Model model, HttpSession session) {
+
         System.out.println(model.asMap());
         User user = currentUserService.resolve(principal);
 
@@ -38,11 +39,9 @@ public class DashboardController {
         model.addAttribute("showWelcomeModal", !user.isHasSeenWelcome());
         System.out.println(".".repeat(50));
         System.out.println("LOGGED IN USER    : "+ "\u001B[32m" + user.getFirstName() + " " + user.getLastName() + "\u001B[0m");
-        System.out.println("Localed Session ID: "+ "\u001B[32m" + user.getId()+"\u001B[0m");
-        System.out.println("Browser Session ID: "+ "\u001B[32m" + session.getId()+"\u001B[0m");
         System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
         System.out.println(".".repeat(50));
-        model.addAttribute("pageTitle","Dashboard | incaptur");
+        model.addAttribute("pageTitle","dashboard | incaptur");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));

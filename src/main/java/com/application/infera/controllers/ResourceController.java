@@ -84,7 +84,7 @@ public class ResourceController {
         User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/auth";
 
-        model.addAttribute("pageTitle", "Resources | incaptur");
+        model.addAttribute("pageTitle", "resources | incaptur");
         model.addAttribute("user", user);
         model.addAttribute("resourcesByCategory", resourceService.getResourcesGroupedByCategory(user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
