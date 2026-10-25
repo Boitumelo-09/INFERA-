@@ -10,6 +10,7 @@ public class InferaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(InferaApplication.class, args);
+        System.out.println("Application started SUCCESSFULLY".toLowerCase());
     }
 
 }

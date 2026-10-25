@@ -28,6 +28,7 @@ public class WorkspaceService {
     private final ActivityRepository activityRepository;
     private final DrawingRepository drawingRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final WorkspaceAccessService workspaceAccessService;
 
     // Create a new workspace linked to the logged-in user
     @Transactional
@@ -76,7 +77,7 @@ public class WorkspaceService {
 
     // Update an existing workspace — only if it belongs to this user
     public void updateWorkspace(Long id, WorkspaceRequest request, User user) {
-        Workspace workspace = getWorkspaceForUser(id, user);
+        Workspace workspace = workspaceAccessService.requireWorkspace(id, user, WorkspaceRole.OWNER);
 
         // If renaming, make sure the new name isn't already taken by another workspace
         boolean nameChanged = !workspace.getName().equalsIgnoreCase(request.getName());
@@ -94,7 +95,7 @@ public class WorkspaceService {
 
     // Delete a workspace — only if it belongs to this user
     public void deleteWorkspace(Long id, User user) {
-        Workspace workspace = getWorkspaceForUser(id, user);
+        Workspace workspace = workspaceAccessService.requireWorkspace(id, user, WorkspaceRole.OWNER);
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
         var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
         drawingRepository.deleteAll(wsDrawings);

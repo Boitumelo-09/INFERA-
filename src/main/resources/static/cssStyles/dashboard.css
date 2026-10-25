@@ -491,7 +491,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     background: var(--secondary);
 }
 
-.topbar-left { display: flex; align-items: center; gap: 14px; }
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
 
 /* Hamburger */
 .sidebar-toggle {
@@ -514,8 +518,14 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .breadcrumb-item, .breadcrumb-item + .breadcrumb-item::before {
     color: transparent;
     font-size: 0.82rem;
+    padding: 0;
 }
-.breadcrumb-item.active { color: var(--text); font-weight: 600; }
+
+.breadcrumb-item.active {
+    color: var(--text);
+    font-weight: 300;
+    padding:0;
+}
 .bc-root { color: var(--muted); }
 
 /* Topbar buttons */
