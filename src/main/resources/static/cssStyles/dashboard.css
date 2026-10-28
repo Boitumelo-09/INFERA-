@@ -3,7 +3,6 @@
    Layout: fixed sidebar + scrollable main
    Font: Sora (display) · Inter (body)
 ───────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=League+Spartan:wght@100..900&family=Smooch+Sans:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
 :root, [data-theme="default"] {
     --bg:           #0d1117;
     --secondary:    #161b22;
