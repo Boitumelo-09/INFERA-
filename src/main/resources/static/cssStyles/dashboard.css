@@ -61,11 +61,6 @@ body {
     overflow-x: hidden;
 }
 
-
-
-
-
-
 a { text-decoration: none; color: inherit; }
 button { font-family: var(--font-body); }
 
@@ -200,7 +195,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0px 16px 14px;
+    padding: 9px 9px 9px;
     flex-shrink: 0;
 }
 
@@ -212,7 +207,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 .logo-mark {
     width: 70px;
-    height: 70px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
