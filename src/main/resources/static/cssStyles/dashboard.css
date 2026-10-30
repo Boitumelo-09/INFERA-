@@ -229,16 +229,24 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     fill: var(--accent);
 }
 .logo-text {
-    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-optical-sizing: auto;
+
     font-weight: 700;
+ 
+
+}
+.logo-text {
+    font-family: "Outfit", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
     font-size: 1.85rem;
     letter-spacing: 0.05em;
+    line-height: 1;
     color: var(--accent);
-    border-left: 2px solid ;
+    border-left: 1px solid ;
     border-color: color-mix(in srgb, var(--accent) 10%, transparent);
-    padding-inline: 9px;
+    padding-inline:9px;
 }
+.logo-dot { color: var(--accent); }
 .sidebar-close {
     display: none;
     background: none;
