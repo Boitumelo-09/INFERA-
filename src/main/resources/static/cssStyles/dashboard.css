@@ -565,12 +565,12 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     font-size: 0.84rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    transition: color 0.2s, box-shadow 0.2s;
     white-space: nowrap;
 }
 .btn-topbar-accent:hover {
-    background: color-mix(in srgb, var(--accent-hover) 10%, transparent);
-    transform: translateY(-1px);
+    color: var(--text);
+    
 }
 
 
