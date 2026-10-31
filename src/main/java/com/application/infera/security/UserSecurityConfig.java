@@ -32,7 +32,8 @@ public class UserSecurityConfig {
                                 "/terms",
                                 "/cssStyles/**",
                                 "/javaScript/**",
-                                "/app_resources/**"
+                                "/app_resources/**",
+                                "/favicons/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -19,8 +19,11 @@
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/editor.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
-    <link type="image/x-icon" rel="shortcut icon" th:href="@{/app_resources/inferaLogoICON.ico}">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
+    <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
+    <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
+    <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
+    <meta name="theme-color" content="#161b22">    <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <!-- One shared React for the lazily-loaded Excalidraw canvas (drawing-canvas.js) -->
     <script type="importmap">

@@ -377,10 +377,30 @@ $$('.ws-card[data-workspace]').forEach(card => {
 ─────────────────────────────────────────────────────────────────── */
 
 $('#notifBtn')?.addEventListener('click', () => {
-    showToast('Belmire - INFERA v2.0.0 Coming Soon...');
+    showToast('Belmire - INCAPTUR v2.0.0 Coming Soon...');
     /* Remove dot after first click */
     $('.notif-dot')?.remove();
 });
+// Select the element (e.g., your navigation bar)
+const header = document.getElementById('topbar')
+// Define the scroll threshold in pixels
+const scrollThreshold = 50;
+
+function handleScroll() {
+    // Check how far the page has been scrolled vertically
+    if (window.scrollY > scrollThreshold) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+}
+
+// Listen for the scroll event
+window.addEventListener('scroll', handleScroll);
+
+// Optional: Run immediately on load in case the page starts already scrolled
+handleScroll();
+
 
 /* ───────────────────────────────────────────────────────────────────
    KEYBOARD SHORTCUTS  (dashboard-level)
