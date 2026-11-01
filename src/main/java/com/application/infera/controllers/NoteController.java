@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.NoteRequest;
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
@@ -75,8 +76,7 @@ public class NoteController {
         if (user == null) return "redirect:/auth";
 
         try {
-            Note note = noteService.getNoteForUser(id, user);
-
+            Note note = noteService.getNoteForUser(id, user, WorkspaceRole.VIEWER);
             model.addAttribute("pageTitle", note.getTitle() + " — INCAPTUR");
             model.addAttribute("user", user);
             model.addAttribute("note", note);

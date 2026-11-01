@@ -69,11 +69,7 @@ public class WorkspaceService {
         return workspaceRepository.countByUser(user);
     }
 
-    // Get a single workspace, scoped to the owner (used before edit/delete)
-    public Workspace getWorkspaceForUser(Long id, User user) {
-        return workspaceRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
-    }
+
 
     // Update an existing workspace — only if it belongs to this user
     public void updateWorkspace(Long id, WorkspaceRequest request, User user) {

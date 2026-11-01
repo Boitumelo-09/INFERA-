@@ -3,6 +3,7 @@ package com.application.infera.services;
 import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.enums.ActivityType;
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
@@ -31,14 +32,13 @@ public class NoteService {
     private final ResourceRepository resourceRepository;
     private final DrawingRepository drawingRepository;
     private final DrawingCleanupService drawingCleanupService;
-
+    private final WorkspaceAccessService workspaceAccessService;
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
     public Note createNote(NoteRequest request, User user) {
         // Throws WorkspaceNotFoundException if this workspace doesn't belong to the user —
         // stops someone from posting a note into a workspace that isn't theirs
-        Workspace workspace = workspaceService.getWorkspaceForUser(request.getWorkspaceId(), user);
-
+        Workspace workspace = workspaceAccessService.requireWorkspace(request.getWorkspaceId(), user, WorkspaceRole.EDITOR);
         Note note = new Note();
         note.setTitle(request.getTitle());
         note.setDocumentJson(request.getDocumentJson());
@@ -62,8 +62,7 @@ public class NoteService {
     // matters: never trust a workspaceId alone, always confirm it's the
     // user's before touching anything that belongs to it.
     public List<Note> getNotesForWorkspace(Long workspaceId, User user) {
-        Workspace workspace = workspaceService.getWorkspaceForUser(workspaceId, user);
-        return noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.VIEWER);        return noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
     }
 
     // Count for dashboard stat card
@@ -92,11 +91,16 @@ public class NoteService {
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
     }
 
+    // Role-aware lookup: the CALLER says how much permission the operation needs
+    public Note getNoteForUser(Long id, User user, WorkspaceRole minimum) {
+        return workspaceAccessService.requireNote(id, user, minimum);
+    }
+
     // Update — re-verifies both the note AND the (possibly new) target workspace belong to the user
 //
 
     public void deleteNote(Long id, User user) {
-        Note note = getNoteForUser(id, user);
+        Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
         String title = note.getTitle();
         Workspace ws = note.getWorkspace();
 
@@ -116,7 +120,7 @@ public class NoteService {
     // Deliberately NOT called from autosaveNote() itself, which would
     // spam one entry per debounce cycle.
     public void logEditActivity(Long id, User user) {
-        Note note = getNoteForUser(id, user);
+        Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
         activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
     }
 
@@ -136,7 +140,7 @@ public class NoteService {
     // changes. Just title + documentJson, the two things the editor page
     // actually owns.
     public Note autosaveNote(Long id, NoteUpdateRequest request, User user) {
-        Note note = getNoteForUser(id, user);
+        Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             note.setTitle(request.getTitle());
@@ -151,7 +155,7 @@ public class NoteService {
         // (see item 5, still undecided).
         boolean workspaceChanged = false;
         if (request.getWorkspaceId() != null && !request.getWorkspaceId().equals(note.getWorkspace().getId())) {
-            Workspace newWorkspace = workspaceService.getWorkspaceForUser(request.getWorkspaceId(), user);
+            Workspace newWorkspace = workspaceAccessService.requireWorkspace(request.getWorkspaceId(), user, WorkspaceRole.EDITOR);
             note.setWorkspace(newWorkspace);
             workspaceChanged = true;
         }
