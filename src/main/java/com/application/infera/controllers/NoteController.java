@@ -77,7 +77,7 @@ public class NoteController {
 
         try {
             Note note = noteService.getNoteForUser(id, user, WorkspaceRole.VIEWER);
-            model.addAttribute("pageTitle", note.getTitle() + " — INCAPTUR");
+            model.addAttribute("pageTitle", note.getTitle() + " | incaptur");
             model.addAttribute("user", user);
             model.addAttribute("note", note);
             model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));

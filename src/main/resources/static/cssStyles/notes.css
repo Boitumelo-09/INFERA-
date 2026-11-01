@@ -549,10 +549,15 @@
     align-items: center;
     padding: 64px 24px 48px;
     overflow-y: auto;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
 }
-
+@media (hover: hover) and (pointer: fine) {
+    scrollbar-width: thin;
+}
+@media (hover: none) {
+    scrollbar-width: thin;
+}
 #viewNoteDialog.theater-mode .view-note-body {
     width: 100%;
     max-width: 760px;
@@ -725,26 +730,6 @@
 .theater-menu-item:hover { background: rgba(255,255,255,0.06); }
 .theater-menu-item.danger { color: #f87171; }
 .theater-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
-
-/*.drawer-close-btn {*/
-/*    display: none;*/
-/*    position: absolute;*/
-/*    top: 16px; right: 16px;*/
-/*    width: 30px; height: 30px;*/
-/*    border-radius: 7px;*/
-/*    background: rgba(255,255,255,0.06);*/
-/*    border: none;*/
-/*    color: var(--muted);*/
-/*    align-items: center; justify-content: center;*/
-/*    cursor: pointer;*/
-/*}*/
-
-/*#viewNoteDialog.theater-mode .view-note-resources .drawer-close-btn {*/
-/*    background: transparent;*/
-/*    top: 10px;*/
-/*    left: 16px;*/
-/*    display: flex;*/
-/*}*/
 
 .drawer-close-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
 /* Stronger blur behind the modal in theater mode — deepens the focus effect */
