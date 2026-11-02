@@ -29,7 +29,7 @@ public class WorkspaceAccessService {
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
         if (!membership.getRole().atLeast(minimum)) {
-            throw new WorkspaceAccessDeniedException("You don't have permission to do that in this workspace");
+            throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
         }
         return membership.getWorkspace();
     }
@@ -42,7 +42,7 @@ public class WorkspaceAccessService {
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
 
         if (!membership.getRole().atLeast(minimum)) {
-            throw new WorkspaceAccessDeniedException("You don't have permission to do that in this workspace");
+            throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
         }
         return noteRepository.findByIdAndWorkspace(noteId, membership.getWorkspace())
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
