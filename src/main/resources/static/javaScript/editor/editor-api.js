@@ -30,6 +30,11 @@ let dirtyDuringSave = false;
 let sessionBaselineSnapshot = null;
 let loggingEdit = false;
 
+// Set when the server refuses a save for good (logged out, no permission, note gone).
+// Retrying can never succeed, so once set we stop saving until the page is reloaded.
+let saveBlockedText = null;
+let retryDelayMs = 4000;
+
 function setStatus(state, errorText = 'Retrying…') {
     if (!statusEl) return;
     statusEl.classList.remove('saving', 'error');
@@ -84,7 +89,7 @@ function sessionContentSnapshot() {
 }
 
 async function logEditIfChanged() {
-    if (!window.__inferaEditor || loggingEdit) return;
+    if (!window.__inferaEditor || loggingEdit || saveBlockedText) return;
     const current = sessionContentSnapshot();
     if (current === sessionBaselineSnapshot) return; // nothing changed since baseline — nothing to log
 
@@ -105,8 +110,28 @@ async function logEditIfChanged() {
         loggingEdit = false;
     }
 }
+// 4xx = the server understood and refused (logged out, no permission, note gone): retrying can't help.
+// Network errors and 5xx are temporary, so those ARE worth retrying.
+function blockedTextFor(err) {
+    if (err.redirected || err.status === 401) return 'Not saved: please sign in again';
+    if (err.status === 403) return 'Not saved: no permission';
+    if (err.status === 404) return 'Not saved: note not found';
+    if (err.status >= 400 && err.status < 500 && err.status !== 408 && err.status !== 429) {
+        return 'Not saved: request refused';
+    }
+    return null; // temporary problem, so retry
+}
+
+function blockSaving(text) {
+    saveBlockedText = text;
+    clearTimeout(saveTimer);
+    sourceErrorText.note = text;
+    reportStatus('note', 'error');
+}
+
 async function performSave(isExit = false) {
     if (!window.__inferaEditor) return; // editor not mounted yet — nothing to save
+    if (saveBlockedText) return; // the server refused for good, so stop trying
     if (isSaving) { dirtyDuringSave = true; return; }
 
     isSaving = true;
@@ -132,15 +157,27 @@ async function performSave(isExit = false) {
             },
             body,
             keepalive: useKeepalive,
+            redirect: 'manual', // never follow redirects: a login redirect must not look like success, or loop
         });
-        if (!res.ok) throw new Error('Save failed: ' + res.status);
+        if (res.redirected || res.type === 'opaqueredirect' || !res.ok) {
+            const failure = new Error('Save failed: ' + res.status);
+            failure.status = res.status;
+            failure.redirected = res.redirected || res.type === 'opaqueredirect';            throw failure;
+        }
 
         lastSavedSnapshot = JSON.stringify(snapshot);
+        retryDelayMs = 4000; // healthy again, so reset the back-off
         reportStatus('note', 'saved');
     } catch (err) {
         console.error('[Incaptur] autosave error', err);
-        reportStatus('note', 'error');
-        saveTimer = setTimeout(() => performSave(isExit), 4000); // retry, don't just give up
+        const blockedText = blockedTextFor(err);
+        if (blockedText) {
+            blockSaving(blockedText);
+        } else {
+            reportStatus('note', 'error');
+            saveTimer = setTimeout(() => performSave(isExit), retryDelayMs); // temporary problem: retry with back-off
+            retryDelayMs = Math.min(retryDelayMs * 2, 30000);
+        }
     } finally {
         isSaving = false;
         if (dirtyDuringSave) {
@@ -151,6 +188,7 @@ async function performSave(isExit = false) {
 }
 
 function scheduleSave() {
+    if (saveBlockedText) return;
     if (!window.__inferaEditor) return;
     const snapshot = JSON.stringify(currentSnapshot());
     if (snapshot === lastSavedSnapshot) return; // nothing actually changed — skip the request entirely
