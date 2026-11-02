@@ -387,6 +387,7 @@ const header = document.getElementById('topbar')
 const scrollThreshold = 50;
 
 function handleScroll() {
+    if (!header) return;
     // Check how far the page has been scrolled vertically
     if (window.scrollY > scrollThreshold) {
         header.classList.add('scrolled');
