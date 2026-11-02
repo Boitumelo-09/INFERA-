@@ -1,0 +1,11 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="flashToast">
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var successMessage = /*[[${successMessage}]]*/ null;
+            var errorMessage = /*[[${errorMessage}]]*/ null;
+            if (typeof showToast !== 'function') return;
+            if (successMessage) showToast(successMessage);
+            if (errorMessage) showToast(errorMessage, 'error');
+        });
+    </script>
+</th:block>

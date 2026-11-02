@@ -575,16 +575,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script th:inline="javascript" th:if="${successMessage}">
-    document.addEventListener("DOMContentLoaded", () => {
-        showToast('[[${successMessage}]]');
-    });
-</script>
-<script th:inline="javascript" th:if="${errorMessage}">
-    document.addEventListener("DOMContentLoaded", () => {
-        showToast('[[${errorMessage}]]', 'error');
-    });
-</script>
+<th:block th:replace="~{fragments/flash-toast :: flashToast}"></th:block>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
 <script type="module" th:src="@{/javaScript/editor/view-renderer.js}"></script>
