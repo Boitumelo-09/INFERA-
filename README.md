@@ -2,4 +2,4 @@
 
 ## captur ideas
 
-### Ramsay Bolton
+### Theon (Rick) Greyjoy
