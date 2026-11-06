@@ -109,6 +109,8 @@
     color: var(--text);
     padding: 0;
     line-height: 1.25;
+    max-width: 640px;
+    text-overflow: ellipsis;
 }
 .editor-title-input::placeholder { color: rgba(148,163,184,0.4); }
 
