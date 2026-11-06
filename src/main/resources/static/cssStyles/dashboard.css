@@ -7,13 +7,12 @@
     --bg:           #0d1117;
     --secondary:    #161b22;
     --card:         #1c2128;
-    --accent:       #ea580c;
-    --accent-hover: #c2410c;
+    --accent:       #b3b9c1;
     --text:         #f8fafc;
     --muted:        #94a3b8;
     --border:       rgba(255,255,255,0.07);
     --radius:       12px;
-    --sidebar-w: 214px;
+    --sidebar-w:    214px;
     --topbar-h:     60px;
     --font-display: 'Sora', sans-serif;
     --font-body:    'Inter', sans-serif;
@@ -364,10 +363,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     content: '';
     position: absolute;
     left: -10px; top: 6px; bottom: 6px;
-    width: 3px;
-    background: linear-gradient(360deg, var(--accent), var(--bg));
+    width: 13px;
+    background: linear-gradient(360deg,var(--accent), var(--bg));
     border-radius: 0 3px 3px 0;
 }
+.sidebar.collapsed .nav-item.active::before { width: 3px; }
 .nav-badge {
     margin-left: auto;
     background:transparent;
