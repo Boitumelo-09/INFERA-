@@ -7,13 +7,12 @@
     --bg:           #0d1117;
     --secondary:    #161b22;
     --card:         #1c2128;
-    --accent:       #ea580c;
-    --accent-hover: #c2410c;
+    --accent:       #b3b9c1;
     --text:         #f8fafc;
     --muted:        #94a3b8;
     --border:       rgba(255,255,255,0.07);
     --radius:       12px;
-    --sidebar-w:    240px;
+    --sidebar-w:    214px;
     --topbar-h:     60px;
     --font-display: 'Sora', sans-serif;
     --font-body:    'Inter', sans-serif;
@@ -206,7 +205,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 
 .logo-mark {
-    width: 70px;
+    width: 45px;
     height: 45px;
     display: flex;
     align-items: center;
@@ -271,15 +270,14 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     border-radius: 9px;
     padding: 8px 12px;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
+    transition: color 0.2s;
     font-size: 0.82rem;
     color: var(--muted);
     flex-shrink: 0;
 }
 
 .sidebar-search:hover {
-    border-color: var(--accent-hover);
-
+  color: var(--text);
 }
 
 .sidebar-search kbd {
@@ -330,17 +328,26 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.18s, color 0.18s;
+    transition: color 0.18s;
     position: relative;
     border: none;
     background: none;
     width: 100%;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ws-nav-name{
+    max-width: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .nav-item i { font-size: 1rem; flex-shrink: 0; }
 
 .nav-item:hover {
-    background: var(--bg);
+
     color: var(--text);
 }
 [ data-theme="light" ] .nav-item:hover {
@@ -356,10 +363,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     content: '';
     position: absolute;
     left: -10px; top: 6px; bottom: 6px;
-    width: 3px;
-    background: var(--accent);
+    width: 13px;
+    background: linear-gradient(360deg,var(--accent), var(--bg));
     border-radius: 0 3px 3px 0;
 }
+.sidebar.collapsed .nav-item.active::before { width: 3px; }
 .nav-badge {
     margin-left: auto;
     background:transparent;
@@ -403,7 +411,6 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     gap: 10px;
     padding: 5px 2px;
     margin: 0px 10px 0;
-    background: rgba(255,255,255,0.03);
     border-radius: 10px;
     flex-shrink: 0;
 }
@@ -535,15 +542,20 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     width: 36px; height: 36px;
     border-radius: 8px;
     border: 1px solid transparent;
-    background: rgba(255,255,255,0.03);
+    background: var(--secondary);
     color: var(--muted);
     display: flex; align-items: center; justify-content: center;
     font-size: 1rem;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    transition: color 0.2s;
     position: relative;
 }
-.topbar-icon-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); }
+
+.topbar-icon-btn:hover {
+    color: var(--text);
+
+}
+
 .notif-dot {
     position: absolute; top: 7px; right: 7px;
     width: 7px; height: 7px;
@@ -2698,13 +2710,17 @@ html[data-theme="dark"] body {
     overscroll-behavior-y: none;
 }
 .welcome-modal-content {
-    background: var(--card);
-
+    border: none;
+    background: transparent;
     border-radius: 20px;
+    backdrop-filter: blur(10px);
 }
 .welcome-icon {
     font-size: 2.4rem;
     color: var(--accent);
+    max-height: 100vh;
+    width: 160px;
+    margin: 0 auto;
 }
 .welcome-title {
     font-family: var(--font-display);
@@ -2726,10 +2742,10 @@ padding: 8px 16px;
 font-size: 0.84rem;
 font-weight: 600;
 cursor: pointer;
-transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+transition: color 0.2s;
 white-space: nowrap;
 }
 .btn-submit-wel:hover {
-    background: color-mix(in srgb, var(--accent-hover) 10%, transparent);
-    transform: translateY(-1px);
+    color: var(--text);
+
 }

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- th:replace or th:fragment wrappers go here when wiring into Thymeleaf layout -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:attr="data-theme=${user != null ? user.themePreference : 'default'}">
 <head>
     <script>
@@ -111,7 +110,7 @@
             <li th:each="ws : ${workspaces}">
                 <a th:href="@{/workspaces}" class="nav-item ws-item">
                     <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
-                    <span th:text="${ws.name}">Workspace</span>
+                    <span class="ws-nav-name" th:text="${ws.name}">Workspace</span>
                 </a>
             </li>
             <li>
