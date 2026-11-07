@@ -31,14 +31,7 @@ public class MailService {
         this.templateEngine = templateEngine;
     }
 
-//    public void sendOtpEmail(String toEmail, String code) {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(buildFromHeader());
-//        message.setTo(toEmail);
-//        message.setSubject("Your INCAPTUR verification code");
-//        message.setText("Your verification code is: INC-" + code + "\n\nThis code expires in 10 minutes.");
-//        mailSender.send(message);
-//    }
+
 public void sendOtpEmail(String toEmail, String code) {
 
     try {
@@ -66,7 +59,7 @@ public void sendOtpEmail(String toEmail, String code) {
         // Text must be set BEFORE inline resources — Spring's MimeMessageHelper
         // requires this exact order or the multipart body renders incorrectly
         helper.setText(htmlContent, true);
-        helper.addInline("logo", new ClassPathResource("static/app_resources/incapturLogo.png"), "image/png");
+        helper.addInline("logo", new ClassPathResource("static/favicons/android-chrome-192x192.png"), "image/png");
         mailSender.send(message);
 
     } catch (Exception e) {

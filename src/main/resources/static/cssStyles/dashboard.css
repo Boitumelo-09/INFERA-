@@ -225,8 +225,9 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 
 .logo-icon {
-    fill: var(--accent);
+    color: var(--accent);
 }
+
 .logo-text {
 
     font-weight: 700;
