@@ -19,13 +19,10 @@ import java.util.Optional;
 @Repository
 public interface DrawingRepository extends JpaRepository<Drawing, Long> {
 
-    // The whole ownership chain in ONE query: user -> workspace -> note -> drawing.
-    // The noteId match also stops someone pairing their own noteId with another
-    // note's drawingId.
-    @Query("SELECT d FROM Drawing d WHERE d.id = :id AND d.note.id = :noteId AND d.note.workspace.user = :user")
-    Optional<Drawing> findOwnedDrawing(@Param("id") Long id,
-                                       @Param("noteId") Long noteId,
-                                       @Param("user") User user);
+    // Used only AFTER the note itself has been authorized (see DrawingService.loadDrawing).
+    // Pairing the drawing id with its note stops someone combining their own noteId
+    // with another note's drawingId.
+    Optional<Drawing> findByIdAndNote(Long id, Note note);
 
     // Previews only — deliberately does NOT select sceneJson, which can be huge.
     @Query("SELECT new com.application.infera.dtos.responses.DrawingSummaryResponse(d.id, d.mode, d.previewSvg, d.updatedAt) " +
