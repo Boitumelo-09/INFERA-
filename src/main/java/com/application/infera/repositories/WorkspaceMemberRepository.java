@@ -28,4 +28,11 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     Optional<WorkspaceMember> findMembershipForNote(@Param("noteId") Long noteId,
                                                     @Param("user") User user);
 
+    // Same lookup, starting from a resource id (resource -> its note -> that note's workspace)
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
+            "WHERE m.user = :user AND w.id = (SELECT r.note.workspace.id FROM Resource r WHERE r.id = :resourceId)")
+    Optional<WorkspaceMember> findMembershipForResource(@Param("resourceId") Long resourceId,
+                                                        @Param("user") User user);
 }
+
+

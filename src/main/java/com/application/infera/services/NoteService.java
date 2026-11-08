@@ -85,11 +85,7 @@ public class NoteService {
         return counts;   // workspaces with zero notes simply won't have an entry here
     }
 
-    // Ownership-scoped single lookup, used before update/delete
-    public Note getNoteForUser(Long id, User user) {
-        return noteRepository.findByIdAndWorkspace_User(id, user)
-                .orElseThrow(() -> new NoteNotFoundException("Note not found"));
-    }
+    
 
     // Role-aware lookup: the CALLER says how much permission the operation needs
     public Note getNoteForUser(Long id, User user, WorkspaceRole minimum) {

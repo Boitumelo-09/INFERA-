@@ -21,9 +21,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     // Notes belonging to one specific workspace (already known to be owned by the user)
     List<Note> findByWorkspaceOrderByUpdatedAtDesc(Workspace workspace);
 
-    // Ownership-scoped single lookup — prevents editing/deleting someone else's note
-    Optional<Note> findByIdAndWorkspace_User(Long id, User user);
-
+    
     // Used only AFTER membership is verified (see WorkspaceAccessService.requireNote)
     Optional<Note> findByIdAndWorkspace(Long id, Workspace workspace);
     // Total note count across all of a user's workspaces (for dashboard stat card)

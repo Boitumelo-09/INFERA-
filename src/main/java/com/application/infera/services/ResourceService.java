@@ -3,35 +3,33 @@ package com.application.infera.services;
 import com.application.infera.dtos.requests.ResourceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.ResourceCategory;
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.ResourceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.Resource;
 
 import com.application.infera.models.User;
 import com.application.infera.repositories.ResourceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final NoteService noteService;
     private final ActivityService activityService;
+    private final WorkspaceAccessService workspaceAccessService;
 
-    public ResourceService(ResourceRepository resourceRepository, NoteService noteService, ActivityService activityService) {
-        this.resourceRepository = resourceRepository;
-        this.noteService = noteService;
-        this.activityService = activityService;
-    }
 
     // Create — note ownership is verified BEFORE the resource is built,
     // same principle as NoteService checking workspace ownership first
     public void createResource(ResourceRequest request, User user) {
-        Note note = noteService.getNoteForUser(request.getNoteId(), user);
-
+        Note note = noteService.getNoteForUser(request.getNoteId(), user, WorkspaceRole.EDITOR);
         Resource resource = new Resource();
         resource.setTitle(request.getTitle());
         resource.setUrl(request.getUrl());
@@ -55,14 +53,13 @@ public class ResourceService {
         return counts;
     }
 
-    // Ownership-scoped single lookup, used before update/delete
-    public Resource getResourceForUser(Long id, User user) {
-        return resourceRepository.findByIdAndNote_Workspace_User(id, user)
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+    // Role-aware lookup: the caller says how much permission the operation needs
+    public Resource getResourceForUser(Long id, User user, WorkspaceRole minimum) {
+        return workspaceAccessService.requireResource(id, user, minimum);
     }
 
     public void updateResource(Long id, ResourceRequest request, User user) {
-        Resource resource = getResourceForUser(id, user);
+        Resource resource = getResourceForUser(id, user, WorkspaceRole.EDITOR);
 
         resource.setTitle(request.getTitle());
         resource.setUrl(request.getUrl());
@@ -75,7 +72,7 @@ public class ResourceService {
     }
 
     public void deleteResource(Long id, User user) {
-        Resource resource = getResourceForUser(id, user);
+        Resource resource = getResourceForUser(id, user, WorkspaceRole.EDITOR);
         Note note = resource.getNote();
         resourceRepository.delete(resource);
         noteService.touchNote(note);

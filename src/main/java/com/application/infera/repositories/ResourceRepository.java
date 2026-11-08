@@ -3,6 +3,7 @@ package com.application.infera.repositories;
 import com.application.infera.models.Note;
 import com.application.infera.models.Resource;
 import com.application.infera.models.User;
+import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +16,9 @@ import java.util.Optional;
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByNoteOrderByCreatedAtDesc(Note note);
 
-    // Ownership-scoped lookup — mirrors findByIdAndWorkspace_User on NoteRepository
-    Optional<Resource> findByIdAndNote_Workspace_User(Long id, User user);
+   
+    // Used only AFTER membership is verified (see WorkspaceAccessService.requireResource)
+    Optional<Resource> findByIdAndNote_Workspace(Long id, Workspace workspace);
 
     long countByNote_Workspace_User(User user);
 
