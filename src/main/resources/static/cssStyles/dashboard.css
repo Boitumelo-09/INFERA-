@@ -447,10 +447,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     flex-shrink: 0;
     padding: 4px;
     border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
+    transition: color 0.2s, font-weight 0.2s;
     display: flex;
 }
-.logout-btn:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+.logout-btn:hover { color: #ef4444; font-weight: 500; }
 
 /* Overlay (mobile) */
 .sidebar-overlay {
