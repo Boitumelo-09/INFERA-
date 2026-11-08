@@ -54,7 +54,7 @@ public class NoteService {
 
     // All notes across every workspace this user owns
     public List<Note> getNotesForUser(User user) {
-        return noteRepository.findByWorkspace_UserOrderByUpdatedAtDesc(user);
+        return noteRepository.findAccessibleByUser(user);
     }
 
     // Notes for ONE specific workspace — ownership is verified first via
@@ -67,14 +67,14 @@ public class NoteService {
 
     // Count for dashboard stat card
     public long countNotesForUser(User user) {
-        return noteRepository.countByWorkspace_User(user);
+        return noteRepository.countAccessibleByUser(user);
     }
 
     // EFFICIENT version — one query gets note counts for ALL of the user's
     // workspaces at once. Returns a Map so the template can look up
     // noteCounts.get(ws.id) for each tile with zero extra database hits.
     public Map<Long, Long> getNoteCountsByWorkspace(User user) {
-        List<Object[]> rows = noteRepository.countNotesGroupedByWorkspace(user);
+        List<Object[]> rows = noteRepository.countAccessibleGroupedByWorkspace(user);
 
         Map<Long, Long> counts = new HashMap<>();
         for (Object[] row : rows) {

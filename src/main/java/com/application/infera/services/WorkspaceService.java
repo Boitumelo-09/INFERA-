@@ -36,7 +36,8 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
-        if (countWorkspacesForUser(user) > 8) {
+        if (workspaceRepository.countByUser(user) > 8) {
+            // the limit applies to workspaces you OWN, not ones shared with you
             throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
         }
 
@@ -61,12 +62,12 @@ public class WorkspaceService {
 
     // Get all workspaces for a user
     public List<Workspace> getWorkspacesForUser(User user) {
-        return workspaceRepository.findByUserOrderByCreatedAtDesc(user);
+        return workspaceRepository.findAccessibleByUser(user);
     }
 
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
-        return workspaceRepository.countByUser(user);
+        return workspaceRepository.countAccessibleByUser(user);
     }
 
 

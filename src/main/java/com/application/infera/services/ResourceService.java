@@ -45,7 +45,7 @@ public class ResourceService {
 
 
     public Map<Long, Long> getResourceCountsByWorkspace(User user) {
-        List<Object[]> rows = resourceRepository.countResourcesGroupedByWorkspace(user);
+        List<Object[]> rows = resourceRepository.countAccessibleGroupedByWorkspace(user);
         Map<Long, Long> counts = new HashMap<>();
         for (Object[] row : rows) {
             counts.put((Long) row[0], (Long) row[1]);
@@ -81,16 +81,16 @@ public class ResourceService {
 
 
     public long countResourcesForUser(User user) {
-        return resourceRepository.countByNote_Workspace_User(user);
+        return resourceRepository.countAccessibleByUser(user);
     }
 
     public Map<Long, List<Resource>> getResourcesGroupedByNote(User user) {
-        List<Resource> resources = resourceRepository.findByNote_Workspace_UserOrderByCreatedAtDesc(user);
+        List<Resource> resources = resourceRepository.findAccessibleByUserOrderByUpdatedAtDesc(user);
         return resources.stream().collect(Collectors.groupingBy(r -> r.getNote().getId()));
     }
 
     public Map<ResourceCategory, List<Resource>> getResourcesGroupedByCategory(User user) {
-        List<Resource> resources = resourceRepository.findByNote_Workspace_UserOrderByUpdatedAtDesc(user);
+        List<Resource> resources = resourceRepository.findAccessibleByUserOrderByUpdatedAtDesc(user);
         Map<ResourceCategory, List<Resource>> grouped = new EnumMap<>(ResourceCategory.class);
         for (ResourceCategory cat : ResourceCategory.values()) {
             grouped.put(cat, new ArrayList<>());
