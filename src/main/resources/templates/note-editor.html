@@ -39,8 +39,6 @@
 </head>
 <body class="editor-body">
 
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      MINIMAL EDITOR TOPBAR — no sidebar on this page. The note's
@@ -56,7 +54,6 @@
     </a>
 
     <div class="editor-ws-badge">
-        <span class="editor-ws-dot"></span>
         <span id="editorTopbarWsName" th:text="${note.workspace.name}">Workspace</span>
     </div>
     <div class="editor-save-status" id="editorSaveStatus">
@@ -81,7 +78,7 @@
     <div class="editor-properties-bar">
         <div class="editor-property-ws-select" id="editorWsSelect">
             <button type="button" class="editor-property-pill editor-property-ws" id="editorWsTrigger">
-                <i class="bi bi-folder2"></i>
+                <i class="bi bi-chevron-bar-down"></i>
                 <span id="editorWsLabel" th:text="${note.workspace.name}">Workspace</span>
             </button>
             <div class="editor-ws-dropdown" id="editorWsDropdown">
