@@ -120,8 +120,25 @@ function save(s) {
     return s.chain;
 }
 
+const BLOCK_TEXT = {
+    permission: ['Not saved: no permission', 'You no longer have permission to edit this drawing, so your changes can’t be saved.'],
+    login:      ['Not saved: sign in again', 'Your session has ended, so your changes can’t be saved. Sign in again in another tab, then reload.'],
+    gone:       ['Not saved: drawing not found', 'This drawing is no longer available, so your changes can’t be saved.'],
+};
+
+// The server refused for good (retrying can't help): stop sending saves and say why, once.
+function blockDrawing(s, reason) {
+    if (s.blocked) return;
+    s.blocked = reason;
+    clearTimeout(s.timer);
+    window.__inferaSetSourceErrorText?.('drawing', BLOCK_TEXT[reason][0]);
+    setPill('error');
+    toast(BLOCK_TEXT[reason][1], 'error');
+}
+
 async function doSave(s) {
     if (!s.api || s.closed) return true; // never save from a torn-down canvas: its scene reads back empty
+    if (s.blocked) return false;         // the server refused for good: don't keep sending saves that can't succeed
     const version = sceneVersion(s.api.getSceneElementsIncludingDeleted());
     if (version === s.savedVersion && !s.forcePreview) return true;
     // forcePreview: page added/removed, no ink change
@@ -143,7 +160,11 @@ async function doSave(s) {
             headers: { 'Content-Type': 'application/json', ...s.ctx.csrfHeaders() },
             body,
             keepalive: new Blob([body]).size < KEEP_KEYALIVE_BYTES,
+            redirect: 'manual', // a login redirect must not look like success, or loop
         });
+        if (res.type === 'opaqueredirect' || res.status === 401) { blockDrawing(s, 'login'); return false; }
+        if (res.status === 403) { blockDrawing(s, 'permission'); return false; }
+        if (res.status === 404) { blockDrawing(s, 'gone'); return false; }
         if (res.status === 413) {
             setPill('error');
             toast('This drawing is too large to save.', 'error');
@@ -774,7 +795,7 @@ export const drawingSession = {
                 if (!(t instanceof Element) || ctx.dom.contains(t) || t.closest(KEEP_ACTIVE_SELECTOR)) return;
                 // Full screen: the top bar (save pill, Back link) stays usable without collapsing the canvas
                 if (ctx.isExpanded?.() && t.closest('.editor-topbar')) return;                this.deactivate().then(ok => {
-                    if (!ok) toast('Couldn’t save the drawing yet — it’s still open. Click outside again to retry.', 'error');
+                    if (!ok && !s.blocked) toast('Couldn’t save the drawing yet - it’s still open. Click outside again to retry.', 'error');
                 });
             };
             document.addEventListener('pointerdown', onPointerDown, true);
@@ -810,7 +831,19 @@ export const drawingSession = {
         closing = (async () => {
             clearTimeout(s.timer);
             syncPageCountFromContent(s); // never crop content that sits beyond the stored page count
-            const ok = await save(s);
+            let ok;
+            if (s.blocked) {
+                // The server will never accept these changes. Don't trap the user in the canvas,
+                // but don't throw their work away silently either: ask first.
+                ok = await confirmDialog({
+                    title: 'Leave without saving?',
+                    message: BLOCK_TEXT[s.blocked][1] + ' If you leave now, your changes to this drawing will be lost.',
+                    confirmText: 'Leave anyway',
+                    danger: true,
+                });
+            } else {
+                ok = await save(s);
+            }
             if (!ok) return false;
             s.cleanup.forEach(fn => fn());
             s.closed = true; // from here on the scene reads back empty: no further saves
@@ -819,7 +852,7 @@ export const drawingSession = {
             if (!silent) {
                 s.ctx.leave();
                 // The note is only touched once the canvas is gone, never while it's live
-                if (s.mode === 'HANDWRITING') {
+                if (s.mode === 'HANDWRITING' && !s.blocked) {
                     console.log('[drawing] leave: storing page count', s.pages);
                     s.ctx.setPages(s.pages);
                 }
