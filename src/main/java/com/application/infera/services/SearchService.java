@@ -25,15 +25,23 @@ public class SearchService {
         List<SearchResultDTO> results = new ArrayList<>();
         if (query == null || query.isBlank()) return results;
 
-        for (Workspace ws : workspaceRepository.findTop5ByUserAndNameContainingIgnoreCase(user, query)) {
+        // Search only inside workspaces this user belongs to (any role)
+        List<Workspace> accessible = workspaceRepository.findAccessibleByUser(user);
+        if (accessible.isEmpty()) return results;   // also avoids an empty IN (...) list
+
+        String needle = query.toLowerCase();
+        for (Workspace ws : accessible.stream()
+                .filter(w -> w.getName().toLowerCase().contains(needle))
+                .limit(5)
+                .toList()) {
             results.add(new SearchResultDTO("workspace", ws.getId(), ws.getName(), "Workspace"));
         }
 
-        for (Note note : noteRepository.findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndPlainTextContainingIgnoreCase(user, query, user, query)) {
+        for (Note note :noteRepository.findTop5ByWorkspaceInAndTitleContainingIgnoreCaseOrWorkspaceInAndPlainTextContainingIgnoreCase(accessible, query, accessible, query)) {
             results.add(new SearchResultDTO("note", note.getId(), note.getTitle(), note.getWorkspace().getName()));
         }
 
-        for (Resource res : resourceRepository.findTop5ByNote_Workspace_UserAndTitleContainingIgnoreCase(user, query)) {
+        for (Resource res :resourceRepository.findTop5ByNote_WorkspaceInAndTitleContainingIgnoreCase(accessible, query)) {
             results.add(new SearchResultDTO("resource", res.getNote().getId(), res.getTitle(), res.getCategory().name()));
         }
 

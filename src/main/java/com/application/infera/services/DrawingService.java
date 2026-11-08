@@ -3,8 +3,10 @@ package com.application.infera.services;
 import com.application.infera.dtos.requests.DrawingSaveRequest;
 import com.application.infera.dtos.responses.DrawingSummaryResponse;
 import com.application.infera.enums.DrawingMode;
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.DrawingNotFoundException;
 import com.application.infera.exception.DrawingTooLargeException;
+import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.models.Drawing;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
@@ -32,8 +34,7 @@ public class DrawingService {
     // is inserted. The note-ownership check happens first, inside
     // getNoteForUser (throws NoteNotFoundException if it isn't the user's).
     public Drawing createDrawing(Long noteId, DrawingMode mode, User user) {
-        Note note = noteService.getNoteForUser(noteId, user);
-
+        Note note = noteService.getNoteForUser(noteId, user, WorkspaceRole.EDITOR);
         Drawing drawing = new Drawing();
         drawing.setNote(note);
         drawing.setMode(mode != null ? mode : DrawingMode.DRAWING);
@@ -42,19 +43,32 @@ public class DrawingService {
 
     // Same message whether the drawing doesn't exist or isn't the user's —
     // nothing to learn by probing ids.
+    // Read access (VIEWER): the controller's GET uses this one
     public Drawing getDrawingForUser(Long noteId, Long drawingId, User user) {
-        return drawingRepository.findOwnedDrawing(drawingId, noteId, user)
+        return loadDrawing(noteId, drawingId, user, WorkspaceRole.VIEWER);
+    }
+
+    // The note gate does the authorization; its "not found" becomes the drawing's "not found"
+    // so every failure to reach a drawing sounds the same.
+    private Drawing loadDrawing(Long noteId, Long drawingId, User user, WorkspaceRole minimum) {
+        Note note;
+        try {
+            note = noteService.getNoteForUser(noteId, user, minimum);
+        } catch (NoteNotFoundException e) {
+            throw new DrawingNotFoundException("Drawing not found");
+        }
+        return drawingRepository.findByIdAndNote(drawingId, note)
                 .orElseThrow(() -> new DrawingNotFoundException("Drawing not found"));
     }
 
     @Transactional(readOnly = true)
     public List<DrawingSummaryResponse> listSummaries(Long noteId, User user) {
-        Note note = noteService.getNoteForUser(noteId, user);
+        Note note = noteService.getNoteForUser(noteId, user, WorkspaceRole.VIEWER);
         return drawingRepository.findSummariesByNote(note);
     }
 
     public Drawing saveDrawing(Long noteId, Long drawingId, DrawingSaveRequest request, User user) {
-        Drawing drawing = getDrawingForUser(noteId, drawingId, user);
+        Drawing drawing = loadDrawing(noteId, drawingId, user, WorkspaceRole.EDITOR);
 
         if (request.getSceneJson() != null && request.getSceneJson().length() > MAX_SCENE_CHARS) {
             throw new DrawingTooLargeException("Drawing is too large to save");

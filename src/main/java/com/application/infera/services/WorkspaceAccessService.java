@@ -2,13 +2,12 @@ package com.application.infera.services;
 
 import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.NoteNotFoundException;
+import com.application.infera.exception.ResourceNotFoundException;
 import com.application.infera.exception.WorkspaceAccessDeniedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
-import com.application.infera.models.Note;
-import com.application.infera.models.User;
-import com.application.infera.models.Workspace;
-import com.application.infera.models.WorkspaceMember;
+import com.application.infera.models.*;
 import com.application.infera.repositories.NoteRepository;
+import com.application.infera.repositories.ResourceRepository;
 import com.application.infera.repositories.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,7 @@ public class WorkspaceAccessService {
 
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final NoteRepository noteRepository;
+    private final ResourceRepository resourceRepository;
     // Returns the workspace only if the user is a member with at least the given role.
     //  - not a member            -> WorkspaceNotFoundException (don't reveal that the id exists)
     //  - member, role too low    -> WorkspaceAccessDeniedException
@@ -46,5 +46,17 @@ public class WorkspaceAccessService {
         }
         return noteRepository.findByIdAndWorkspace(noteId, membership.getWorkspace())
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
+    }
+
+    // Same idea for a resource: its workspace is reached through its note.
+    public Resource requireResource(Long resourceId, User user, WorkspaceRole minimum) {
+        WorkspaceMember membership = workspaceMemberRepository.findMembershipForResource(resourceId, user)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+
+        if (!membership.getRole().atLeast(minimum)) {
+            throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
+        }
+        return resourceRepository.findByIdAndNote_Workspace(resourceId, membership.getWorkspace())
+                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
 }

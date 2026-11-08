@@ -67,6 +67,7 @@ function reportStatus(source, state) {
     else setStatus('saved');
 }
 window.__inferaReportSaveStatus = reportStatus;
+window.__inferaSetSourceErrorText = (source, text) => { sourceErrorText[source] = text; };
 
 function currentSnapshot() {
     const title = (titleInput?.value || '').trim() || 'Untitled';
