@@ -2,4 +2,4 @@
 
 ## captur ideas
 
-### Theon (Rick) Greyjoy
+### Samuel Tully
