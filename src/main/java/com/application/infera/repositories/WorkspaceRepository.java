@@ -31,5 +31,5 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     boolean existsByNameAndUser(String name, User user);
     
 
-    List<Workspace> findTop5ByUserAndNameContainingIgnoreCase(User user, String query);
+   
 }
