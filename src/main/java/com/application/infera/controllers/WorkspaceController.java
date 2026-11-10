@@ -62,7 +62,7 @@ public class WorkspaceController {
         try {
             workspaceService.createWorkspace(workspaceRequest, user);
             redirectAttributes.addFlashAttribute("successMessage", String.format("Workspace \"%s\" created!", workspaceRequest.getName()));
-        } catch (WorkspaceAlreadyExistExeption | WorkspaceNotFoundException e) {
+        } catch (WorkspaceAlreadyExistExeption | WorkspaceNotFoundException | WorkspaceLimitReachedException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
