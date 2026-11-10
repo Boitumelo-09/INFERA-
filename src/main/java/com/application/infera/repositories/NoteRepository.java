@@ -15,9 +15,7 @@ import java.util.Optional;
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
-    // A note has no direct user_id — ownership is traced through workspace.user
-    // Spring Data reads this as: WHERE workspace.user_id = ?
-    List<Note> findByWorkspace_UserOrderByUpdatedAtDesc(User user);
+
 
     // Notes belonging to one specific workspace (already known to be owned by the user)
     List<Note> findByWorkspaceOrderByUpdatedAtDesc(Workspace workspace);
@@ -25,15 +23,12 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     // Used only AFTER membership is verified (see WorkspaceAccessService.requireNote)
     Optional<Note> findByIdAndWorkspace(Long id, Workspace workspace);
-    // Total note count across all of a user's workspaces (for dashboard stat card)
-    long countByWorkspace_User(User user);
 
 
-    @Query("SELECT n.workspace.id, COUNT(n) FROM Note n WHERE n.workspace.user = :user GROUP BY n.workspace.id")
-    List<Object[]> countNotesGroupedByWorkspace(@Param("user") User user);
 
-    List<Note> findTop5ByWorkspace_UserAndTitleContainingIgnoreCaseOrWorkspace_UserAndPlainTextContainingIgnoreCase(
-            User user1, String titleQuery, User user2, String contentQuery);
+
+
+
     List<Note> findByWorkspace_User(User user);   // notes in workspaces this user OWNS: account deletion only
 
     // ── Member-based reads: every note in a workspace this user belongs to (any role) ──
