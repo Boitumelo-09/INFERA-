@@ -6,6 +6,7 @@ import com.application.infera.models.User;
 import com.application.infera.repositories.TagRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,14 +30,15 @@ public class TagService {
 
     public Tag findOrCreate(String rawName, com.application.infera.models.User user) {
         String name = normalize(rawName);
-        return tagRepository.findByNameIgnoreCase(name)
-                .orElseGet(() -> {
-                    Tag tag = new Tag();
-                    tag.setName(name);
-                    Tag saved = tagRepository.save(tag);
-                    activityService.log(user, ActivityType.TAG_CREATED, name, null);
-                    return saved;
-                });
+        Optional<Tag> existing = tagRepository.findByNameIgnoreCase(name);
+        if (existing.isPresent()) return existing.get();
+
+        // Not found: insert race-safely, then read back whichever row won
+        boolean created = tagRepository.insertIfAbsent(name, LocalDateTime.now()) == 1;
+        Tag tag = tagRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new IllegalStateException("Tag could not be created: " + name));
+        if (created) activityService.log(user, ActivityType.TAG_CREATED, name, null); // only the request that created it logs it
+        return tag;
     }
 
     public Set<Tag> resolveTags(String rawCsv, User user) {
@@ -50,9 +52,15 @@ public class TagService {
     }
 
     // Powers the autocomplete endpoint
-    public List<Tag> searchTags(String query) {
+    public List<Tag> searchTags(String query, User user) {
         if (query == null || query.isBlank()) return List.of();
-        return tagRepository.findTop10ByNameContainingIgnoreCaseOrderByNameAsc(normalize(query));
+        String needle = normalize(query);
+        // Only tags on notes in workspaces this user belongs to; names are stored normalized (lowercase)
+        return tagRepository.findAccessibleByUser(user).stream()
+                .filter(t -> t.getName().contains(needle))
+                .sorted(Comparator.comparing(Tag::getName))
+                .limit(10)
+                .toList();
     }
 
     public long countTagsForUser(User user) {

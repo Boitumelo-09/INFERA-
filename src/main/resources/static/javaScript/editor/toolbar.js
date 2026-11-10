@@ -49,13 +49,15 @@ const GROUPS = [
     ],
 ];
 const COLORS = [
-    { name: 'Orange',  value: '#ea580c' },
-    { name: 'Indigo',  value: '#6366f1' },
-    { name: 'Emerald', value: '#10b981' },
-    { name: 'Amber',   value: '#f59e0b' },
-    { name: 'Sky',     value: '#0ea5e9' },
-    { name: 'Pink',    value: '#ec4899' },
-    { name: 'Muted',   value: '#94a3b8' },
+    { name: 'Silver',      value: '#b3b9c1' },
+    { name: 'Indigo',      value: '#6366f1' },
+    { name: 'Emerald',     value: '#10b981' },
+    { name: 'Ruby',        value: '#e11d48' },
+    { name: 'Mustard',     value: '#ddcd25' },
+    { name: 'Plum',        value: '#580d5c' },
+    { name: 'Rust',        value: '#9c3109' },
+    { name: 'Lime',        value: '#4dcf0d' },
+    { name: 'Pink',        value: '#ec4899' },
 ];
 
 function buildColorPicker(editor) {

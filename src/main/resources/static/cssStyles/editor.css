@@ -222,7 +222,7 @@
     top: 40px;
     left: 0;
     background: var(--secondary);
-    border: 1px solid var(--border);
+    border: none;
     border-radius: 10px;
     padding: 12px;
     min-width: 168px;
@@ -247,14 +247,17 @@
     margin-top: 10px;
     padding: 6px 8px;
     background: none;
-    border: 1px solid var(--border);
+    border: none;
     border-radius: 7px;
     color: var(--muted);
     font-size: 0.78rem;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
 }
-.color-picker-reset:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+.color-picker-reset:hover {
+    color: var(--text);
+}
 
 /* ═══════════════════════════════════════
    TOOLBAR
@@ -318,6 +321,7 @@
     font-family: var(--font-body);
     font-size: 1rem;
     color: var(--text);
+    border-bottom: 1px solid var(--border);
 }
 
 .ProseMirror {

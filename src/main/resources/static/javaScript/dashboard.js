@@ -302,19 +302,6 @@ function addWorkspaceToSidebar(name, color) {
     setTimeout(() => link.style.background = '', 1800);
 }
 
-/* ───────────────────────────────────────────────────────────────────
-   BADGE COUNT HELPERS
-─────────────────────────────────────────────────────────────────── */
-function updateBadgeCount(badgeId, delta) {
-    const el = $(`#${badgeId}`);
-    if (!el) return;
-    const current = parseInt(el.textContent, 10) || 0;
-    el.textContent = current + delta;
-    /* Pulse animation */
-    el.style.transform = 'scale(1.4)';
-    el.style.transition = 'transform 0.15s';
-    setTimeout(() => { el.style.transform = ''; }, 200);
-}
 
 /* ───────────────────────────────────────────────────────────────────
    NAV ROUTING STUBS
