@@ -553,7 +553,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 64px 24px 48px;
+    padding: 10px 24px 48px;
     overflow-y: auto;
     scrollbar-width: none;
     scrollbar-color: var(--ws-color, var(--accent)) transparent;
@@ -658,7 +658,7 @@
     .resources-close-btn { top: 10px; left: 10px; }}
 
 @media (max-height: 500px) {
-    #viewNoteDialog.theater-mode .view-note-main { padding: 52px 18px 28px; }
+    #viewNoteDialog.theater-mode .view-note-main { padding: 10px 18px 28px; }
 }
 @media (max-width: 480px) {
     #viewNoteDialog.theater-mode .view-note-body { font-size: 0.98rem; }
@@ -675,17 +675,22 @@
 
 .theater-menu-btn {
     width: 38px; height: 38px;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    border:none;
     border-radius: 10px;
-    background: var(--card);
-    border: 1px solid transparent;
     color: var(--muted);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    transition: color 0.22s;
 }
-.theater-menu-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.16); }
+
+.theater-menu-btn:hover {
+    color: var(--text);
+
+}
 
 .theater-menu-dropdown {
     position: absolute;
@@ -727,13 +732,13 @@
     border-radius: 7px;
     background: none;
     border: none;
-    color: var(--text);
+    color: var(--muted);
     font-size: 0.85rem;
     cursor: pointer;
     text-align: left;
-    transition: background 0.15s;
+    transition: color 0.15s;
 }
-.theater-menu-item:hover { background: rgba(255,255,255,0.06); }
+.theater-menu-item:hover { color: var(--text); }
 .theater-menu-item.danger { color: #f87171; }
 .theater-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
 
