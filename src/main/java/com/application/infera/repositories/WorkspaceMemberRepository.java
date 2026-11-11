@@ -4,6 +4,7 @@ import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.models.WorkspaceMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,15 @@ import java.util.Optional;
 public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember, Long> {
     List<WorkspaceMember> findByWorkspace(Workspace workspace);
     List<WorkspaceMember> findByUser(User user);
+
+    // Adds a member unless one already exists for (workspace, user); an existing role is never changed.
+    // Returns 1 if inserted, 0 if the user was already a member.
+    @Modifying
+    @Query(value = "INSERT INTO workspace_members (workspace_id, user_id, role, created_at) " +
+            "VALUES (:workspaceId, :userId, :role, :createdAt) ON CONFLICT (workspace_id, user_id) DO NOTHING",
+            nativeQuery = true)
+    int insertIfAbsent(@Param("workspaceId") Long workspaceId, @Param("userId") Long userId,
+                       @Param("role") String role, @Param("createdAt") java.time.LocalDateTime createdAt);
 
     // The single lookup behind every access check: this user's membership in this workspace, if any
     @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace " +
