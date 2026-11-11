@@ -20,6 +20,7 @@ public class ActivityController {
     private final WorkspaceService workspaceService;
     private final CurrentUserService currentUserService;
     private final ResourceService resourceService;
+    private final TagService tagService;
 
 
     @GetMapping
@@ -39,6 +40,7 @@ public class ActivityController {
         model.addAttribute("monthlyDailyCounts", activityService.getMonthlyDailyCounts(user));
         model.addAttribute("recentActivities", activityService.getRecentActivities(user, 30));
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
+        model.addAttribute("tagCount", tagService.countTagsForUser(user));
         return "activity";
     }
 

@@ -937,12 +937,12 @@
     border: 1px solid var(--border);
     border-radius: 9px;
     padding: 8px 10px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.22s;
 }
 
 .tag-input-wrap:focus-within {
-    border-color: rgba(234, 88, 12, 0.5);
-    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+    border-color: var(--accent);
+
 }
 
 [data-theme="dark"] .tag-input-wrap:focus-within {
@@ -961,8 +961,9 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: rgba(234, 88, 12, 0.12);
-    color: #fb923c;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--muted);
     border-radius: 99px;
     padding: 3px 6px 3px 10px;
     font-size: 0.78rem;
@@ -991,11 +992,11 @@
     border-radius: 50%;
     display: flex;
     align-items: center;
-    transition: background 0.15s;
+    transition: color 0.15s;
 }
 
 .tag-chip button:hover {
-    background: rgba(255, 255, 255, 0.15);
+    color: var(--text);
 }
 
 .tag-text-input {
@@ -1015,7 +1016,7 @@
 }
 
 .tag-text-input::placeholder {
-    color: rgba(148, 163, 184, 0.4);
+    color: var(--muted);
 }
 
 .tag-suggestions {
@@ -1040,13 +1041,13 @@
 .tag-suggestion-item {
     padding: 8px 12px;
     font-size: 0.82rem;
-    color: var(--text);
+    color: var(--muted);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: color 0.15s;
 }
 
 .tag-suggestion-item:hover, .tag-suggestion-item.focused {
-    background: rgba(234, 88, 12, 0.1);
+    color: var(--text);
 }
 
 /* ─── TAG PILLS ─── */

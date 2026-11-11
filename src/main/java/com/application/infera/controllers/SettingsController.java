@@ -1,5 +1,6 @@
 package com.application.infera.controllers;
 
+import com.application.infera.exception.AccountDeletionBlockedException;
 import com.application.infera.models.User;
 import com.application.infera.repositories.*;
 import com.application.infera.services.*;
@@ -39,6 +40,9 @@ public class SettingsController {
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
+        model.addAttribute("ownedWorkspaceCount", settingsService.countOwnedWorkspaces(user));
+        model.addAttribute("ownedNotesCount", settingsService.countOwnedNotes(user));
+        model.addAttribute("ownedResourcesCount", settingsService.countOwnedResources(user));
         return "settings";
     }
 
@@ -59,13 +63,19 @@ public class SettingsController {
     @PostMapping("/delete-account")
     public String deleteAccount(@AuthenticationPrincipal Object principal,
                                 @RequestParam("confirmText") String confirmText,
-                                HttpServletRequest request) throws ServletException {
+                                HttpServletRequest request,
+                                RedirectAttributes redirectAttributes) throws ServletException {
         User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/signin";
         if (!"DELETE".equals(confirmText)) {
             return "redirect:/settings?error=confirm";
         }
-       settingsService.deleteUser(user);
+        try {
+            settingsService.deleteUser(user);
+        } catch (AccountDeletionBlockedException e) {
+            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+            return "redirect:/settings";
+        }
         request.logout();
         return "redirect:/signin?deleted=true";
     }

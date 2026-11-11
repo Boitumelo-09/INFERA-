@@ -91,6 +91,7 @@ public class WorkspaceService {
     }
 
     // Delete a workspace — only if it belongs to this user
+    @Transactional
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = workspaceAccessService.requireWorkspace(id, user, WorkspaceRole.OWNER);
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
@@ -104,7 +105,7 @@ public class WorkspaceService {
         noteRepository.deleteAll(wsNotes);
         activityRepository.deleteAll(activityRepository.findByWorkspace(workspace));
         workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
-
+        
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }

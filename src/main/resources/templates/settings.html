@@ -154,8 +154,7 @@
         <form th:action="@{/settings/delete-account}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div class="modal-body">
-                <p style="color: var(--muted); font-size: 0.86rem;">This permanently deletes your workspaces, notes, resources, and activity. Type <strong>DELETE</strong> to confirm.</p>
-                <input type="text" name="confirmText" id="deleteConfirmInput" class="form-input" style="padding-left:14px;" autocomplete="off" required />
+                <p style="color: var(--muted); font-size: 0.86rem;">This permanently deletes the <strong th:text="${ownedWorkspaceCount}">0</strong> workspace(s), <strong th:text="${ownedNotesCount}">0</strong> note(s) and <strong th:text="${ownedResourcesCount}">0</strong> resource(s) you own, plus your activity. Workspaces shared with you are not deleted; you are just removed from them. Type <strong>DELETE</strong> to confirm.</p>                <input type="text" name="confirmText" id="deleteConfirmInput" class="form-input" style="padding-left:14px;" autocomplete="off" required />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>

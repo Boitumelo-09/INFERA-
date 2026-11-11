@@ -134,6 +134,12 @@
                 <div class="asc-value" th:text="${totalActivities}">0</div>
                 <div class="asc-label">Total actions logged</div>
             </div>
+
+            <div class="act-stat-card">
+                <div class="asc-icon"><i class="bi bi-tags"></i></div>
+                <div class="asc-value" th:text="${tagCount}">0</div>
+                <div class="asc-label">Tags in my workspaces</div>
+            </div>
         </div>
 
         <!-- ── TREND + BREAKDOWN ── -->
@@ -153,7 +159,7 @@
 
             <div class="dash-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="bi bi-pie-chart"></i> Breakdown</h2>
+                    <h2 class="panel-title"><i class="bi bi-pie-chart"></i> My activity breakdown</h2>
                 </div>
                 <div class="act-donut-wrap"
                      th:data-notes="${categoryBreakdown.get('NOTE')}"
