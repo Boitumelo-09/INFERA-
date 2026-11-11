@@ -52,4 +52,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             Collection<Workspace> workspaces1, String titleQuery,
             Collection<Workspace> workspaces2, String contentQuery);
 
+    long countByWorkspace_User(User user);
 }
