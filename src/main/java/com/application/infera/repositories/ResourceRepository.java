@@ -44,4 +44,5 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
     List<Resource> findByNote_Workspace_UserOrderByCreatedAtDesc(User user);
 
+    long countByNote_Workspace_User(User user);
 }
