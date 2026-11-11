@@ -19,6 +19,7 @@ public class SettingsService {
     private final TodoService todoService;
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final DrawingService drawingService;
+    private final InvitationRepository invitationRepository;
 
     public boolean updateTheme(User user, String theme) {
         if (!theme.equals("default") && !theme.equals("dark") && !theme.equals("light")) return false;
@@ -48,7 +49,9 @@ public class SettingsService {
       // Activity rows from OTHER users (e.g. former members) that still point at this user's workspaces
       for (var ws : workspaceRepository.findByUserOrderByCreatedAtDesc(user)) {
           activityRepository.deleteAll(activityRepository.findByWorkspace(ws));
+          invitationRepository.deleteByWorkspace(ws);
       }
+      invitationRepository.deleteByEmail(user.getEmail());   // invitations addressed to this person
       workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByUser(user));
       workspaceRepository.deleteAll(workspaceRepository.findByUserOrderByCreatedAtDesc(user));
       profileService.deleteAvatar(user);
