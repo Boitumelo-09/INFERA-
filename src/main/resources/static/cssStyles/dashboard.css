@@ -1090,14 +1090,16 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 /* ═══════════════════════════════════════
    MODALS
 ═══════════════════════════════════════ */
+
 .infera-modal .modal-content {
     background: var(--secondary);
     border: 1px solid transparent;
     border-radius: 16px;
     box-shadow: 0 32px 72px rgba(0,0,0,0.55);
+   
 }
 .infera-modal .modal-header {
-    border-bottom: 1px solid var(--border);
+    border: none;
     padding: 20px 24px;
     display: flex; align-items: center; justify-content: space-between;
 }
@@ -1111,14 +1113,20 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     background: none; border: none;
     color: var(--muted); font-size: 1rem;
     cursor: pointer; padding: 4px 6px;
-    border-radius: 6px; transition: color 0.2s, background 0.2s;
+    border-radius: 6px; transition: color 0.22s;
 }
-.modal-close:hover { color: var(--text); background: rgba(255,255,255,0.06); }
-.infera-modal .modal-body { padding: 24px; }
+.modal-close:hover { color: var(--text);  }
+
+.infera-modal .modal-body {
+    padding: 10px 24px;
+}
+
 .infera-modal .modal-footer {
-    border-top: 1px solid var(--border);
+    border: none;
     padding: 16px 24px;
-    display: flex; justify-content: flex-end; gap: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 /* Bootstrap backdrop fix */
 .modal-backdrop { background: rgba(13,17,23,0.8); }
@@ -1138,10 +1146,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 .form-input {
     width: 100%;
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 10px 14px 10px 38px;
+    background: transparent;
+    border:none;
+    border-bottom: 1px solid var(--border);
+    /*border-radius: 9px;*/
+    padding: 10px 14px 1px 38px;
     color: var(--text);
     font-family: var(--font-body);
     font-size: 0.88rem;
@@ -1150,8 +1159,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     -webkit-appearance: none;
 }
 .form-input::placeholder { color: var(--muted); }
+
 .form-input:focus {
-    border-color: var(--accent);
+    color: var(--text);
+    background: var(--secondary);
 
 }
 .input-wrap:focus-within .input-icon { color: var(--accent); }
@@ -1188,19 +1199,24 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     background: transparent;
     border: 1px solid var(--border);
     color: var(--muted);
+    transition: color 0.22s;
 }
-.btn-modal-ghost:hover { border-color: rgba(255,255,255,0.16); color: var(--text); background: rgba(255,255,255,0.04); }
+
+.btn-modal-ghost:hover {
+
+    color: var(--text);
+
+}
 
 .btn-modal-accent {
     background: transparent;
     border: 1px var(--accent) solid;
-    color: var(--accent);
+    color: var(--muted);
+    transition: color 0.22s;
 }
 
 .btn-modal-accent:hover {
-    background: color-mix(in srgb, var(--accent-hover) 10%, transparent);
-    transform: translateY(-1px);
-
+    color: var(--accent);
 }
 
 /* Spinner */
