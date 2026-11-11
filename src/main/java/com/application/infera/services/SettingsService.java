@@ -4,7 +4,6 @@ import com.application.infera.exception.AccountDeletionBlockedException;
 import com.application.infera.models.User;
 import com.application.infera.repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
