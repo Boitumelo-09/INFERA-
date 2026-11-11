@@ -493,12 +493,11 @@
     cursor: pointer;
     padding: 6px 8px;
     border-radius: 7px;
-    transition: color 0.2s, background 0.2s;
+    transition: color 0.2s;
 }
 
 .modal-expand-btn:hover {
     color: var(--text);
-    background: rgba(255, 255, 255, 0.06);
 }
 
 /* ═══════════════════════════════════════

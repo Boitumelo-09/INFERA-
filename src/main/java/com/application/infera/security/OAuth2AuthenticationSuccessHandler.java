@@ -6,6 +6,8 @@ import com.application.infera.repositories.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import com.application.infera.services.InvitationTokens;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -40,7 +42,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
 
         assert oauthUser != null;
-        String email     = resolveEmail(oauthUser, provider);
+        String email     = OAuthEmailResolver.resolve(oauthUser);
         String firstName = resolveFirstName(oauthUser, provider);
         String lastName  = resolveLastName(oauthUser, provider);
 
@@ -69,10 +71,24 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             userRepository.save(user);
         }
 
-        response.sendRedirect("/dashboard");
+        response.sendRedirect(resolvePostLoginTarget(request));
     }
 
     // ── ATTRIBUTE RESOLVERS ──────────────────────────────────────────
+    // Back to a pending invitation page if one was stored before sign-in, else the dashboard.
+    // Only a path that exactly matches /invitations/<43-char token> is ever honoured (no open redirect).
+    private String resolvePostLoginTarget(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object stored = session.getAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+            session.removeAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+            if (stored instanceof String path && InvitationTokens.RETURN_PATH.matcher(path).matches()) {
+                return path;
+            }
+        }
+        return "/dashboard";
+    }
+
     private String resolveAvatarUrl(OAuth2User oauthUser, String provider) {
         if ("google".equals(provider)) return oauthUser.getAttribute("picture");
         if ("github".equals(provider)) return oauthUser.getAttribute("avatar_url");

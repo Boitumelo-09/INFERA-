@@ -1,0 +1,110 @@
+package com.application.infera.controllers;
+
+import com.application.infera.enums.WorkspaceRole;
+import com.application.infera.exception.InvitationException;
+import com.application.infera.models.User;
+import com.application.infera.models.Workspace;
+import com.application.infera.services.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Slf4j
+@Controller
+@RequestMapping("/workspaces/{workspaceId}/members")
+@RequiredArgsConstructor
+public class WorkspaceMembersController {
+
+    private final InvitationService invitationService;
+    private final MailService mailService;
+    private final WorkspaceAccessService workspaceAccessService;
+    private final CurrentUserService currentUserService;
+    private final WorkspaceService workspaceService;
+    private final NoteService noteService;
+    private final ResourceService resourceService;
+
+    @Value("${app.invitations.expiry-days:5}")
+    private int expiryDays;
+
+    @GetMapping
+    public String page(@PathVariable Long workspaceId,
+                       @AuthenticationPrincipal Object principal,
+                       Model model) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+
+        // OWNER only: a member with a lower role is denied, a non-member gets "not found"
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.OWNER);
+
+        model.addAttribute("pageTitle", "members | incaptur");
+        model.addAttribute("user", user);
+        model.addAttribute("workspace", workspace);
+        model.addAttribute("pendingInvitations", invitationService.listPending(workspaceId, user));
+        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
+        model.addAttribute("noteCount", noteService.countNotesForUser(user));
+        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+        return "workspace-members";
+    }
+
+    @PostMapping("/invitations")
+    public String invite(@PathVariable Long workspaceId,
+                         @RequestParam("email") String email,
+                         @RequestParam("role") WorkspaceRole role,
+                         @AuthenticationPrincipal Object principal,
+                         RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+
+        try {
+            // 1) save (own transaction, committed when this returns)
+            InvitationService.CreatedInvitation created =
+                    invitationService.createInvitation(workspaceId, email, role, user);
+            // 2) only then send: a mail failure can never roll back or hide the saved invitation
+            try {
+                String roleName = created.invitation().getRole().name();
+                mailService.sendInvitationEmail(
+                        created.invitation().getEmail(),
+                        fullName(user),
+                        created.invitation().getWorkspace().getName(),
+                        roleName.charAt(0) + roleName.substring(1).toLowerCase(),
+                        created.rawToken(),
+                        expiryDays);
+                redirectAttributes.addFlashAttribute("toast", "Invitation sent to " + created.invitation().getEmail() + ".");
+            } catch (RuntimeException mailFailure) {
+                log.error("Invitation email failed for workspace {}", workspaceId, mailFailure);   // never log the token
+                redirectAttributes.addFlashAttribute("toastError",
+                        "Invitation saved, but the email could not be sent. Click Invite again to retry.");
+            }
+        } catch (InvitationException e) {
+            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+        }
+        return "redirect:/workspaces/" + workspaceId + "/members";
+    }
+
+    @PostMapping("/invitations/{invitationId}/revoke")
+    public String revoke(@PathVariable Long workspaceId,
+                         @PathVariable Long invitationId,
+                         @AuthenticationPrincipal Object principal,
+                         RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try {
+            invitationService.revokeInvitation(workspaceId, invitationId, user);
+            redirectAttributes.addFlashAttribute("toast", "Invitation revoked.");
+        } catch (InvitationException e) {
+            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+        }
+        return "redirect:/workspaces/" + workspaceId + "/members";
+    }
+
+    private static String fullName(User u) {
+        String name = ((u.getFirstName() == null ? "" : u.getFirstName()) + " "
+                + (u.getLastName() == null ? "" : u.getLastName())).trim();
+        return name.isEmpty() ? "Someone" : name;
+    }
+}

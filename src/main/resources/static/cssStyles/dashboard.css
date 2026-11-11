@@ -267,9 +267,9 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     align-items: center;
     gap: 8px;
     background: var(--bg);
-    border: 1px solid transparent;
+    border: none;
     border-radius: 9px;
-    padding: 8px 12px;
+    padding: 6px 12px;
     cursor: pointer;
     transition: color 0.2s;
     font-size: 0.82rem;
@@ -283,14 +283,16 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 .sidebar-search kbd {
     margin-left: auto;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
+    background: transparent;
+    border: none;
     border-radius: 5px;
     padding: 1px 6px;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     color: var(--muted);
+    transition: color 0.2s;
 }
+.sidebar-search:hover kbd { color: var(--text); }
 
 /* Nav */
 .sidebar-nav {
@@ -517,14 +519,13 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     cursor: pointer;
     padding: 4px 6px;
     border-radius: 7px;
-    transition: color 0.2s, background 0.2s;
+    transition: color 0.22s;
 }
-.sidebar-toggle:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
-/* Breadcrumb */
-/*.breadcrumb {*/
-/*    --bs-breadcrumb-divider-color: rgba(148, 163, 184, 0.3);*/
-/*}*/
+.sidebar-toggle:hover {
+    color: var(--text);
+}
+
 .breadcrumb-item, .breadcrumb-item + .breadcrumb-item::before {
     color: transparent;
     font-size: 0.82rem;

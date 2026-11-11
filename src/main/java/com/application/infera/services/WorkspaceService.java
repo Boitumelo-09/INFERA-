@@ -29,6 +29,7 @@ public class WorkspaceService {
     private final DrawingRepository drawingRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceAccessService workspaceAccessService;
+    private final InvitationRepository invitationRepository;
 
     // Create a new workspace linked to the logged-in user
     @Transactional
@@ -104,8 +105,8 @@ public class WorkspaceService {
         noteRepository.saveAll(wsNotes);
         noteRepository.deleteAll(wsNotes);
         activityRepository.deleteAll(activityRepository.findByWorkspace(workspace));
+        invitationRepository.deleteByWorkspace(workspace);
         workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
-        
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }
