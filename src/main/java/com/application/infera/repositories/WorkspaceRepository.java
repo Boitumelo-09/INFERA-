@@ -29,7 +29,10 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
 
     // Check if a workspace name already exists for this user
     boolean existsByNameAndUser(String name, User user);
-    
 
-   
+
+    // Workspaces this user owns that also have at least one OTHER member
+    @Query("SELECT w FROM Workspace w WHERE w.user = :user AND EXISTS " +
+            "(SELECT 1 FROM WorkspaceMember m WHERE m.workspace = w AND m.user <> :user)")
+    List<Workspace> findOwnedSharedWorkspaces(@Param("user") User user);
 }
