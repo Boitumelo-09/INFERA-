@@ -2,6 +2,7 @@ package com.application.infera.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,6 +36,8 @@ public class UserSecurityConfig {
                                 "/app_resources/**",
                                 "/favicons/**"
                         ).permitAll()
+                        // invitation landing page: public GET only (read-only); accepting is a POST and stays authenticated
+                        .requestMatchers(HttpMethod.GET, "/invitations/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
