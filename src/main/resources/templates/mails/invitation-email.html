@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="supported-color-schemes" content="dark">
+    <title>You're invited to INCAPTUR</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0d1117;font-family:'Inter','Segoe UI',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#0d1117;padding:48px 15px;">
+    <tr><td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+               style="max-width:560px;width:100%;background-color:#1c2128;border-radius:16px;overflow:hidden;">
+
+            <tr><td align="center" style="padding:40px 30px 32px;background-color:#161b22;">
+                <img src="cid:logo" alt="INCAPTUR" width="200"
+                     style="display:block;width:200px;max-width:100%;height:auto;border:0;" />
+            </td></tr>
+
+            <tr><td style="padding:44px 36px 36px;text-align:center;">
+                <h1 style="margin:0 0 12px;font-family:'Sora','Segoe UI',Arial,sans-serif;color:#f8fafc;font-size:22px;font-weight:800;line-height:1.35;">
+                    <span th:text="${inviterName}">Someone</span> invited you to
+                    <span th:text="${workspaceName}" style="color:#b3b9c1;">a workspace</span>
+                </h1>
+                <p style="margin:0;color:#94a3b8;font-size:15px;line-height:1.6;">
+                    You've been invited to collaborate as
+                    <strong style="color:#f8fafc;" th:text="${roleLabel}">Viewer</strong>.
+                </p>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:32px auto;">
+                    <tr><td style="background-color:#b3b9c1;border-radius:10px; ">
+                        <a th:href="${link}" href="#"
+                           style="display:inline-block;padding:14px 32px;color:#0d1117;font-weight:700;font-size:15px;text-decoration:none;">
+                            View invitation
+                        </a>
+                    </td></tr>
+                </table>
+
+                <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.6;">
+                    This invitation expires in <strong style="color:#f8fafc;" th:text="${expiryDays} + ' days'">5 days</strong>
+                    and can only be accepted by the address it was sent to.
+                </p>
+                <p style="margin:20px 0 0;color:#5a6472;font-size:12px;line-height:1.6;word-break:break-all;">
+                    Button not working? Paste this link into your browser:<br>
+                    <span th:text="${link}">link</span>
+                </p>
+                <p style="margin:24px 0 0;color:#5a6472;font-size:12px;line-height:1.6;">
+                    Didn't expect this? You can safely ignore this email.
+                </p>
+            </td></tr>
+
+            <tr><td style="padding:22px 30px;background-color:#161b22;border-top:1px solid #2a303a;text-align:center;">
+                <p style="margin:0;color:#5a6472;font-size:11px;letter-spacing:0.03em;">© <script>document.write(new Date().getFullYear())</script> incaptur.co.za &nbsp;·&nbsp; Capture & Collaborate Ideas</p>
+            </td></tr>
+        </table>
+    </td></tr>
+</table>
+</body>
+</html>
