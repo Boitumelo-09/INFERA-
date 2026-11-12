@@ -15,7 +15,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -109,6 +112,32 @@ public class WorkspaceService {
         workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
         workspaceRepository.delete(workspace);
         activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
+    }
+
+    // What one tile needs: my role, how many members, and the first few to draw as avatars
+    public record TileMembers(WorkspaceRole myRole, int total, List<WorkspaceMember> preview) {
+        public boolean isOwner() { return myRole == WorkspaceRole.OWNER; }
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, TileMembers> getTileMembers(List<Workspace> workspaces, User user) {
+        if (workspaces.isEmpty()) return Map.of();
+        List<Long> ids = workspaces.stream().map(Workspace::getId).toList();
+
+        Map<Long, List<WorkspaceMember>> byWorkspace = new HashMap<>();
+        for (WorkspaceMember m : workspaceMemberRepository.findAllForWorkspaces(ids)) {
+            byWorkspace.computeIfAbsent(m.getWorkspace().getId(), k -> new ArrayList<>()).add(m);
+        }
+
+        Map<Long, TileMembers> result = new HashMap<>();
+        byWorkspace.forEach((wsId, members) -> {
+            WorkspaceRole mine = members.stream()
+                    .filter(m -> m.getUser().getId().equals(user.getId()))
+                    .map(WorkspaceMember::getRole)
+                    .findFirst().orElse(WorkspaceRole.VIEWER);   // least privilege if the row is somehow missing
+            result.put(wsId, new TileMembers(mine, members.size(), members.stream().limit(3).toList()));
+        });
+        return result;
     }
 
     public long countAllWorkspaces() {
