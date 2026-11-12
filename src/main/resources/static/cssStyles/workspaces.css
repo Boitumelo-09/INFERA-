@@ -489,16 +489,29 @@
 .hub-divider { border-top: 1px solid var(--border); margin: 18px 0; }
 .hub-revoke-form { margin: 0; }
 .hub-revoke-btn {
-    background: none; border: 1px solid rgba(239,68,68,0.35); color: #f87171;
-    border-radius: 7px; padding: 4px 10px; font-size: 0.74rem; cursor: pointer;
-    transition: background 0.15s;
+    background: none;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #f87171;
+    border-radius: 7px;
+    padding: 4px 10px;
+    font-size: 0.74rem;
+    cursor: pointer;
+    transition: color 0.15s;
 }
-.hub-revoke-btn:hover { background: rgba(239,68,68,0.1); }
+.hub-revoke-btn:hover { color:rgba(239, 68, 68, 0.35);  }
 .hub-revoke-btn:disabled, .hub-invite-btn:disabled { opacity: 0.5; cursor: default; }
 .hub-pending { margin-bottom: 4px; }
 
 /* the toast must show above an open modal (Bootstrap modals sit at z-index 1055) */
 .infera-toast { z-index: 2100; }
+/* ─── HUB: remove / leave ─── */
+.hub-leave-form { margin: 0 auto 0 0; }                 /* pushes Close / Open notes to the right */
+.hub-revoke-btn.armed {
+
+    border-color: #dc2626;
+    color: var(--accent);
+}
+.hub-member .hub-revoke-form { flex-shrink: 0; }
 /* ─── RESPONSIVE ─────────────────────── */
 @media (max-width: 576px) {
     .ws-grid { grid-template-columns: 1fr; }
