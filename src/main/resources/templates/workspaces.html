@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <!-- Reuses sidebar / topbar / modal / form styles already defined for the dashboard -->
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}"  />
     <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}"/>
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
@@ -24,9 +23,6 @@
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
     <meta name="theme-color" content="#161b22"></head>
 <body>
-
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SIDEBAR
@@ -146,10 +142,6 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
-<!--            <button class="btn-topbar-accent" id="newWorkspaceBtnTop">-->
-<!--                <i class="bi bi-plus-lg"></i>-->
-<!--                <span class="d-none d-sm-inline">New workspace</span>-->
-<!--            </button>-->
             <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div th:class="${user.avatarUrl} ? 'topbar-avatar' : 'topbar-avatar'"
