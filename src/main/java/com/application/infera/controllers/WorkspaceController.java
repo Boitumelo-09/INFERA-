@@ -7,10 +7,7 @@ import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.repositories.UserRepository;
-import com.application.infera.services.CurrentUserService;
-import com.application.infera.services.NoteService;
-import com.application.infera.services.ResourceService;
-import com.application.infera.services.WorkspaceService;
+import com.application.infera.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,6 +26,7 @@ public class WorkspaceController {
     private final NoteService noteService;
     private final ResourceService resourceService;
     private final CurrentUserService currentUserService;
+    private final InvitationService invitationService;
 
 
     // GET /workspaces — show all workspaces for the logged-in user
@@ -47,7 +45,7 @@ public class WorkspaceController {
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
-        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+        model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
         IO.println("WORKSPACES END");
         return "workspaces";
 

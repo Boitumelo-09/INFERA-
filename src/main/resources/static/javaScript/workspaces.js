@@ -258,4 +258,72 @@ $$('.form-input').forEach(input => {
   input.addEventListener('blur',  () => { if (label) label.style.color = ''; });
   input.addEventListener('input', () => { input.style.borderColor = ''; });
 });
+/* Invitation cards: disable both buttons after the first click (prevents a double accept) */
+$$('.ws-invite-form').forEach(form => {
+  form.addEventListener('submit', () => {
+    $$('.ws-invite-actions button', form.closest('.ws-invite-card')).forEach(b => { b.disabled = true; });
+  });
+});
+/* Pending invitations: collapsible panel, open state remembered for this tab */
+(() => {
+  const toggle = $('#invitesToggle');
+  const list   = $('#invitesList');
+  if (!toggle || !list) return;
+
+  const KEY = 'invitesOpen';
+  const setOpen = open => {
+    toggle.setAttribute('aria-expanded', String(open));
+    list.classList.toggle('open', open);
+    try { sessionStorage.setItem(KEY, open ? '1' : '0'); } catch (e) { /* storage blocked: still works, just not remembered */ }
+  };
+
+  let saved = null;
+  try { saved = sessionStorage.getItem(KEY); } catch (e) {}
+  list.classList.add('no-anim');            // restore the saved state without animating on page load
+  setOpen(saved === '1');
+  requestAnimationFrame(() => requestAnimationFrame(() => list.classList.remove('no-anim')));
+
+  toggle.addEventListener('click', () => setOpen(!list.classList.contains('open')));})();
+
+/* ───────────────────────────────────────────────────────────────────
+   MEMBERS HUB MODAL — opened from a tile's avatar stack
+─────────────────────────────────────────────────────────────────── */
+const hubModalEl = $('#hubModal');
+const hubModal   = hubModalEl ? new bootstrap.Modal(hubModalEl) : null;
+const hubBody    = $('#hubBody');
+let hubRequestId = 0;   // lets us ignore a slow response if the user already opened another tile
+
+function setHubMessage(text, isError) {
+  const box = document.createElement('div');
+  box.className = 'hub-state' + (isError ? ' error' : '');
+  box.textContent = text;
+  hubBody.replaceChildren(box);
+}
+
+async function openHub(tile) {
+  if (!hubModal) return;
+  const myRequest = ++hubRequestId;
+
+  $('#hubTitle').textContent = tile.dataset.name;                              // textContent: names may contain "<"
+  hubModalEl.style.setProperty('--ws-color', tile.dataset.color || '#b3b9c1');
+  setHubMessage('Loading members…', false);
+  hubModal.show();
+
+  try {
+    const res = await fetch(`/workspaces/${tile.dataset.id}/members/panel`, { credentials: 'same-origin' });
+    if (myRequest !== hubRequestId) return;
+    if (res.redirected) { setHubMessage('Your session may have expired. Reload the page.', true); return; }
+    if (!res.ok)        { setHubMessage('Could not load members. Try again.', true); return; }
+    hubBody.innerHTML = await res.text();   // server-rendered, already escaped by Thymeleaf
+  } catch (err) {
+    if (myRequest === hubRequestId) setHubMessage('Network problem. Check your connection and try again.', true);
+  }
+}
+
+$$('.ws-avatar-stack').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    openHub(btn.closest('.ws-tile'));
+  });
+});
 

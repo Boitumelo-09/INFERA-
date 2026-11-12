@@ -318,9 +318,171 @@
 .ws-av:first-child { margin-left: 0; }
 .ws-av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ws-av-more { color: var(--muted); }
+/* ─── PENDING INVITATIONS STRIP ─── */
+.ws-invites { margin-bottom: 28px; }
+.ws-invites-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px;
+}
+
+.ws-invites-count {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.68rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+.ws-invite-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+    padding: 6px 30px;
+    margin-bottom: 10px;
+}
+.ws-invite-name { font-family: var(--font-display); font-weight: 700; color: var(--text); }
+.ws-invite-sub { font-size: 0.83rem; color: var(--muted); margin-top: 2px; }
+.ws-invite-sub strong { color: var(--text); }
+
+.ws-invite-expiry {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    text-transform: lowercase;
+}
+.ws-invite-actions { display: flex; gap: 8px; }
+.ws-invite-form { margin: 0; }
+
+.btn-invite-accept, .btn-invite-decline {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.22s;
+}
+
+.btn-invite-accept {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+.btn-invite-accept:hover { color: var(--text) }
+.btn-invite-decline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-invite-decline:hover {  color: var(--text); }
+.ws-invite-actions button:disabled { opacity: 0.5; cursor: default; }
+@media (max-width: 576px) {
+    .ws-invite-actions { width: 100%; }
+    .ws-invite-actions form, .ws-invite-actions button { flex: 1; width: 100%; }
+}
+/* ─── INVITATIONS: collapsible header + scrolling panel ─── */
+.ws-invites-toggle {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 30px;
+    color: var(--muted);
+    cursor: pointer;
+}
+.ws-invites-title{
+    transition: color 0.22s;
+}.ws-invites-chevron{
+    transition: color 0.22s;
+}
+.ws-invites-toggle:hover .ws-invites-title {
+   color: var(--text);
+}.ws-invites-toggle:hover .ws-invites-chevron {
+   color: var(--text);
+}
+
+
+.ws-invites-toggle .ws-invites-title { margin-bottom: 0; }
+.ws-invites-chevron { color: var(--muted); transition: transform 0.25s; }
+.ws-invites-toggle[aria-expanded="true"] .ws-invites-chevron { transform: rotate(180deg); }
+
+.ws-invites-list {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+}
+.ws-invites-list.open { grid-template-rows: 1fr; }
+.ws-invites-inner {
+    min-height: 0;
+    overflow: hidden;
+    visibility: hidden;                         /* closed: removed from tab order */
+    transition: visibility 0s linear 0.3s;      /* wait for the slide before hiding */
+}
+.ws-invites-list.open .ws-invites-inner {
+
+    visibility: visible;
+    transition-delay: 0s;
+    max-height: 60vh;                           /* delete these two lines to let the list grow with the page */
+    overflow-y: auto;
+    padding-top: 10px;
+}
+.ws-invites-list.no-anim,
+.ws-invites-list.no-anim .ws-invites-inner { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+    .ws-invites-list, .ws-invites-inner, .ws-invites-chevron { transition: none; }
+}
+/* ─── MEMBERS HUB ─── */
+.hub-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.hub-title #hubTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hub-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    background: var(--ws-color, var(--accent));
+}
+/* the wrapper must stay a flex column so .modal-body can scroll inside a scrollable dialog */
+.hub-body, .hub-content { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; overflow: hidden; }
+.hub-content .modal-body { overflow-y: auto; }
+
+.hub-state { padding: 36px 20px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+.hub-state.error { color: #f87171; }
+
+.hub-section-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+}
+.hub-count { color: var(--text); margin-left: 4px; }
+.hub-members { list-style: none; margin: 0; padding: 0; }
+.hub-member {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.hub-member:last-child { border-bottom: none; }
+.hub-av {
+    position: relative; width: 36px; height: 36px; flex-shrink: 0;
+    border-radius: 50%; background: var(--secondary); color: var(--text);
+    font-size: 0.8rem; font-weight: 600; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+}
+.hub-av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hub-member-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.hub-member-name { color: var(--text); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+.hub-member-name > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hub-member-email {
+    color: var(--muted); font-size: 0.75rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hub-you {
+    font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px;
+}
+.hub-open-notes { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 /* ─── RESPONSIVE ─────────────────────── */
 @media (max-width: 576px) {
     .ws-grid { grid-template-columns: 1fr; }
     .ws-page-header { flex-direction: column; align-items: stretch; }
     .ws-page-header .btn-topbar-accent { justify-content: center; }
 }
+

@@ -1,0 +1,37 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="hub" class="hub-content">
+
+    <div class="modal-body">
+        <div class="hub-section-label">
+            <span class="hub-count" th:text="${#lists.size(hub.members())}">0</span> Members
+        </div>
+
+        <ul class="hub-members">
+            <li class="hub-member" th:each="m : ${hub.members()}">
+                <span class="hub-av">
+                    <span th:text="${#strings.isEmpty(m.user.firstName) ? '?' : #strings.toUpperCase(#strings.substring(m.user.firstName, 0, 1))}">S</span>
+                    <img th:if="${m.user.avatarUrl}" th:src="${m.user.avatarUrl}" alt="" onerror="this.remove()" />
+                </span>
+
+                <span class="hub-member-info">
+                    <span class="hub-member-name">
+                        <span th:text="${#strings.trim((m.user.firstName ?: '') + ' ' + (m.user.lastName ?: ''))}">Sipho Ndlovu</span>
+                        <span class="hub-you" th:if="${m.user.id.equals(hub.myUserId())}">You</span>
+                    </span>
+                    <!-- emails are owner-only: left out of the HTML entirely for everyone else -->
+                    <span class="hub-member-email" th:if="${hub.isOwner()}" th:text="${m.user.email}">sipho@example.com</span>
+                </span>
+
+                <span class="ws-role-badge"
+                      th:classappend="'role-' + ${#strings.toLowerCase(m.role.name())}"
+                      th:text="${#strings.capitalize(#strings.toLowerCase(m.role.name()))}">Owner</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
+        <a class="btn-modal-accent hub-open-notes" th:href="@{/notes(workspace=${hub.workspace().id})}">
+            <i class="bi bi-journal-text"></i> Open notes
+        </a>
+    </div>
+</div>

@@ -167,6 +167,49 @@
             </button>
         </div>
 
+        <!-- Pending invitations (only rendered when there are some) -->
+        <section class="ws-invites" th:if="${!#lists.isEmpty(pendingInvitations)}" aria-label="Pending invitations">
+            <button type="button" class="ws-invites-toggle" id="invitesToggle"
+                    aria-expanded="false" aria-controls="invitesList">
+                <span class="ws-invites-title">
+                    <i class="bi bi-envelope-open"></i>
+                    Pending invitations
+                    <span class="ws-invites-count" th:text="${#lists.size(pendingInvitations)}">1</span>
+                </span>
+                <i class="bi bi-chevron-down ws-invites-chevron"></i>
+            </button>
+            <div class="ws-invites-list" id="invitesList">
+                <div class="ws-invites-inner">
+            <div class="ws-invite-card" th:each="inv : ${pendingInvitations}">
+                <div class="ws-invite-info">
+                    <div class="ws-invite-name" th:text="${inv.workspace.name}">Workspace</div>
+                    <div class="ws-invite-sub">
+                        <span th:if="${inv.invitedBy != null}"
+                              th:text="${inv.invitedBy.firstName + ' invited you as '}">Sipho invited you as </span>
+                        <span th:if="${inv.invitedBy == null}">You were invited as </span>
+                        <strong th:text="${#strings.capitalize(#strings.toLowerCase(inv.role.name()))}">Editor</strong>
+                        <span th:text="${inv.role.name() == 'EDITOR' ? ' (can create and edit notes)' : ' (can read only)'}"></span>
+                    </div>
+                    <div class="ws-invite-expiry">
+                        <i class="bi bi-hourglass-split"></i>
+                        Expires <span th:text="${#temporals.format(inv.expiresAt, 'dd MMM yyyy')}">17 Nov 2026</span>
+                    </div>
+                </div>
+                <div class="ws-invite-actions">
+                    <form th:action="@{/invitations/mine/{id}/decline(id=${inv.id})}" method="post" class="ws-invite-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-invite-decline">Decline</button>
+                    </form>
+                    <form th:action="@{/invitations/mine/{id}/accept(id=${inv.id})}" method="post" class="ws-invite-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-invite-accept">Accept</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+            </div>
+        </section>
+
         <!-- Empty state -->
         <div class="ws-empty" th:if="${#lists.isEmpty(workspaces)}">
             <div class="ws-empty-icon " ><i class="bi bi-folder-x"></i></div>
@@ -380,7 +423,26 @@
         </div>
     </div>
 </div>
-<div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
+<!-- ═══════════════════════════════════════════════════════════════
+     MEMBERS HUB MODAL (body is fetched from /workspaces/{id}/members/panel)
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="hubModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title hub-title">
+                    <span class="hub-dot"></span>
+                    <span id="hubTitle">Workspace</span>
+                </h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div id="hubBody" class="hub-body"></div>
+        </div>
+    </div>
+</div>
+<div class="search-modal" id="searchModal"role="dialog" aria-modal="true" aria-label="Search" hidden>
     <div class="search-backdrop" id="searchBackdrop"></div>
     <div class="search-box">
         <div class="search-input-wrap">
