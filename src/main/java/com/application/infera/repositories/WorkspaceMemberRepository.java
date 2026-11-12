@@ -17,6 +17,12 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     List<WorkspaceMember> findByWorkspace(Workspace workspace);
     List<WorkspaceMember> findByUser(User user);
 
+    // Members of many workspaces in ONE query (user + workspace fetched, so no lazy hits in templates)
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.user JOIN FETCH m.workspace " +
+            "WHERE m.workspace.id IN :workspaceIds ORDER BY m.createdAt ASC, m.id ASC")
+    List<WorkspaceMember> findAllForWorkspaces(@Param("workspaceIds") List<Long> workspaceIds);
+
+
     // Adds a member unless one already exists for (workspace, user); an existing role is never changed.
     // Returns 1 if inserted, 0 if the user was already a member.
     @Modifying
