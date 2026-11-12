@@ -341,4 +341,19 @@ hubBody?.addEventListener('submit', e => {
   const tile = document.querySelector(`.ws-tile[data-id="${CSS.escape(id)}"]`);
   if (tile) openHub(tile);
 })();
+/* Two-step confirm for Remove / Leave: first click arms the button, second click submits */
+hubBody?.addEventListener('click', e => {
+  const btn = e.target.closest('.hub-confirm-btn');
+  if (!btn || btn.dataset.armed === '1') return;     // already armed: let the form submit
+  e.preventDefault();
+  const label = btn.textContent;
+  btn.dataset.armed = '1';
+  btn.textContent = 'Click again to confirm';
+  btn.classList.add('armed');
+  setTimeout(() => {
+    btn.dataset.armed = '';
+    btn.textContent = label;
+    btn.classList.remove('armed');
+  }, 4000);
+});
 
