@@ -33,6 +33,17 @@ public class WorkspaceMembersController {
 
 
 
+    // Returns ONLY the hub fragment (no page); the workspaces page fetches it when the modal opens
+    @GetMapping("/panel")
+    public String panel(@PathVariable Long workspaceId,
+                        @AuthenticationPrincipal Object principal,
+                        Model model) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        model.addAttribute("hub", workspaceService.getHub(workspaceId, user));
+        return "fragments/members-hub :: hub";
+    }
+
     @PostMapping("/invitations")
     public String invite(@PathVariable Long workspaceId,
                          @RequestParam("email") String email,
