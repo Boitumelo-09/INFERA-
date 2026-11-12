@@ -2,6 +2,8 @@ package com.application.infera.controllers;
 
 import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.InvitationException;
+import com.application.infera.exception.MembershipException;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.services.*;
@@ -81,6 +83,41 @@ public class WorkspaceMembersController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        return "redirect:/workspaces";
+    }
+
+    @PostMapping("/{memberId}/remove")
+    public String remove(@PathVariable Long workspaceId,
+                         @PathVariable Long memberId,
+                         @AuthenticationPrincipal Object principal,
+                         RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try {
+            String name = workspaceService.removeMember(workspaceId, memberId, user);
+            redirectAttributes.addFlashAttribute("successMessage", name + " was removed.");
+            redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        } catch (MembershipException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        } catch (WorkspaceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/workspaces";
+    }
+
+    @PostMapping("/leave")
+    public String leave(@PathVariable Long workspaceId,
+                        @AuthenticationPrincipal Object principal,
+                        RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try {
+            String name = workspaceService.leaveWorkspace(workspaceId, user);
+            redirectAttributes.addFlashAttribute("successMessage", "You left \"" + name + "\".");
+        } catch (MembershipException | WorkspaceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/workspaces";
     }
 

@@ -66,11 +66,22 @@
                 <span class="ws-role-badge"
                       th:classappend="'role-' + ${#strings.toLowerCase(m.role.name())}"
                       th:text="${#strings.capitalize(#strings.toLowerCase(m.role.name()))}">Owner</span>
+
+                <form th:if="${hub.isOwner() and m.role.name() != 'OWNER'}" method="post" class="hub-revoke-form"
+                      th:action="@{/workspaces/{wid}/members/{mid}/remove(wid=${hub.workspace().id}, mid=${m.id})}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="hub-revoke-btn hub-confirm-btn">Remove</button>
+                </form>
             </li>
         </ul>
     </div>
 
     <div class="modal-footer">
+        <form th:unless="${hub.isOwner()}" method="post" class="hub-leave-form"
+              th:action="@{/workspaces/{id}/members/leave(id=${hub.workspace().id})}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="hub-revoke-btn hub-confirm-btn">Leave workspace</button>
+        </form>
         <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
         <a class="btn-modal-accent hub-open-notes" th:href="@{/notes(workspace=${hub.workspace().id})}">
             <i class="bi bi-journal-text"></i> Open notes
