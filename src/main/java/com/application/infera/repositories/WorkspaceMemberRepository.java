@@ -1,5 +1,6 @@
 package com.application.infera.repositories;
 
+import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.models.WorkspaceMember;
@@ -16,6 +17,19 @@ import java.util.Optional;
 public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember, Long> {
     List<WorkspaceMember> findByWorkspace(Workspace workspace);
     List<WorkspaceMember> findByUser(User user);
+
+    Optional<WorkspaceMember> findByIdAndWorkspace(Long id, Workspace workspace);
+
+    // Atomic removals: the owner row can never match, and the count tells us if anything was deleted
+    @Modifying
+    @Query("DELETE FROM WorkspaceMember m WHERE m.id = :memberId AND m.workspace = :workspace AND m.role <> :owner")
+    int deleteNonOwnerById(@Param("memberId") Long memberId, @Param("workspace") Workspace workspace,
+                           @Param("owner") WorkspaceRole owner);
+
+    @Modifying
+    @Query("DELETE FROM WorkspaceMember m WHERE m.workspace = :workspace AND m.user = :user AND m.role <> :owner")
+    int deleteNonOwnerMembership(@Param("workspace") Workspace workspace, @Param("user") User user,
+                                 @Param("owner") WorkspaceRole owner);
 
     // Members of many workspaces in ONE query (user + workspace fetched, so no lazy hits in templates)
     @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.user JOIN FETCH m.workspace " +
