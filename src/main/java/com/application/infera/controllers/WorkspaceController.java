@@ -95,7 +95,7 @@ public class WorkspaceController {
                                   @PathVariable Long id,
                                   RedirectAttributes redirectAttributes) {
         User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/signin";
+        if (user == null) return "redirect:/auth";
 
         try {
             workspaceService.deleteWorkspace(id, user);

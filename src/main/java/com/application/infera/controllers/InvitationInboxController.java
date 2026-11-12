@@ -23,20 +23,6 @@ public class InvitationInboxController {
     private final NoteService noteService;
     private final ResourceService resourceService;
 
-    @GetMapping
-    public String inbox(@AuthenticationPrincipal Object principal, Model model) {
-        User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/auth";
-
-        model.addAttribute("pageTitle", "invitations | incaptur");
-        model.addAttribute("user", user);
-        model.addAttribute("invitations", invitationService.pendingForUser(user));
-        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
-        model.addAttribute("noteCount", noteService.countNotesForUser(user));
-        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
-        return "invitations";
-    }
-
     // "/mine/{id}/..." (three segments) cannot collide with the public "/{token}/accept"
     @PostMapping("/mine/{id}/accept")
     public String accept(@PathVariable Long id,
@@ -47,11 +33,11 @@ public class InvitationInboxController {
         try {
             Workspace workspace = invitationService.acceptById(id, user);
             // use the SAME flash attribute name you fixed in InvitationController.accept
-            redirectAttributes.addFlashAttribute("toast", "You joined " + workspace.getName() + ".");
+            redirectAttributes.addFlashAttribute("successMessage", "You joined " + workspace.getName() + ".");
             return "redirect:/workspaces";
         } catch (InvitationInvalidException e) {
-            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
-            return "redirect:/invitations";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/workspaces";
         }
     }
 
@@ -63,10 +49,10 @@ public class InvitationInboxController {
         if (user == null) return "redirect:/auth";
         try {
             invitationService.declineById(id, user);
-            redirectAttributes.addFlashAttribute("toast", "Invitation declined.");
+            redirectAttributes.addFlashAttribute("successMessage", "Invitation declined.");
         } catch (InvitationInvalidException e) {
-            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/invitations";
+        return "redirect:/workspaces";
     }
 }
