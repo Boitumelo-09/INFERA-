@@ -40,7 +40,11 @@ public class WorkspaceMembersController {
                         Model model) {
         User user = currentUserService.resolve(principal);
         if (user == null) return "redirect:/auth";
-        model.addAttribute("hub", workspaceService.getHub(workspaceId, user));
+        WorkspaceService.Hub hub = workspaceService.getHub(workspaceId, user);
+        model.addAttribute("hub", hub);
+        if (hub.isOwner()) {
+            model.addAttribute("pending", invitationService.listPending(workspaceId, user));
+        }
         return "fragments/members-hub :: hub";
     }
 

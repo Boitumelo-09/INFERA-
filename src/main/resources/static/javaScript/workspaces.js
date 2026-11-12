@@ -326,4 +326,19 @@ $$('.ws-avatar-stack').forEach(btn => {
     openHub(btn.closest('.ws-tile'));
   });
 });
+/* Hub forms are injected after page load, so listen on the container (event delegation) */
+hubBody?.addEventListener('submit', e => {
+  const form = e.target.closest('form');
+  if (!form) return;
+  // browser validation already passed if we got here; stop a double click sending twice
+  $$('button[type="submit"]', hubBody).forEach(b => { b.disabled = true; });
+});
+
+/* After an invite/revoke redirect the server flashes the workspace id: reopen that hub */
+(() => {
+  const id = $('#pageContent')?.dataset.openMembers;
+  if (!id) return;
+  const tile = document.querySelector(`.ws-tile[data-id="${CSS.escape(id)}"]`);
+  if (tile) openHub(tile);
+})();
 

@@ -15,10 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -138,6 +135,23 @@ public class WorkspaceService {
             result.put(wsId, new TileMembers(mine, members.size(), members.stream().limit(3).toList()));
         });
         return result;
+    }
+
+    // Everything the members hub shows: any member may read it
+    public record Hub(Workspace workspace, WorkspaceRole myRole, Long myUserId, List<WorkspaceMember> members) {
+        public boolean isOwner() { return myRole == WorkspaceRole.OWNER; }
+    }
+
+    @Transactional(readOnly = true)
+    public Hub getHub(Long workspaceId, User user) {
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.VIEWER);
+        List<WorkspaceMember> members = new ArrayList<>(workspaceMemberRepository.findAllForWorkspaces(List.of(workspaceId)));
+        members.sort(Comparator.comparing(WorkspaceMember::getRole));   // enum order OWNER, EDITOR, VIEWER; sort is stable, so join order holds within a role
+        WorkspaceRole mine = members.stream()
+                .filter(m -> m.getUser().getId().equals(user.getId()))
+                .map(WorkspaceMember::getRole)
+                .findFirst().orElse(WorkspaceRole.VIEWER);
+        return new Hub(workspace, mine, user.getId(), members);
     }
 
     public long countAllWorkspaces() {
