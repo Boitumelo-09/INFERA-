@@ -225,7 +225,8 @@ $$('.ws-tile').forEach(tile => {
   // Clicking the tile itself (not the menu) navigates to Notes,
   // pre-filtered to only this workspace — soft fade, not an abrupt jump
   tile.addEventListener('click', e => {
-    if (menuWrap.contains(e.target)) return;   // let the menu handle its own clicks
+    if (menuWrap?.contains(e.target)) return;   // let the menu handle its own clicks
+    if (e.target.closest('.ws-avatar-stack')) return;   // hub modal opens from here in step 4
     const id = tile.dataset.id;
     softNavigate(`/notes?workspace=${id}`);
   });
