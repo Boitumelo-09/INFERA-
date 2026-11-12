@@ -31,25 +31,7 @@ public class WorkspaceMembersController {
     @Value("${app.invitations.expiry-days:5}")
     private int expiryDays;
 
-    @GetMapping
-    public String page(@PathVariable Long workspaceId,
-                       @AuthenticationPrincipal Object principal,
-                       Model model) {
-        User user = currentUserService.resolve(principal);
-        if (user == null) return "redirect:/auth";
 
-        // OWNER only: a member with a lower role is denied, a non-member gets "not found"
-        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.OWNER);
-
-        model.addAttribute("pageTitle", "members | incaptur");
-        model.addAttribute("user", user);
-        model.addAttribute("workspace", workspace);
-        model.addAttribute("pendingInvitations", invitationService.listPending(workspaceId, user));
-        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
-        model.addAttribute("noteCount", noteService.countNotesForUser(user));
-        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
-        return "workspace-members";
-    }
 
     @PostMapping("/invitations")
     public String invite(@PathVariable Long workspaceId,
@@ -74,16 +56,17 @@ public class WorkspaceMembersController {
                         roleName.charAt(0) + roleName.substring(1).toLowerCase(),
                         created.rawToken(),
                         expiryDays);
-                redirectAttributes.addFlashAttribute("toast", "Invitation sent to " + created.invitation().getEmail() + ".");
+                redirectAttributes.addFlashAttribute("successMessage", "Invitation sent to " + created.invitation().getEmail() + ".");
             } catch (RuntimeException mailFailure) {
                 log.error("Invitation email failed for workspace {}", workspaceId, mailFailure);   // never log the token
-                redirectAttributes.addFlashAttribute("toastError",
+                redirectAttributes.addFlashAttribute("errorMessage",
                         "Invitation saved, but the email could not be sent. Click Invite again to retry.");
             }
         } catch (InvitationException e) {
-            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/workspaces/" + workspaceId + "/members";
+        redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        return "redirect:/workspaces";
     }
 
     @PostMapping("/invitations/{invitationId}/revoke")
@@ -95,16 +78,17 @@ public class WorkspaceMembersController {
         if (user == null) return "redirect:/auth";
         try {
             invitationService.revokeInvitation(workspaceId, invitationId, user);
-            redirectAttributes.addFlashAttribute("toast", "Invitation revoked.");
+            redirectAttributes.addFlashAttribute("successMessage", "Invitation revoked.");
         } catch (InvitationException e) {
-            redirectAttributes.addFlashAttribute("toastError", e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/workspaces/" + workspaceId + "/members";
+        redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        return "redirect:/workspaces";
     }
 
-    private static String fullName(User u) {
-        String name = ((u.getFirstName() == null ? "" : u.getFirstName()) + " "
-                + (u.getLastName() == null ? "" : u.getLastName())).trim();
+    private static String fullName(User user) {
+        String name = ((user.getFirstName() == null ? "" : user.getFirstName()) + " "
+                + (user.getLastName() == null ? "" : user.getLastName())).trim();
         return name.isEmpty() ? "Someone" : name;
     }
 }
