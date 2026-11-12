@@ -4,6 +4,7 @@ package com.application.infera.services;
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
+import com.application.infera.exception.MembershipException;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
 import com.application.infera.exception.WorkspaceLimitReachedException;
 import com.application.infera.exception.WorkspaceNotFoundException;
@@ -152,6 +153,43 @@ public class WorkspaceService {
                 .map(WorkspaceMember::getRole)
                 .findFirst().orElse(WorkspaceRole.VIEWER);
         return new Hub(workspace, mine, user.getId(), members);
+    }
+
+    // OWNER removes someone else. Returns the removed person's name for the toast.
+    @Transactional
+    public String removeMember(Long workspaceId, Long memberId, User actor) {
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, actor, WorkspaceRole.OWNER);
+        WorkspaceMember target = workspaceMemberRepository.findByIdAndWorkspace(memberId, workspace)
+                .orElseThrow(() -> new MembershipException("That member is no longer in this workspace."));
+        if (target.getRole() == WorkspaceRole.OWNER) {
+            throw new MembershipException("The owner can't be removed.");
+        }
+        String name = displayName(target.getUser());   // read before the delete
+        if (workspaceMemberRepository.deleteNonOwnerById(memberId, workspace, WorkspaceRole.OWNER) == 0) {
+            throw new MembershipException("That member is no longer in this workspace.");
+        }
+        return name;
+    }
+
+    // A non-owner leaves. Returns the workspace name for the toast.
+    @Transactional
+    public String leaveWorkspace(Long workspaceId, User user) {
+        WorkspaceMember membership = workspaceMemberRepository.findMembership(workspaceId, user)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
+        if (membership.getRole() == WorkspaceRole.OWNER) {
+            throw new MembershipException("Owners can't leave their own workspace. Delete it instead.");
+        }
+        String workspaceName = membership.getWorkspace().getName();
+        if (workspaceMemberRepository.deleteNonOwnerMembership(membership.getWorkspace(), user, WorkspaceRole.OWNER) == 0) {
+            throw new MembershipException("You are no longer a member of this workspace.");
+        }
+        return workspaceName;
+    }
+
+    private static String displayName(User u) {
+        String name = ((u.getFirstName() == null ? "" : u.getFirstName()) + " "
+                + (u.getLastName() == null ? "" : u.getLastName())).trim();
+        return name.isEmpty() ? "The member" : name;
     }
 
     public long countAllWorkspaces() {
