@@ -110,61 +110,57 @@
 }
 
 .ws-tile {
-    background: var(--card);
-    border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--bg), var(--secondary));
+    border: 1px solid var(--bg);
     border-radius: var(--radius);
-    padding: 22px 20px;
+    padding: 2px 24px;
     position: relative;
-    transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+    transition: border-color 0.25s, box-shadow 0.25s;
     cursor: default;
     overflow: hidden;
 }
-.ws-tile::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    border-radius: 15px 15px 0 0;
-}
+
 .ws-tile:hover {
     border-color: color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
-    transform: translateY(-3px);
     box-shadow: 0 16px 36px rgba(0,0,0,0.3);
     cursor: pointer;
     text-shadow: 0 1px 2px color-mix(in srgb, var(--ws-color, var(--accent)) 40%, var(--border));
 }
-.ws-tile:hover::before {
-    background: linear-gradient(90deg, var(--ws-color, var(--accent)), transparent);
-}
+
 
 .ws-tile-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 4px;
 }
 .ws-tile-icon {
     width: 40px; height: 40px;
     border-radius: 10px;
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 15%, transparent);
+    background:none;
     color: var(--ws-color, var(--accent));
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     font-size: 1.1rem;
 }
 
 /* Dropdown menu */
 .ws-tile-menu { position: relative; }
-.ws-menu-btn {
-    width: 30px; height: 30px;
-    border-radius: 7px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s, color 0.2s;
+/*.ws-menu-btn {*/
+/*    width: 30px; height: 30px;*/
+/*    border-radius: 7px;*/
+/*    background: transparent;*/
+/*    border: none;*/
+/*    color: var(--muted);*/
+/*    cursor: pointer;*/
+/*    display: flex; align-items: center; justify-content: center;*/
+/*    transition: color 0.2s;*/
+/*}*/
+
+.ws-menu-btn:hover {
+    color: var(--text);
 }
-.ws-menu-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 
 .ws-menu-dropdown {
     position: absolute;
@@ -193,15 +189,16 @@
     border-radius: 7px;
     background: none;
     border: none;
-    color: var(--text);
+    color: var(--muted);
     font-size: 0.83rem;
     cursor: pointer;
     text-align: left;
-    transition: background 0.15s;
+    transition: font-weight 0.22s, color 0.22s;
 }
-.ws-menu-item:hover { background: rgba(255,255,255,0.06); }
+.ws-menu-item:hover { color: var(--text);
+   font-weight: 500;}
 .ws-menu-item.danger { color: #f87171; }
-.ws-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
+
 
 .ws-tile-name {
     font-family: var(--font-display);
@@ -257,21 +254,70 @@
 }
 .delete-warning strong { color: var(--text); }
 
-.btn-modal-danger {
-    margin-top: 20px;
-    padding: 9px 22px;
-    border-radius: 8px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #dc2626;
-    border: none;
-    color: #fff;
-    display: flex; align-items: center; gap: 6px;
-    transition: background 0.2s, transform 0.15s;
-}
+/*.btn-modal-danger {*/
+/*    margin-top: 20px;*/
+/*    padding: 9px 22px;*/
+/*    border-radius: 8px;*/
+/*    font-size: 0.86rem;*/
+/*    font-weight: 600;*/
+/*    cursor: pointer;*/
+/*    background: #dc2626;*/
+/*    border: none;*/
+/*    color: #fff;*/
+/*    display: flex; align-items: center; gap: 6px;*/
+/*    transition: background 0.2s, transform 0.15s;*/
+/*}*/
 .btn-modal-danger:hover { background: #b91c1c; transform: translateY(-1px); }
+/* ─── TILE SUMMARY (role, notes, members) ─── */
+.ws-tile-meta { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.ws-role-badge {
+    font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px;
+    border: none; color: var(--ws-color);
+}
 
+.ws-role-badge.role-owner {
+    color: var(--ws-color);
+}
+
+.ws-role-badge.role-editor {
+    color: var(--ws-color);
+
+}
+
+.ws-tile-notes {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ws-avatar-stack {
+    display: flex; align-items: center;
+    background: none;
+    border: none;
+    padding: 2px 4px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+
+.ws-av {
+    position: relative; width: 24px; height: 24px; margin-left: -8px;
+    border-radius: 50%; border: 1px solid var(--card);
+    background: var(--secondary); color: var(--text);
+    font-size: 0.62rem; font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.ws-avatar-stack:hover .ws-av { border-color: var(--ws-color); }
+.ws-av:first-child { margin-left: 0; }
+.ws-av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ws-av-more { color: var(--muted); }
 /* ─── RESPONSIVE ─────────────────────── */
 @media (max-width: 576px) {
     .ws-grid { grid-template-columns: 1fr; }
