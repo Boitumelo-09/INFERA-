@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}"  />
     <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}"/>
+    <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
@@ -180,6 +181,7 @@
         <div class="ws-grid" th:unless="${#lists.isEmpty(workspaces)}">
             <div class="ws-tile"
                  th:each="ws : ${workspaces}"
+                 th:with="tm=${tileMembers[ws.id]}"
                  th:style="'--ws-color:' + ${ws.color}"
                  th:data-id="${ws.id}"
                  th:data-name="${ws.name}"
@@ -188,7 +190,7 @@
 
                 <div class="ws-tile-top">
                     <div class="ws-tile-icon"><i class="bi bi-folder2-open"></i></div>
-                    <div class="ws-tile-menu">
+                    <div class="ws-tile-menu" th:if="${tm.isOwner()}">
                         <button class="ws-menu-btn" aria-label="Workspace options">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
@@ -206,11 +208,30 @@
                 <h3 class="ws-tile-name" th:text="${ws.name}">Workspace name</h3>
                 <p class="ws-tile-desc" th:text="${ws.description != null and ws.description != '' ? ws.description : 'No description yet.'}">Description</p>
 
+                <div class="ws-tile-meta">
+                    <span class="ws-role-badge"
+                          th:classappend="'role-' + ${#strings.toLowerCase(tm.myRole().name())}"
+                          th:text="${#strings.capitalize(#strings.toLowerCase(tm.myRole().name()))}">Owner</span>
+                    <span class="ws-tile-notes">
+                        <i class="bi bi-journal-text"></i>
+                        <span th:text="${(wsNoteCount[ws.id] ?: 0) + ((wsNoteCount[ws.id] ?: 0) == 1 ? ' note' : ' notes')}">0 notes</span>
+                    </span>
+                </div>
+
                 <div class="ws-tile-footer">
                     <span class="ws-tile-date">
                         <i class="bi bi-calendar3"></i>
                         <span th:text="${#temporals.format(ws.createdAt, 'dd MMM yyyy')}">01 Jan 2026</span>
                     </span>
+                    <button type="button" class="ws-avatar-stack" th:data-ws-id="${ws.id}"
+                            aria-label="View members" title="Members">
+                        <span class="ws-av" th:each="m : ${tm.preview()}">
+                            <span th:text="${#strings.isEmpty(m.user.firstName) ? '?' : #strings.toUpperCase(#strings.substring(m.user.firstName, 0, 1))}">S</span>
+                            <img th:if="${m.user.avatarUrl}" th:src="${m.user.avatarUrl}" alt="" onerror="this.remove()" />
+                        </span>
+                        <span class="ws-av ws-av-more" th:if="${tm.total() > tm.preview().size()}"
+                              th:text="${'+' + (tm.total() - tm.preview().size())}">+2</span>
+                    </button>
                 </div>
             </div>
         </div>
