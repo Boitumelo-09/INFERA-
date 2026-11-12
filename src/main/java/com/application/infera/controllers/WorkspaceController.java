@@ -37,7 +37,7 @@ public class WorkspaceController {
         User user = currentUserService.resolve(principal);
 
         if (user == null) return "redirect:/auth";
-
+        IO.println("WORKSPACES:");
         List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
         model.addAttribute("pageTitle", "workspaces | incaptur");
         model.addAttribute("workspaces", workspaces);
@@ -46,8 +46,11 @@ public class WorkspaceController {
         model.addAttribute("workspaceCount", workspaces.size());
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
+        model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+        IO.println("WORKSPACES END");
         return "workspaces";
+
     }
 
     // POST /workspaces — create a new workspace
