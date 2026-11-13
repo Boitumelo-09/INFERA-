@@ -41,11 +41,9 @@ public class WorkspaceController {
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
-        model.addAttribute("workspaceCount", workspaces.size());
-        model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
-        model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));        model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+        model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));
         IO.println("WORKSPACES END");
         return "workspaces";
 
