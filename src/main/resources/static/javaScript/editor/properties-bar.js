@@ -46,6 +46,7 @@ function renderTagPills(csv) {
 // ─── Workspace dropdown ─────────────────────────────
 wsTrigger?.addEventListener('click', e => {
     e.stopPropagation();
+    if (document.body.classList.contains('is-readonly')) return;
     wsSelect.classList.toggle('open');
 });
 document.addEventListener('click', e => {
@@ -69,6 +70,7 @@ wsDropdown?.querySelectorAll('.editor-ws-option').forEach(opt => {
 
 // ─── Tags inline editor ─────────────────────────────
 tagsDisplay?.addEventListener('click', () => {
+    if (document.body.classList.contains('is-readonly')) return;
     tagsInput.value = window.__inferaPropsState.tags;
     tagsDisplay.style.display = 'none';
     tagsInput.style.display = '';
