@@ -168,7 +168,7 @@
                     workspaces.
                 </p>
             </div>
-            <button class="btn-topbar-accent" id="newNoteBtnHeader" th:disabled="${#lists.isEmpty(workspaces)}">
+            <button class="btn-topbar-accent" id="newNoteBtnHeader" th:if="${!#lists.isEmpty(editableWorkspaces)}">
                 <i class="bi bi-plus-lg"></i>
                 <span>New note</span>
             </button>
@@ -202,7 +202,7 @@
             <div class="notes-empty-icon"><i class="bi bi-journal-text"></i></div>
             <h3>No notes yet</h3>
             <p>Capture your first idea, waste no seconds.</p>
-            <button class="btn-topbar-accent mt-2" id="newNoteBtnEmpty">
+            <button class="btn-topbar-accent mt-2" id="newNoteBtnEmpty" th:if="${!#lists.isEmpty(editableWorkspaces)}">
                 <i class="bi bi-plus-lg"></i> Write your first note
             </button>
         </div>
@@ -216,6 +216,7 @@
                  th:data-title="${note.title}"
                  th:data-content="${note.documentJson}"
                  th:data-workspace-id="${note.workspace.id}"
+                 th:data-can-edit="${editableWorkspaceIds.contains(note.workspace.id)}"
                  th:data-workspace-name="${note.workspace.name}"
                  th:data-tags="${note.getTagNamesCsv()}">
 
@@ -249,11 +250,11 @@
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View
                             </button>
-                            <button class="ws-menu-item note-edit-trigger">
+                            <button class="ws-menu-item note-edit-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
 
-                            <button class="ws-menu-item danger note-delete-trigger">
+                            <button class="ws-menu-item danger note-delete-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
                         </div>
@@ -387,7 +388,7 @@
                     <div class="form-group mb-3">
                         <label class="form-label-custom" for="noteWorkspace">Workspace </label>
                         <select id="noteWorkspace" name="workspaceId" class="form-input form-select-custom" required>
-                            <option th:each="ws : ${workspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace
+                            <option th:each="ws : ${editableWorkspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace
                                  
                             </option>
                         </select>
