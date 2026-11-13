@@ -4,7 +4,10 @@ import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
+import com.application.infera.exception.InvalidMoveTargetException;
 import com.application.infera.exception.NoteNotFoundException;
+import com.application.infera.exception.WorkspaceAccessDeniedException;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -151,7 +154,13 @@ public class NoteService {
         // (see item 5, still undecided).
         boolean workspaceChanged = false;
         if (request.getWorkspaceId() != null && !request.getWorkspaceId().equals(note.getWorkspace().getId())) {
-            Workspace newWorkspace = workspaceAccessService.requireWorkspace(request.getWorkspaceId(), user, WorkspaceRole.EDITOR);
+            Workspace newWorkspace;
+            try {
+                newWorkspace = workspaceAccessService.requireWorkspace(request.getWorkspaceId(), user, WorkspaceRole.EDITOR);
+            } catch (WorkspaceNotFoundException | WorkspaceAccessDeniedException e) {
+                // Not "you lost this note": only the chosen destination is unusable
+                throw new InvalidMoveTargetException("You can't move this note to that workspace.");
+            }
             note.setWorkspace(newWorkspace);
             workspaceChanged = true;
         }
