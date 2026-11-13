@@ -19,32 +19,6 @@ const editNoteTagWidget = createTagInput({
     wrapId: 'editNoteTagWrap', chipsId: 'editNoteTagChips',
     textInputId: 'editNoteTagsInput', suggestionsId: 'editNoteTagSuggestions', hiddenInputId: 'editNoteTags'
 });
-/* ───────────────────────────────────────────────────────────────────
-   CUSTOM CURSOR
-─────────────────────────────────────────────────────────────────── */
-const dot  = $('#cursorDot');
-const ring = $('#cursorRing');
-let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-if (dot && ring) {
-    document.addEventListener('mousemove', e => {
-        mouseX = e.clientX; mouseY = e.clientY;
-        dot.style.left = mouseX + 'px';
-        dot.style.top  = mouseY + 'px';
-    });
-    (function animateRing() {
-        ringX += (mouseX - ringX) * 0.14;
-        ringY += (mouseY - ringY) * 0.14;
-        ring.style.left = ringX + 'px';
-        ring.style.top  = ringY + 'px';
-        requestAnimationFrame(animateRing);
-    })();
-    $$('a, button, input, textarea, select').forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-    });
-}
-
 
 /* ───────────────────────────────────────────────────────────────────
    SOFT PAGE NAVIGATION
@@ -112,6 +86,13 @@ function openViewNoteModal(row) {
     $('#viewNoteWs').textContent    = wsName;
     $('#viewNoteWs').style.setProperty('--ws-color', wsColor);
     $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
+
+    // Controls come from the server flag on the row (data-can-edit); JS only reads it.
+    const canEdit = row.dataset.canEdit === 'true';
+    ['#viewNoteEditBtn', '#theaterEditBtn', '#addResourceBtn'].forEach(sel => {
+        const el = $(sel);
+        if (el) el.style.display = canEdit ? '' : 'none';
+    });
 
     renderNoteContent(content, row.dataset.id);
     renderResourcesForRow(row);
@@ -383,12 +364,16 @@ function renderResourcesForRow(row) {
         </div>`;
     }).join('');
 
+    if (row.dataset.canEdit !== 'true') {
+        $$('.vnr-card .ws-tile-menu', container).forEach(m => m.remove());
+    }
     wireResourceCardMenus();
 }
 
 function wireResourceCardMenus() {
     $$('.vnr-card').forEach(card => {
         const menuWrap = card.querySelector('.ws-tile-menu');
+        if (!menuWrap) return;   // viewers: no resource menu
         menuWrap.querySelector('.vnr-menu-btn')?.addEventListener('click', e => {
             e.stopPropagation();
             $$('.ws-tile-menu.open').forEach(m => { if (m !== menuWrap) m.classList.remove('open'); });
