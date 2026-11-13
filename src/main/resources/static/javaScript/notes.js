@@ -427,7 +427,7 @@ $$('.note-row-item').forEach(row => {
     const menuBtn        = row.querySelector('.nri-menu-btn');
     const viewBtn          = row.querySelector('.note-view-trigger');
     const editBtn            = row.querySelector('.note-edit-trigger');
-    const propertiesBtn        = row.querySelector('.note-properties-trigger');
+    // const propertiesBtn        = row.querySelector('.note-properties-trigger');
     const deleteBtn              = row.querySelector('.note-delete-trigger');
 
     // Clicking anywhere on the row (but not the menu) opens the read-only view
@@ -462,12 +462,12 @@ $$('.note-row-item').forEach(row => {
         softNavigate(`/notes/${row.dataset.id}/edit`);
     });
 
-    propertiesBtn?.addEventListener('click', e => {
-        e.stopPropagation();
-        menuWrap.classList.remove('open');
-        row.classList.remove('menu-active');
-        openNotePropertiesModal(row);
-    });
+    // propertiesBtn?.addEventListener('click', e => {
+    //     e.stopPropagation();
+    //     menuWrap.classList.remove('open');
+    //     row.classList.remove('menu-active');
+    //     openNotePropertiesModal(row);
+    // });
 
     deleteBtn?.addEventListener('click', e => {
         e.stopPropagation();
