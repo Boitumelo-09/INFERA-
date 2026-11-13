@@ -311,4 +311,12 @@
 .act-ws-pill.active { color: var(--text); border-color: var(--ws-color, var(--text)); }
 .act-ws-pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ws-color, var(--muted)); }
 .act-actor { color: var(--text); font-weight: 600; }
+.act-hidden { display: none !important; }
+/* actor + workspace badge: actor only in a workspace view, badge only in "My activity" */
+#actLog:not(.is-ws-view) .act-actor,
+#actLog:not(.is-ws-view) .act-actor-sep { display: none; }
+#actLog.is-ws-view .act-workspace { display: none; }
+/* pills are buttons now: reset + calm the theme-wide button hover lift */
+button.act-ws-pill { background: transparent; cursor: pointer; font-family: inherit; }
+button.act-ws-pill:hover, button.act-ws-pill:active { transform: none; box-shadow: none; }
 
