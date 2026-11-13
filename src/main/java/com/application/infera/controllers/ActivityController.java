@@ -30,8 +30,6 @@ public class ActivityController {
 
         model.addAttribute("pageTitle", "activity | incaptur");
         model.addAttribute("user", user);
-        model.addAttribute("noteCount", noteService.countNotesForUser(user));
-        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
 
         model.addAttribute("totalActivities", activityService.getTotalActivityCount(user));
         model.addAttribute("currentStreak", activityService.getCurrentStreak(user));
@@ -39,7 +37,6 @@ public class ActivityController {
         model.addAttribute("categoryBreakdown", activityService.getCategoryBreakdown(user));
         model.addAttribute("monthlyDailyCounts", activityService.getMonthlyDailyCounts(user));
         model.addAttribute("recentActivities", activityService.getRecentActivities(user, 30));
-        model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("tagCount", tagService.countTagsForUser(user));
         return "activity";
     }
