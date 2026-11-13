@@ -1,5 +1,6 @@
 package com.application.infera.services;
 
+import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.InvitationEmailMismatchException;
 import com.application.infera.exception.InvitationException;
@@ -28,6 +29,7 @@ public class InvitationService {
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceAccessService workspaceAccessService;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
     @Value("${app.invitations.expiry-days:5}")
     private int expiryDays;
@@ -79,15 +81,20 @@ public class InvitationService {
             // two owners clicking at once: the one-open index let only one through
             throw new InvitationException("An invitation to this address was just created. Refresh and try again.");
         }
+        activityService.log(inviter, ActivityType.MEMBER_INVITED, email, workspace);
         return new CreatedInvitation(invitation, rawToken);
     }
 
     @Transactional
     public void revokeInvitation(Long workspaceId, Long invitationId, User actor) {
         Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, actor, WorkspaceRole.OWNER);
+        String email = invitationRepository.findById(invitationId)
+                .filter(i -> i.getWorkspace().getId().equals(workspaceId))
+                .map(Invitation::getEmail).orElse("an invitation");
         if (invitationRepository.revokeOpenById(invitationId, workspace, LocalDateTime.now()) == 0) {
             throw new InvitationException("That invitation is no longer pending.");
         }
+        activityService.log(actor, ActivityType.MEMBER_INVITE_REVOKED, email, workspace);
     }
 
     @Transactional(readOnly = true)
@@ -139,16 +146,24 @@ public class InvitationService {
         }
         Invitation invitation = invitationRepository.findWithDetailsById(invitationId)
                 .orElseThrow(InvitationInvalidException::new);
-        workspaceMemberRepository.insertIfAbsent(invitation.getWorkspace().getId(), user.getId(),
+        int inserted = workspaceMemberRepository.insertIfAbsent(invitation.getWorkspace().getId(), user.getId(),
                 invitation.getRole().name(), now);
+        if (inserted == 1) {
+            activityService.log(user, ActivityType.MEMBER_JOINED,
+                    invitation.getWorkspace().getName(), invitation.getWorkspace());
+        }
         return invitation.getWorkspace();
     }
 
     @Transactional
     public void declineById(Long invitationId, User user) {
+        Invitation invitation = invitationRepository.findWithDetailsById(invitationId)
+                .orElseThrow(InvitationInvalidException::new);
         if (invitationRepository.markDeclined(invitationId, user.getEmail().toLowerCase(), LocalDateTime.now()) == 0) {
             throw new InvitationInvalidException();
         }
+        activityService.log(user, ActivityType.MEMBER_INVITE_DECLINED,
+                invitation.getWorkspace().getName(), invitation.getWorkspace());
     }
 
     // "sipho@gmail.com" -> "s***@gmail.com"
