@@ -37,6 +37,11 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
             "ORDER BY i.createdAt DESC")
     List<Invitation> findPendingByEmail(@Param("email") String email, @Param("now") LocalDateTime now);
 
+    // Same filter as findPendingByEmail, but only counts (drives the sidebar badge)
+    @Query("SELECT COUNT(i) FROM Invitation i WHERE i.email = :email AND i.acceptedAt IS NULL " +
+            "AND i.revokedAt IS NULL AND i.declinedAt IS NULL AND i.expiresAt > :now")
+    long countPendingByEmail(@Param("email") String email, @Param("now") LocalDateTime now);
+
     // Re-invite: closes any open row (including expired-but-unrevoked) so the one-open index allows a new one
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Invitation i SET i.revokedAt = :now WHERE i.workspace = :workspace AND i.email = :email " +
