@@ -128,6 +128,7 @@ function blockedTextFor(err) {
 // stop editing, keep the text on screen so nothing the user typed vanishes.
 function lockEditorAfterAccessChange(status) {
     window.__inferaEditor?.setEditable(false);
+    window.__inferaLockDrawings?.();
     if (titleInput) titleInput.readOnly = true;
     document.body.classList.add('is-readonly');
     const banner = document.getElementById('editorReadonlyBanner');
