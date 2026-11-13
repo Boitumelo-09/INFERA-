@@ -88,6 +88,7 @@ public class ResourceController {
         model.addAttribute("user", user);
         model.addAttribute("resourcesByCategory", resourceService.getResourcesGroupedByCategory(user));
         model.addAttribute("resourceCount", resourceService.countResourcesForUser(user));
+        model.addAttribute("canAddResource", !workspaceService.getEditableWorkspaceIds(user).isEmpty());
         model.addAttribute("noteCount", noteService.countNotesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
 
