@@ -272,10 +272,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    /*padding: 5px 5px 5px 16px; */
-    padding: 0px 0px 0px 16px;
-    background: var(--card);
     border: 1px solid transparent;
+    padding: 0 0 0 16px;
+    background: linear-gradient(135deg, var(--bg), var(--secondary));
     border-radius: 9px;
     transition: border-color 0.2s ease;
 }
