@@ -184,10 +184,20 @@ async function performSave(isExit = false) {
         }
 
         lastSavedSnapshot = JSON.stringify(snapshot);
+        window.__inferaCommitWorkspace?.(snapshot.workspaceId);
         retryDelayMs = 4000; // healthy again, so reset the back-off
         reportStatus('note', 'saved');
     } catch (err) {
         console.error('[Incaptur] autosave error', err);
+        if (err.status === 422) {
+            // Only the move was refused: put the pill back, keep the content, save again without the move
+            window.__inferaRevertWorkspace?.();
+            window.showToast?.("You cannot move this note to that workspace.", 'error');
+            reportStatus('note', 'saved');
+            lastSavedSnapshot = null;   // force the next save to go through
+            dirtyDuringSave = true;     // the finally block reschedules it
+            return;
+        }
         const blockedText = blockedTextFor(err);
         if (blockedText) {
             blockSaving(blockedText);
