@@ -935,3 +935,12 @@ body.drawing-expanded { overflow: hidden; }
 .is-readonly .editor-toolbar-mount { display:none; }
 .is-readonly .editor-property-ws .bi-chevron-down { display:none; }
 .is-readonly .editor-property-ws, .is-readonly .editor-property-tags { cursor:default; }
+.is-readonly .drawing-resize-handle,
+.is-readonly .drawing-expand-btn,
+.is-readonly .drawing-move-cluster { display: none; }
+.drawing-node.is-blocked .drawing-page-btn,
+.drawing-node.is-blocked .drawing-props-toggle { display: none; }.is-readonly .drawing-resize-handle,
+                                                                 .is-readonly .drawing-expand-btn,
+                                                                 .is-readonly .drawing-move-cluster { display: none; }
+.drawing-node.is-blocked .drawing-page-btn,
+.drawing-node.is-blocked .drawing-props-toggle { display: none; }
