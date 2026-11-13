@@ -25,4 +25,18 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     long countByUser(User user);
 
     List<Activity> findByWorkspace(Workspace workspace);
+
+    // My own rows, plus other people's rows in my workspaces. Owner-only types only where I own the workspace.
+    // Id lists must be non-empty (callers pass a -1 sentinel).
+    @Query("""
+            SELECT a FROM Activity a JOIN FETCH a.user LEFT JOIN FETCH a.workspace
+            WHERE a.user = :me
+               OR (a.workspace.id IN :wsIds AND (a.type IN :publicTypes OR a.workspace.id IN :ownedIds))
+            ORDER BY a.createdAt DESC
+            """)
+    List<Activity> findLog(@Param("me") User me,
+                           @Param("wsIds") java.util.Collection<Long> wsIds,
+                           @Param("ownedIds") java.util.Collection<Long> ownedIds,
+                           @Param("publicTypes") java.util.Collection<com.application.infera.enums.ActivityType> publicTypes,
+                           org.springframework.data.domain.Pageable pageable);
 }
