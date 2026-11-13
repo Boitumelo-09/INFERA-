@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.NoteUpdateRequest;
+import com.application.infera.exception.InvalidMoveTargetException;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
@@ -40,8 +41,8 @@ public class NoteApiController {
             return ResponseEntity.ok(new AutosaveResponse(note.getUpdatedAt()));
         } catch (NoteNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (WorkspaceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (InvalidMoveTargetException e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
         }
     }
 
