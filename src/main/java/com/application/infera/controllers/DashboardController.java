@@ -43,18 +43,15 @@ public class DashboardController {
         System.out.println(".".repeat(50));
         model.addAttribute("pageTitle","dashboard | incaptur");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
-        model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
         List<Note> allNotes = noteService.getNotesForUser(user);
         model.addAttribute("notes", allNotes);
         model.addAttribute("wsNoteCount",noteService.getNoteCountsByWorkspace(user));
-        model.addAttribute("tagCount",tagService.countTagsForUser(user));
         model.addAttribute("resourceCount",resourceService.countResourcesForUser(user));
         model.addAttribute("workspaceResourceCount",resourceService.getResourceCountsByWorkspace(user));
         model.addAttribute("weeklyNotes", activityService.countWeeklyByPrefix(user, "NOTE_CREATED"));
         model.addAttribute("weeklyResources", activityService.countWeeklyByPrefix(user, "RESOURCE_"));
         model.addAttribute("weeklyWorkspaces", activityService.countWeeklyByPrefix(user, "WORKSPACE_"));
-        model.addAttribute("dailyActivityCounts", activityService.getWeeklyDailyCounts(user));
         model.addAttribute("recentActivities", activityService.getRecentActivities(user, 10));
 
         // ── Dashboard home: continue / recent / unfinished ──
