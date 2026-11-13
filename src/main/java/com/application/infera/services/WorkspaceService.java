@@ -186,6 +186,25 @@ public class WorkspaceService {
         return workspaceName;
     }
 
+    // OWNER changes someone else's role to EDITOR or VIEWER. Returns the member's name for the toast.
+    @Transactional
+    public String changeMemberRole(Long workspaceId, Long memberId, WorkspaceRole newRole, User actor) {
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, actor, WorkspaceRole.OWNER);
+        if (newRole != WorkspaceRole.EDITOR && newRole != WorkspaceRole.VIEWER) {
+            throw new MembershipException("Members can only be Editor or Viewer.");
+        }
+        WorkspaceMember target = workspaceMemberRepository.findByIdAndWorkspace(memberId, workspace)
+                .orElseThrow(() -> new MembershipException("That member is no longer in this workspace."));
+        if (target.getRole() == WorkspaceRole.OWNER) {
+            throw new MembershipException("The owner's role can't be changed.");
+        }
+        String name = displayName(target.getUser());   // read before the update
+        if (workspaceMemberRepository.updateNonOwnerRole(memberId, workspace, newRole, WorkspaceRole.OWNER) == 0) {
+            throw new MembershipException("That member is no longer in this workspace.");
+        }
+        return name;
+    }
+
     private static String displayName(User u) {
         String name = ((u.getFirstName() == null ? "" : u.getFirstName()) + " "
                 + (u.getLastName() == null ? "" : u.getLastName())).trim();
