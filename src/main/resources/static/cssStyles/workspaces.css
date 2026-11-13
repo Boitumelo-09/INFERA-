@@ -562,7 +562,9 @@
 .hub-menu-item.danger:hover { color: darkred; }
 .hub-menu-item.armed {  color:var(--text); }
 .hub-menu-item:disabled { opacity: 0.5; cursor: default; }
-
+.nav-badge-alert{
+    display: none;
+}
 /* ─── RESPONSIVE ─────────────────────── */
 @media (max-width: 576px) {
     .ws-grid { grid-template-columns: 1fr; }
