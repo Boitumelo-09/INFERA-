@@ -9,6 +9,7 @@
 const SAVE_DEBOUNCE_MS = 1500;
 
 const noteId      = window.__NOTE_ID__;
+const readOnly    = window.__NOTE_CAN_EDIT__ !== true; // server decided; JS only obeys
 const csrfToken    = document.querySelector('meta[name="_csrf"]')?.content;
 const csrfHeader     = document.querySelector('meta[name="_csrf_header"]')?.content;
 
@@ -90,7 +91,7 @@ function sessionContentSnapshot() {
 }
 
 async function logEditIfChanged() {
-    if (!window.__inferaEditor || loggingEdit || saveBlockedText) return;
+    if (readOnly || !window.__inferaEditor || loggingEdit || saveBlockedText) return;
     const current = sessionContentSnapshot();
     if (current === sessionBaselineSnapshot) return; // nothing changed since baseline — nothing to log
 
@@ -123,6 +124,22 @@ function blockedTextFor(err) {
     return null; // temporary problem, so retry
 }
 
+// Role was downgraded (403) or access removed (404) while the note was open:
+// stop editing, keep the text on screen so nothing the user typed vanishes.
+function lockEditorAfterAccessChange(status) {
+    window.__inferaEditor?.setEditable(false);
+    if (titleInput) titleInput.readOnly = true;
+    document.body.classList.add('is-readonly');
+    const banner = document.getElementById('editorReadonlyBanner');
+    const text   = document.getElementById('editorReadonlyText');
+    if (text) {
+        text.textContent = status === 403
+            ? 'Your access changed to view-only. Your latest text is still here: copy it if you need it.'
+            : 'You can no longer access this note (removed, or it was deleted). Your latest text is still here: copy it if you need it.';
+    }
+    banner?.removeAttribute('hidden');
+}
+
 function blockSaving(text) {
     saveBlockedText = text;
     clearTimeout(saveTimer);
@@ -132,7 +149,7 @@ function blockSaving(text) {
 
 async function performSave(isExit = false) {
     if (!window.__inferaEditor) return; // editor not mounted yet — nothing to save
-    if (saveBlockedText) return; // the server refused for good, so stop trying
+    if (readOnly || saveBlockedText) return; // viewer, or the server refused for good
     if (isSaving) { dirtyDuringSave = true; return; }
 
     isSaving = true;
@@ -174,6 +191,7 @@ async function performSave(isExit = false) {
         const blockedText = blockedTextFor(err);
         if (blockedText) {
             blockSaving(blockedText);
+            if (err.status === 403 || err.status === 404) lockEditorAfterAccessChange(err.status);
         } else {
             reportStatus('note', 'error');
             saveTimer = setTimeout(() => performSave(isExit), retryDelayMs); // temporary problem: retry with back-off
@@ -189,6 +207,7 @@ async function performSave(isExit = false) {
 }
 
 function scheduleSave() {
+    if (readOnly) return;
     if (saveBlockedText) return;
     if (!window.__inferaEditor) return;
     const snapshot = JSON.stringify(currentSnapshot());
