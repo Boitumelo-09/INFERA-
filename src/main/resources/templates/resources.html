@@ -91,7 +91,7 @@
             </nav>
         </div>
         <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
-            <a th:href="@{/notes}" class="btn-topbar-accent"><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline">Add resource</span></a>
+            <a th:if="${canAddResource}" th:href="@{/notes}" class="btn-topbar-accent"><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline">Add resource</span></a>
             <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
@@ -115,7 +115,7 @@
             <div class="res-empty-icon"><i class="bi bi-link-45deg"></i></div>
             <h3>No resources yet</h3>
             <p>Attach documentation, articles, tutorials, videos, or images to any note.</p>
-            <a th:href="@{/notes}" class="btn-topbar-accent mt-2"><i class="bi bi-plus-lg"></i> Go add one</a>
+            <a th:if="${canAddResource}" th:href="@{/notes}" class="btn-topbar-accent mt-2"><i class="bi bi-plus-lg"></i> Go add one</a>
         </div>
 
         <div class="res-shelves" th:if="${resourceCount > 0}">
