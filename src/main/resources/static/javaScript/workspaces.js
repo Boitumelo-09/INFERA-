@@ -346,14 +346,51 @@ hubBody?.addEventListener('click', e => {
   const btn = e.target.closest('.hub-confirm-btn');
   if (!btn || btn.dataset.armed === '1') return;     // already armed: let the form submit
   e.preventDefault();
-  const label = btn.textContent;
+  const label = btn.innerHTML;
   btn.dataset.armed = '1';
   btn.textContent = 'Click again to confirm';
   btn.classList.add('armed');
   setTimeout(() => {
     btn.dataset.armed = '';
-    btn.textContent = label;
+    btn.innerHTML = label;
     btn.classList.remove('armed');
   }, 4000);
 });
+/* Member options dropdown (position: fixed so the scrolling modal body can't clip it) */
+function closeHubMenus() {
+  $$('.hub-menu.open', hubBody).forEach(menu => {
+    menu.classList.remove('open');
+    menu.previousElementSibling?.setAttribute('aria-expanded', 'false');
+  });
+}
+
+hubBody?.addEventListener('click', e => {
+  const toggle = e.target.closest('.hub-menu-toggle');
+  if (!toggle) return;
+  e.stopPropagation();                      // keep the document handler below from closing it at once
+  const menu = toggle.nextElementSibling;
+  const wasOpen = menu.classList.contains('open');
+  closeHubMenus();
+  if (wasOpen) return;
+
+  menu.classList.add('open');
+  toggle.setAttribute('aria-expanded', 'true');
+  const r = toggle.getBoundingClientRect();
+  const below = r.bottom + 6 + menu.offsetHeight <= window.innerHeight;     // flip up if no room below
+  menu.style.top  = Math.max(8, below ? r.bottom + 6 : r.top - menu.offsetHeight - 6) + 'px';
+  menu.style.left = Math.max(8, r.right - menu.offsetWidth) + 'px';
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.hub-menu-wrap')) closeHubMenus();
+});
+hubBody?.addEventListener('scroll', closeHubMenus, true);   // scroll doesn't bubble, so capture it
+window.addEventListener('resize', closeHubMenus);
+hubModalEl?.addEventListener('hidden.bs.modal', closeHubMenus);
+hubModalEl?.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('.hub-menu.open', hubBody)) {
+    e.stopImmediatePropagation();           // Esc closes the menu first, not the whole modal
+    closeHubMenus();
+  }
+}, true);
 
