@@ -13,6 +13,7 @@ import { getSharedExtensions, parseDocumentJson } from './extensions.js';
 import { renderToolbar } from './toolbar.js';
 
 
+const canEdit = window.__NOTE_CAN_EDIT__ === true;
 const mountEl = document.getElementById('editorContentMount');
 mountEl.innerHTML = ''; // clear the Step 2 "editor will mount here" placeholder
 
@@ -25,9 +26,10 @@ const editor = new Editor({
     ],
     content: parseDocumentJson(window.__NOTE_RAW_CONTENT__ || ''),
     autofocus: false,
+    editable: canEdit,
 });
 
-renderToolbar(editor, document.getElementById('editorToolbarMount'));
+if (canEdit) renderToolbar(editor, document.getElementById('editorToolbarMount'));
 
 /* Exposed so Step 4's autosave script can read editor.getJSON()
    without this module needing to know anything about saving. */

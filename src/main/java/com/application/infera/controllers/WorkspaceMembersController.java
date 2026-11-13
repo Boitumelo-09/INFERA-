@@ -106,6 +106,28 @@ public class WorkspaceMembersController {
         return "redirect:/workspaces";
     }
 
+    @PostMapping("/{memberId}/role")
+    public String changeRole(@PathVariable Long workspaceId,
+                             @PathVariable Long memberId,
+                             @RequestParam("role") WorkspaceRole role,
+                             @AuthenticationPrincipal Object principal,
+                             RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try {
+            String name = workspaceService.changeMemberRole(workspaceId, memberId, role, user);
+            String roleName = role.name().charAt(0) + role.name().substring(1).toLowerCase();
+            redirectAttributes.addFlashAttribute("successMessage", name + " is now " + (role == WorkspaceRole.EDITOR ? "an " : "a ") + roleName + ".");
+            redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        } catch (MembershipException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("openMembers", workspaceId);
+        } catch (WorkspaceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/workspaces";
+    }
+
     @PostMapping("/leave")
     public String leave(@PathVariable Long workspaceId,
                         @AuthenticationPrincipal Object principal,

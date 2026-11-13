@@ -18,7 +18,16 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     List<WorkspaceMember> findByWorkspace(Workspace workspace);
     List<WorkspaceMember> findByUser(User user);
 
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace WHERE m.user = :user")
+    List<WorkspaceMember> findAllByUserWithWorkspace(@Param("user") User user);
+
     Optional<WorkspaceMember> findByIdAndWorkspace(Long id, Workspace workspace);
+
+    // Atomic role change: the owner row can never match; the count tells us if anything changed
+    @Modifying
+    @Query("UPDATE WorkspaceMember m SET m.role = :role WHERE m.id = :memberId AND m.workspace = :workspace AND m.role <> :owner")
+    int updateNonOwnerRole(@Param("memberId") Long memberId, @Param("workspace") Workspace workspace,
+                           @Param("role") WorkspaceRole role, @Param("owner") WorkspaceRole owner);
 
     // Atomic removals: the owner row can never match, and the count tells us if anything was deleted
     @Modifying

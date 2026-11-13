@@ -134,6 +134,9 @@ function blockDrawing(s, reason) {
     window.__inferaSetSourceErrorText?.('drawing', BLOCK_TEXT[reason][0]);
     setPill('error');
     toast(BLOCK_TEXT[reason][1], 'error');
+    s.ctx.dom.classList.add('is-blocked');
+    // Re-render with viewModeEnabled on (initialData is only read on first mount, so passing none is fine)
+    try { s.root.render(buildElement(s, undefined)); } catch { /* courtesy only: the save block already holds */ }
 }
 
 async function doSave(s) {
@@ -616,6 +619,7 @@ function buildElement(s, initialData) {
             },
             theme: s.theme,
             autoFocus: true,
+            viewModeEnabled: !!s.blocked, // saves refused: the canvas becomes look-only
             UIOptions: {
                 canvasActions: {
                     loadScene: false, saveToActiveFile: false, export: false,
@@ -882,6 +886,9 @@ export const drawingSession = {
     undo() { sendUndoRedo(false); },
     redo() { sendUndoRedo(true); },
 };
+
+// Called by editor-api.js when the note itself reports 403/404, so a live canvas locks too
+window.__inferaLockDrawings = () => { if (active) blockDrawing(active, 'permission'); };
 
 function sendUndoRedo(redo) {
     if (!active) return;

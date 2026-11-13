@@ -37,7 +37,7 @@
         }
     </script>
 </head>
-<body class="editor-body">
+<body class="editor-body" th:classappend="${!canEdit} ? 'is-readonly'">
 
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -65,13 +65,19 @@
 <!-- ═══════════════════════════════════════════════════════════════
      EDITOR BODY — centered writing column
 ════════════════════════════════════════════════════════════════ -->
-<main class="editor-page" id="editorPageMain" th:style="'--ws-color:' + ${note.workspace.color}">    <div class="editor-column">
+<main class="editor-page" id="editorPageMain" th:style="'--ws-color:' + ${note.workspace.color}">
+    <div class="editor-column">
+        <div class="editor-readonly-banner" id="editorReadonlyBanner" th:hidden="${canEdit}">
+            <i class="bi bi-eye"></i>
+            <span id="editorReadonlyText">View only: you can read this note but not edit it.</span>
+        </div>
 
         <input type="text"
                id="editorTitleInput"
                class="editor-title-input"
                th:value="${note.title}"
                placeholder="Untitled"
+               th:readonly="${!canEdit}"
                maxlength="150"
                autocomplete="off" />
 
@@ -81,9 +87,9 @@
                 <span id="editorWsLabel" th:text="${note.workspace.name}">Workspace</span>
                 <i class="bi bi-chevron-down"></i>
             </button>
-            <div class="editor-ws-dropdown" id="editorWsDropdown">
+            <div class="editor-ws-dropdown" id="editorWsDropdown" th:if="${canEdit}">
                 <button type="button" class="editor-ws-option"
-                        th:each="ws : ${workspaces}"
+                        th:each="ws : ${editableWorkspaces}"
                         th:attr="data-id=${ws.id},data-name=${ws.name},data-color=${ws.color}"
                         th:text="${ws.name}">Workspace name</button>
             </div>
@@ -137,7 +143,8 @@
 <script th:inline="javascript">
     window.__NOTE_ID__ = /*[[${note.id}]]*/ 0;
     window.__NOTE_RAW_CONTENT__ = /*[[${note.documentJson}]]*/ '';
-    window.__NOTE_WORKSPACE_ID__ = /*[[${note.workspace.id}]]*/ 0
+    window.__NOTE_WORKSPACE_ID__ = /*[[${note.workspace.id}]]*/ 0;
+    window.__NOTE_CAN_EDIT__ = /*[[${canEdit}]]*/ false;
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>

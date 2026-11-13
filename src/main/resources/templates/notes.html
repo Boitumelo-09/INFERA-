@@ -8,7 +8,7 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title th:text="${pageTitle}">Notes — INFERA</title>
+    <title th:text="${pageTitle}"></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
@@ -28,103 +28,9 @@
     <meta name="theme-color" content="#161b22"></head>
 <body>
 
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SIDEBAR
-════════════════════════════════════════════════════════════════ -->
-<aside class="sidebar" id="sidebar">
 
-    <div class="sidebar-logo">
-        <a th:href="@{/home}" class="logo-link d-flex align-items-center gap-2">
-            <div class="logo-mark">
-                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
-                    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V104" fill="none" stroke="currentColor" stroke-width="13"/>
-                    <path d="M94 134V92M94 110C94 94 106 86 120 86C134 86 142 96 142 110" fill="none" stroke="currentColor" stroke-width="13"/>
-                    <circle cx="94" cy="72" r="8" fill="currentColor"/>
-                </svg>
-            </div>
-            <span class="logo-text">incaptur.</span>
-        </a>
-        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
-            <i class="bi bi-x-lg"></i>
-        </button>
-    </div>
-    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
-        <i class="bi bi-chevron-left"></i>
-    </button>
-
-    <div class="sidebar-search" id="searchTrigger" role="button" tabindex="0" aria-label="Open search">
-        <i class="bi bi-search"></i>
-        <span>Search...</span>
-        <kbd>⌘K</kbd>
-    </div>
-
-    <nav class="sidebar-nav" aria-label="Main navigation">
-
-        <div class="nav-section-label">Main</div>
-        <ul class="nav-list">
-            <li>
-                <a th:href="@{/dashboard}" class="nav-item">
-                    <i class="bi bi-grid-1x2"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/workspaces}" class="nav-item">
-                    <i class="bi bi-folder2-open"></i>
-                    <span>Workspaces</span>
-                    <span class="nav-badge" th:text="${workspaceCount}">0</span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/notes}" class="nav-item active">
-                    <i class="bi bi-journal-text"></i>
-                    <span>Notes</span>
-                    <span class="nav-badge" th:text="${noteCount}">0</span>
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/resources}" class="nav-item" data-page="resources">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>Resources</span>
-                    <!--  -->
-                    <span th:text="${resourceCount}" class="nav-badge" id="navResourcesBadge">0</span>
-                </a>
-            </li>
-        </ul>
-        <div class="nav-section-label mt-3">Account</div>
-        <ul class="nav-list">
-            <li><a th:href="@{/activity}" class="nav-item"><i class="bi bi-clock-history"></i><span>Activity</span></a></li>
-            <li><a th:href="@{/profile}" class="nav-item"><i class="bi bi-person-circle"></i><span>Profile</span></a></li>
-            <li><a th:href="@{/settings}" class="nav-item"><i class="bi bi-gear"></i><span>Settings</span></a></li>
-        </ul>
-
-    </nav>
-
-    <div class="sidebar-user">
-        <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
-            <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-            <div th:style="${user.avatarUrl} ? 'display:none' : 'display:flex'" class="topbar-avatar" th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
-        </div>
-        <div class="user-info">
-            <div class="user-name" th:text="${user.firstName + ' ' + user.lastName}">Sipho Ndlovu</div>
-            <div class="user-email" th:text="${user.email}">sipho@example.com</div>
-        </div>
-        <form th:action="@{/logout}" method="post" style="margin:0;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="logout-btn" title="Sign out">
-                <i class="bi bi-box-arrow-right"></i>
-            </button>
-        </form>
-    </div>
-
-</aside>
-
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
+<th:block th:replace="~{fragments/sidebar :: sidebar('notes')}"></th:block>
 <!-- ═══════════════════════════════════════════════════════════════
      MAIN CONTENT
 ════════════════════════════════════════════════════════════════ -->
@@ -168,7 +74,7 @@
                     workspaces.
                 </p>
             </div>
-            <button class="btn-topbar-accent" id="newNoteBtnHeader" th:disabled="${#lists.isEmpty(workspaces)}">
+            <button class="btn-topbar-accent" id="newNoteBtnHeader" th:if="${!#lists.isEmpty(editableWorkspaces)}">
                 <i class="bi bi-plus-lg"></i>
                 <span>New note</span>
             </button>
@@ -202,7 +108,7 @@
             <div class="notes-empty-icon"><i class="bi bi-journal-text"></i></div>
             <h3>No notes yet</h3>
             <p>Capture your first idea, waste no seconds.</p>
-            <button class="btn-topbar-accent mt-2" id="newNoteBtnEmpty">
+            <button class="btn-topbar-accent mt-2" id="newNoteBtnEmpty" th:if="${!#lists.isEmpty(editableWorkspaces)}">
                 <i class="bi bi-plus-lg"></i> Write your first note
             </button>
         </div>
@@ -216,6 +122,7 @@
                  th:data-title="${note.title}"
                  th:data-content="${note.documentJson}"
                  th:data-workspace-id="${note.workspace.id}"
+                 th:data-can-edit="${editableWorkspaceIds.contains(note.workspace.id)}"
                  th:data-workspace-name="${note.workspace.name}"
                  th:data-tags="${note.getTagNamesCsv()}">
 
@@ -249,11 +156,11 @@
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View
                             </button>
-                            <button class="ws-menu-item note-edit-trigger">
+                            <button class="ws-menu-item note-edit-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
 
-                            <button class="ws-menu-item danger note-delete-trigger">
+                            <button class="ws-menu-item danger note-delete-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
                         </div>
@@ -387,7 +294,7 @@
                     <div class="form-group mb-3">
                         <label class="form-label-custom" for="noteWorkspace">Workspace </label>
                         <select id="noteWorkspace" name="workspaceId" class="form-input form-select-custom" required>
-                            <option th:each="ws : ${workspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace
+                            <option th:each="ws : ${editableWorkspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace
                                  
                             </option>
                         </select>

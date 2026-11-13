@@ -219,10 +219,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: block;
 }
 
-.logo-bg {
-    fill: url(#logoBgGradient);
 
-}
 
 .logo-icon {
     color: var(--accent);
@@ -390,6 +387,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     /*background: var(--bg);*/
     color: var(--muted);
 }
+
 /* Workspace items */
 .ws-item {
     color: var(--muted);
@@ -1093,8 +1091,8 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 ═══════════════════════════════════════ */
 
 .infera-modal .modal-content {
-    background: var(--secondary);
-    border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--bg), var(--secondary));
+    border: none;
     border-radius: 16px;
     box-shadow: 0 32px 72px rgba(0,0,0,0.55);
    
@@ -2766,4 +2764,48 @@ white-space: nowrap;
 .btn-submit-wel:hover {
     color: var(--text);
 
+}
+
+.nav-badge-alert {
+    background: none;
+    border-radius: 50%;
+    color: lime;
+    margin-left: auto;
+    margin-right: 2px;
+    margin-bottom:8px;
+    animation: sharpPulse 2.4s ease-in-out infinite;
+    will-change: transform, color, text-shadow;
+}
+@keyframes sharpPulse {
+    0%, 100% {
+        color: lime; /* Lime */
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        color: var(--accent); /* Maroon */
+        transform: translateY(-3px);
+        opacity: 0.85;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blink-sharp {
+        animation: none;
+    }
+}
+/* Collapsed sidebar: the pending-invitation number becomes a dot on the icon */
+.sidebar.collapsed .nav-item .nav-badge-alert,
+.sb-collapsed .sidebar .nav-item .nav-badge-alert {
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 20px;
+    width: 8px;
+    height: 8px;
+    margin: 0;
+    padding: 0;
+    font-size: 0;          /* hides the number, keeps the dot */
+    border-radius: 50%;
 }

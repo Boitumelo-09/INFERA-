@@ -43,9 +43,25 @@ function renderTagPills(csv) {
     });
 }
 
+// Last workspace the SERVER accepted; a rejected move reverts to this.
+let committedWorkspaceId = window.__NOTE_WORKSPACE_ID__;
+window.__inferaCommitWorkspace = id => { committedWorkspaceId = id; };
+window.__inferaRevertWorkspace = () => {
+    const opt = [...(wsDropdown?.querySelectorAll('.editor-ws-option') || [])]
+        .find(o => Number(o.dataset.id) === committedWorkspaceId);
+    window.__inferaPropsState.workspaceId = committedWorkspaceId;
+    if (!opt) return;   // the original workspace isn't in the editable list: label stays, state is right
+    wsLabel.textContent = opt.dataset.name;
+    if (wsTopbarName) wsTopbarName.textContent = opt.dataset.name;
+    ['editorTopbar', 'editorPageMain'].forEach(id2 => {
+        document.getElementById(id2)?.style.setProperty('--ws-color', opt.dataset.color);
+    });
+};
+
 // ─── Workspace dropdown ─────────────────────────────
 wsTrigger?.addEventListener('click', e => {
     e.stopPropagation();
+    if (document.body.classList.contains('is-readonly')) return;
     wsSelect.classList.toggle('open');
 });
 document.addEventListener('click', e => {
@@ -69,6 +85,7 @@ wsDropdown?.querySelectorAll('.editor-ws-option').forEach(opt => {
 
 // ─── Tags inline editor ─────────────────────────────
 tagsDisplay?.addEventListener('click', () => {
+    if (document.body.classList.contains('is-readonly')) return;
     tagsInput.value = window.__inferaPropsState.tags;
     tagsDisplay.style.display = 'none';
     tagsInput.style.display = '';

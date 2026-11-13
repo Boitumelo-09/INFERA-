@@ -110,6 +110,14 @@ public class InvitationService {
         return invitationRepository.findPendingByEmail(user.getEmail().toLowerCase(), LocalDateTime.now());
     }
 
+    // Badge count. Hidden-email GitHub users can never receive invitations, so skip the query for them.
+    @Transactional(readOnly = true)
+    public long countPendingForUser(User user) {
+        String email = user.getEmail();
+        if (email == null || email.endsWith("@github.oauth")) return 0;
+        return invitationRepository.countPendingByEmail(email.toLowerCase(), LocalDateTime.now());
+    }
+
     // Link flow: resolve the token, give the clear "wrong address" message, then the shared atomic accept
     @Transactional
     public Workspace acceptByToken(String rawToken, User user) {
