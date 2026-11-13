@@ -67,6 +67,16 @@ public class WorkspaceService {
         return workspaceRepository.findAccessibleByUser(user);
     }
 
+    // Ids of workspaces where this user may write (EDITOR or OWNER). One query; drives what the UI shows.
+    @Transactional(readOnly = true)
+    public Set<Long> getEditableWorkspaceIds(User user) {
+        Set<Long> ids = new HashSet<>();
+        for (WorkspaceMember m : workspaceMemberRepository.findAllByUserWithWorkspace(user)) {
+            if (m.getRole().atLeast(WorkspaceRole.EDITOR)) ids.add(m.getWorkspace().getId());
+        }
+        return ids;
+    }
+
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
         return workspaceRepository.countAccessibleByUser(user);
