@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/notes")
@@ -42,6 +43,10 @@ public class NoteController {
         model.addAttribute("user", user);
         model.addAttribute("notes", notes);
         model.addAttribute("noteCount", notes.size());
+        Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+        model.addAttribute("editableWorkspaceIds", editableIds);
+        model.addAttribute("editableWorkspaces", workspaceService.getWorkspacesForUser(user).stream()
+                .filter(w -> editableIds.contains(w.getId())).toList());
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
         model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
         model.addAttribute("resourcesByNote", resourceService.getResourcesGroupedByNote(user));
@@ -80,6 +85,10 @@ public class NoteController {
             model.addAttribute("pageTitle", note.getTitle() + " | incaptur");
             model.addAttribute("user", user);
             model.addAttribute("note", note);
+            Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+            model.addAttribute("canEdit", editableIds.contains(note.getWorkspace().getId()));
+            model.addAttribute("editableWorkspaces", workspaceService.getWorkspacesForUser(user).stream()
+                    .filter(w -> editableIds.contains(w.getId())).toList());
             model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
             model.addAttribute("workspaceCount", workspaceService.countWorkspacesForUser(user));
             model.addAttribute("noteCount", noteService.countNotesForUser(user));
