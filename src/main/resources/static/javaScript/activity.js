@@ -2,15 +2,6 @@
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-/* Cursor + sidebar */
-const dot = $('#cursorDot'), ring = $('#cursorRing');
-let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-if (dot && ring) {
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; dot.style.left = mouseX+'px'; dot.style.top = mouseY+'px'; });
-    (function animateRing(){ ringX += (mouseX-ringX)*0.14; ringY += (mouseY-ringY)*0.14; ring.style.left=ringX+'px'; ring.style.top=ringY+'px'; requestAnimationFrame(animateRing); })();
-    document.addEventListener('mouseleave', () => { dot.style.opacity='0'; ring.style.opacity='0'; });
-    document.addEventListener('mouseenter', () => { dot.style.opacity='1'; ring.style.opacity='1'; });
-}
 /* ─── STREAK RING ─── */
 function buildStreakRing() {
     const ring = $('#currentStreakRing');
@@ -134,7 +125,8 @@ function buildDonutChart() {
         { label: 'Notes', value: parseInt(wrap.dataset.notes, 10) || 0, color: '#818cf8' },
         { label: 'Workspaces', value: parseInt(wrap.dataset.workspaces, 10) || 0, color: '#f59e0b' },
         { label: 'Resources', value: parseInt(wrap.dataset.resources, 10) || 0, color: '#34d399' },
-        { label: 'Tags', value: parseInt(wrap.dataset.tags, 10) || 0, color: '#6a0afa' }
+        { label: 'Tags', value: parseInt(wrap.dataset.tags, 10) || 0, color: '#6a0afa' },
+        { label: 'Collaboration', value: parseInt(wrap.dataset.members, 10) || 0, color: '#38bdf8' }
     ];
 
     const total = data.reduce((s, d) => s + d.value, 0);
@@ -207,4 +199,28 @@ function buildTrendDescription(values) {
     }
 
     el.innerHTML = `<strong>${total}</strong> actions logged over the last 30 days — averaging <strong>${avg}</strong> per day, ${trendPhrase}.`;
+    /* ─── LOG FILTER PILLS — client-side; the server tags every row, JS only toggles visibility ─── */
+    (function () {
+        const log = $('#actLog'), title = $('#actLogTitle'), empty = $('#actEmpty');
+        if (!log) return;
+        const rows = $$('.activity-item', log);
+
+        function applyLogFilter(filter, name) {
+            $$('.act-ws-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
+            log.classList.toggle('is-ws-view', filter !== 'mine');
+            let visible = 0;
+            rows.forEach(r => {
+                const show = filter === 'mine' ? r.dataset.mine === 'true' : r.dataset.ws === filter;
+                r.classList.toggle('act-hidden', !show);
+                if (show) visible++;
+            });
+            if (empty) empty.hidden = visible > 0;
+            if (title) title.textContent = filter === 'mine' ? 'Activity Log' : name + ' activity';
+            log.scrollTop = 0;
+        }
+
+        $$('.act-ws-pill').forEach(p =>
+            p.addEventListener('click', () => applyLogFilter(p.dataset.filter, p.dataset.name)));
+        applyLogFilter('mine');
+    })();
 }
