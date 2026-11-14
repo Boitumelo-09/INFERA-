@@ -78,9 +78,29 @@
 /* ─── WORKSPACE FILTER PILLS ─────────── */
 .ws-filter-row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
     margin-bottom: 22px;
+
+    max-height: 42px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg) transparent;
+
+    padding-bottom: 4px;
+    transition: all .22s;
+}
+
+/* Prevent pills from shrinking */
+.ws-filter-pill {
+    flex-shrink: 0;
+}
+
+.ws-filter-row:hover{
+    scrollbar-color: var(--accent) transparent;
 }
 
 .ws-filter-pill {
@@ -99,7 +119,6 @@
 }
 
 .ws-filter-pill:hover {
-    /*border-color: rgba(255, 255, 255, 0.16);*/
     color: var(--text);
 }
 
@@ -110,10 +129,16 @@
 }
 
 .ws-filter-pill[data-filter="all"].active {
-    background: var(--secondary);
-    border-color: var(--border);
-    color: var(--accent);
+    background: transparent;
+    border:2px var(--accent) solid;
+    color: var(--text);
 }
+.ws-filter-pill[data-filter="archived"].active {
+    background: transparent;
+    border:2px var(--accent) solid;
+    color: var(--text);
+}
+
 
 .ws-filter-dot {
     width: 8px;
@@ -122,6 +147,7 @@
     background: linear-gradient(285deg, var(--ws-color), black);
     flex-shrink: 0;
 }
+
 
 /* ─── EMPTY STATES ───────────────────── */
 .notes-empty {
