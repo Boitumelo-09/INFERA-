@@ -174,6 +174,7 @@ function openDeleteModal(tile) {
 $$('.ws-tile').forEach(tile => {
   const menuWrap   = tile.querySelector('.ws-tile-menu');
   const menuBtn    = tile.querySelector('.ws-menu-btn');
+  const membersBtn  = tile.querySelector('.ws-members-trigger');
   const editBtn    = tile.querySelector('.ws-edit-trigger');
   const deleteBtn  = tile.querySelector('.ws-delete-trigger');
 
@@ -183,7 +184,11 @@ $$('.ws-tile').forEach(tile => {
     $$('.ws-tile-menu.open').forEach(m => { if (m !== menuWrap) m.classList.remove('open'); });
     menuWrap.classList.toggle('open');
   });
-
+membersBtn?.addEventListener('click', e => {
+  e.stopPropagation();
+  menuWrap.classList.remove('open');
+  openHub(tile); 
+})
   editBtn?.addEventListener('click', e => {
     e.stopPropagation();
     menuWrap.classList.remove('open');
