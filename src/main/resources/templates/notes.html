@@ -95,6 +95,9 @@
             <button class="ws-filter-pill active" data-filter="all">
                 <span>All notes</span>
             </button>
+            <button class="ws-filter-pill " data-filter="archived">
+                <span>Archived</span>
+            </button>
             <button class="ws-filter-pill" th:each="ws : ${workspaces}"
                     th:data-filter="${ws.id}"
                     th:style="'--ws-color:' + ${ws.color}">
@@ -124,6 +127,7 @@
                  th:data-workspace-id="${note.workspace.id}"
                  th:data-can-edit="${editableWorkspaceIds.contains(note.workspace.id)}"
                  th:data-workspace-name="${note.workspace.name}"
+                 th:data-archived="${note.archived}"
                  th:data-tags="${note.getTagNamesCsv()}">
 
                 <div class="nri-accent"></div>
@@ -153,6 +157,12 @@
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <div class="ws-menu-dropdown">
+                            <button th:if="${note.archived == false}" class="ws-menu-item note-archive-trigger">
+                                <i class="bi bi-archive"></i> Archive
+                            </button>
+                            <button th:if="${note.archived == true}" class="ws-menu-item note-unarchive-trigger">
+                                <i class="bi bi-box-arrow-up"></i> Unarchive
+                            </button>
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View
                             </button>
