@@ -26,7 +26,6 @@ import java.util.Map;
 public class NoteService {
 
     private final NoteRepository noteRepository;
-    private final WorkspaceService workspaceService;
     private final TagService tagService;
     private final ActivityService activityService;
     private final ResourceRepository resourceRepository;
@@ -180,20 +179,21 @@ public class NoteService {
     }
 
     public void setArchived(Long id, User user) {
-        Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
+        Note note = getNoteForUser(id, user, WorkspaceRole.OWNER);
         if (note.isArchived()){
             throw new NoteArchiveException("This note is already archived.");
         }
         note.setArchived(true);
         noteRepository.save(note);
+        activityService.log(user, ActivityType.NOTE_ARCHIVED, note.getTitle(), note.getWorkspace());
     }
     public void setUnarchived(Long id, User user) {
-        Note note = getNoteForUser(id,user,WorkspaceRole.EDITOR);
+        Note note = getNoteForUser(id,user,WorkspaceRole.OWNER);
         if (!note.isArchived()){
             throw new NoteArchiveException("This note is already unarchived.");
         }
         note.setArchived(false);
-
         noteRepository.save(note);
+        activityService.log(user, ActivityType.NOTE_UNARCHIVED, note.getTitle(), note.getWorkspace());
     }
 }
