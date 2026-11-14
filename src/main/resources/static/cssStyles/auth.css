@@ -267,9 +267,7 @@ a {
 }
 
 .form-input:focus {
-    border-color: rgba(234, 88, 12, 0.55);
-   
-    background: rgba(22, 27, 34, 0.8);
+    border-color: var(--accent);
 }
 
 .form-input:focus + .input-icon,
@@ -373,8 +371,6 @@ a {
 
 .otp-box:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14);
-    background: rgba(22, 27, 34, 0.8);
     transform: translateY(-1px);
 }
 
@@ -468,12 +464,12 @@ a {
 }
 
 .link-accent:hover {
-    color: #fb923c;
+    color: var(--accent);
 }
 
 /* Alert */
 .auth-alert {
-    background: rgba(239, 68, 68, 0.1);
+    background: none;
     border: 1px solid rgba(239, 68, 68, 0.25);
     border-radius: 10px;
     padding: 12px 16px;
@@ -600,22 +596,20 @@ a {
 
 .infera-toast {
     position: fixed;
-    bottom: 28px;
-    right: 28px;
-    background: #1c2128;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    bottom: 28px; right: 28px;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    border: 1px solid transparent;
     border-radius: 10px;
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 6px 9px;
+    display: flex; align-items: center; gap: 10px;
     font-size: 0.84rem;
-    color: #f8fafc;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    color: var(--text);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.4);
     z-index: 1000;
     transform: translateY(80px);
     opacity: 0;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    transition: transform 0.35s cubic-bezier(0.34, 1.54, 0.64, 1), opacity 0.3s;
     pointer-events: none;
 }
 
