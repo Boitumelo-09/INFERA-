@@ -7,6 +7,8 @@ public enum ActivityType {
     NOTE_CREATED("Created note", "bi-journal-plus", "created"),
     NOTE_UPDATED("Updated note", "bi-pencil-square", "updated"),
     NOTE_DELETED("Deleted note", "bi-trash", "danger"),
+    NOTE_ARCHIVED("Archived note", "bi-archive", "archived"),
+    NOTE_UNARCHIVED("Restored note", "bi-archive-fill", "restored"),
     WORKSPACE_CREATED("Created workspace", "bi-folder-plus", "ws-created"),
     WORKSPACE_UPDATED("Updated workspace", "bi-pencil-square", "updated"),
     WORKSPACE_DELETED("Deleted workspace", "bi-trash", "danger"),
@@ -24,6 +26,7 @@ public enum ActivityType {
     MEMBER_REMOVED("Removed member", "bi-person-x", "danger", false),
     MEMBER_ROLE_CHANGED("Changed role of", "bi-shield-check", "updated", false);
 
+    //Archiving Notes
     private final String label;
     private final String icon;
     private final String cssClass;
