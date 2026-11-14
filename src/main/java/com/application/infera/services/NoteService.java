@@ -4,10 +4,7 @@ import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
-import com.application.infera.exception.InvalidMoveTargetException;
-import com.application.infera.exception.NoteNotFoundException;
-import com.application.infera.exception.WorkspaceAccessDeniedException;
-import com.application.infera.exception.WorkspaceNotFoundException;
+import com.application.infera.exception.*;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -180,5 +177,23 @@ public class NoteService {
             activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
         }
         return note;
+    }
+
+    public void setArchived(Long id, User user) {
+        Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
+        if (note.isArchived()){
+            throw new NoteArchiveException("This note is already archived.");
+        }
+        note.setArchived(true);
+        noteRepository.save(note);
+    }
+    public void setUnarchived(Long id, User user) {
+        Note note = getNoteForUser(id,user,WorkspaceRole.EDITOR);
+        if (!note.isArchived()){
+            throw new NoteArchiveException("This note is already unarchived.");
+        }
+        note.setArchived(false);
+
+        noteRepository.save(note);
     }
 }
