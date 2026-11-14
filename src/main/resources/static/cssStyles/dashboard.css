@@ -80,7 +80,7 @@ button { font-family: var(--font-body); }
     position: fixed;
     top: 0; left: 0; bottom: 0;
     width: var(--sidebar-w);
-    background: var(--secondary);
+    background: transparent;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-right: 1px solid transparent;
@@ -91,7 +91,10 @@ button { font-family: var(--font-body); }
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 12px;
+    scrollbar-color: var(--bg) transparent;
+    scrollbar-width: thin;
 }
+
 html.sb-collapsed .sidebar, .sidebar.collapsed { width: 76px; }
 html.sb-collapsed .sidebar ~ .main-wrapper { margin-left: 76px; }
 html.no-sb-transition .sidebar,
