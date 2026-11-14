@@ -2,11 +2,11 @@ package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.enums.WorkspaceRole;
+import com.application.infera.exception.NoteArchiveException;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
-import com.application.infera.repositories.UserRepository;
 import com.application.infera.services.CurrentUserService;
 import com.application.infera.services.NoteService;
 import com.application.infera.services.ResourceService;
@@ -115,6 +115,35 @@ public class NoteController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
+        return "redirect:/notes";
+    }
+
+    @GetMapping("/{id}/archive")
+    public String archiveNote(@AuthenticationPrincipal Object principal,
+                             @PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try{
+            noteService.setArchived(id,user);
+            redirectAttributes.addFlashAttribute("successMessage", "Note archived.");
+        }catch(NoteArchiveException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
+        return "redirect:/notes";
+    }
+
+    @GetMapping("/{id}/unarchive")
+    String unarchiveNote(@AuthenticationPrincipal Object principal,@PathVariable Long id,RedirectAttributes redirectAttributes){
+        User user = currentUserService.resolve(principal);
+        if (user == null) return "redirect:/auth";
+        try {
+              noteService.setUnarchived(id,user);
+              redirectAttributes.addFlashAttribute("successMessage", "Note unarchived.");
+          } catch (NoteArchiveException e) {
+              redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+          }
         return "redirect:/notes";
     }
 
