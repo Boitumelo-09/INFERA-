@@ -14,7 +14,7 @@ function authFetch(url, body) {
 }
 // add anywhere in auth.js, ideally near the top
 function showToast(msg, type = 'success') {
-    const toast = document.getElementById('inferaToast');
+    const toast = document.getElementById('authToast');
     const toastMsg = document.getElementById('toastMsg');
     const toastIcon = document.getElementById('toastIcon');
     if (!toast) return;
@@ -46,6 +46,33 @@ const resendCooldown = document.getElementById('resendCooldown');
 const resendTimer    = document.getElementById('resendTimer');
 const authAlert     = document.getElementById('authAlert');
 const authAlertText = document.getElementById('authAlertText');
+
+const authOptions    = document.getElementById('authOptions');
+const emailToggleBtn = document.getElementById('emailToggleBtn');
+const backToOptions  = document.getElementById('backToOptions');
+const authTitle      = document.getElementById('authTitle');
+const authSub        = document.getElementById('authSub');
+
+const views = { options: authOptions, email: stepEmail, code: stepCode };
+const viewCopy = {
+    options: ['Continue to incaptur.', 'Your mind has no save button. We do!'],
+    email:   ['Continue with email', 'We’ll send a 6-digit code to sign you in.'],
+    code:    ['Check your inbox', 'Enter the code to finish signing in.']
+};
+
+function showView(name) {
+    Object.entries(views).forEach(([key, el]) => el.classList.toggle('d-none', key !== name));
+    authTitle.textContent = viewCopy[name][0];
+    authSub.textContent = viewCopy[name][1];
+    hideAlert();
+    const el = views[name];            // replay the fade-in
+    el.classList.remove('view');
+    void el.offsetWidth;
+    el.classList.add('view');
+}
+
+emailToggleBtn.addEventListener('click', () => { showView('email'); emailInput.focus(); });
+backToOptions.addEventListener('click', () => showView('options'));
 
 let currentEmail = '';
 let cooldownInterval = null;
@@ -115,18 +142,19 @@ emailInput.addEventListener('keydown', (e) => {
 
 function enterCodeStep(email) {
     codeEmailDisplay.textContent = email;
-    stepEmail.classList.add('d-none');
-    stepCode.classList.remove('d-none');
+    showView('code');
     otpBoxes.forEach(b => b.value = '');
     otpBoxes[0].focus();
     updateVerifyState();
 }
 
 editEmailBtn.addEventListener('click', () => {
-    stepCode.classList.add('d-none');
-    stepEmail.classList.remove('d-none');
-    hideAlert();
+    showView('email');
     clearInterval(cooldownInterval);
+    resendCooldown.classList.add('d-none');
+    resendIdle.classList.remove('d-none');
+    emailInput.focus();
+    emailInput.select();
 });
 
 // ─── STEP 2: OTP BOXES ─────────────────────
@@ -165,11 +193,15 @@ function updateVerifyState() {
     if (code.length === 6) verifyCode();
 }
 
+let verifying = false;
+
 async function verifyCode() {
+    if (verifying) return;
     hideAlert();
     const code = getCode();
     if (code.length !== 6) return;
 
+    verifying = true;
     setLoading(verifyBtn, true);
     try {
         const res = await authFetch('/auth/verify-code', { email: currentEmail, code });
@@ -177,6 +209,8 @@ async function verifyCode() {
 
         if (res.ok && data.status === 'success') {
             otpBoxesWrap.classList.add('success');
+            setLoading(verifyBtn, false);
+            verifyBtn.disabled = true;
             verifyBtn.querySelector('.btn-submit-text').innerHTML = '<i class="bi bi-check2"></i> Verified';
             setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 500);
         } else {
@@ -185,11 +219,13 @@ async function verifyCode() {
             otpBoxes.forEach(b => b.value = '');
             otpBoxes[0].focus();
             showAlert(data.message || 'Incorrect code.');
+            verifying = false;
             setLoading(verifyBtn, false);
             verifyBtn.disabled = true;
         }
     } catch {
         showAlert('Could not reach the server. Check your connection.');
+        verifying = false;
         setLoading(verifyBtn, false);
     }
 }
