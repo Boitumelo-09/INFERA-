@@ -16,32 +16,6 @@ const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
 /* ───────────────────────────────────────────────────────────────────
-   CUSTOM CURSOR
-─────────────────────────────────────────────────────────────────── */
-const dot  = $('#cursorDot');
-const ring = $('#cursorRing');
-let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-if (dot && ring) {
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    dot.style.left = mouseX + 'px';
-    dot.style.top  = mouseY + 'px';
-  });
-  (function animateRing() {
-    ringX += (mouseX - ringX) * 0.14;
-    ringY += (mouseY - ringY) * 0.14;
-    ring.style.left = ringX + 'px';
-    ring.style.top  = ringY + 'px';
-    requestAnimationFrame(animateRing);
-  })();
-  $$('a, button, input, textarea').forEach(el => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-  });
-}
-
-/* ───────────────────────────────────────────────────────────────────
    SOFT PAGE NAVIGATION
    Fades the current page out before navigating, instead of the
    abrupt jump cut of a normal link/redirect. Also fades the
@@ -346,6 +320,7 @@ hubBody?.addEventListener('click', e => {
   const btn = e.target.closest('.hub-confirm-btn');
   if (!btn || btn.dataset.armed === '1') return;     // already armed: let the form submit
   e.preventDefault();
+  e.stopPropagation();
   const label = btn.innerHTML;
   btn.dataset.armed = '1';
   btn.textContent = 'Click again to confirm';

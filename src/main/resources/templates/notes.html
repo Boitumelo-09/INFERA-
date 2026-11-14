@@ -92,10 +92,10 @@
 
         <!-- Workspace filter pills -->
         <div class="ws-filter-row" th:if="${!#lists.isEmpty(workspaces) and workspaces.size() > 1}">
-            <button class="ws-filter-pill active" data-filter="all">
+            <button class="ws-filter-pill outsiderFilter active" data-filter="all">
                 <span>All notes</span>
             </button>
-            <button class="ws-filter-pill " data-filter="archived">
+            <button class="ws-filter-pill outsiderFilter" data-filter="archived">
                 <span>Archived</span>
             </button>
             <button class="ws-filter-pill" th:each="ws : ${workspaces}"
