@@ -427,7 +427,8 @@ $$('.note-row-item').forEach(row => {
     const menuBtn        = row.querySelector('.nri-menu-btn');
     const viewBtn          = row.querySelector('.note-view-trigger');
     const editBtn            = row.querySelector('.note-edit-trigger');
-    // const propertiesBtn        = row.querySelector('.note-properties-trigger');
+    const archiveBtn         = row.querySelector('.note-archive-trigger');
+    const unarchiveBtn       = row.querySelector('.note-unarchive-trigger');
     const deleteBtn              = row.querySelector('.note-delete-trigger');
 
     // Clicking anywhere on the row (but not the menu) opens the read-only view
@@ -462,12 +463,16 @@ $$('.note-row-item').forEach(row => {
         softNavigate(`/notes/${row.dataset.id}/edit`);
     });
 
-    // propertiesBtn?.addEventListener('click', e => {
-    //     e.stopPropagation();
-    //     menuWrap.classList.remove('open');
-    //     row.classList.remove('menu-active');
-    //     openNotePropertiesModal(row);
-    // });
+   archiveBtn?.addEventListener('click', e => {
+       e.stopPropagation();
+       menuWrap.classList.remove('open');
+       softNavigate(`/notes/${row.dataset.id}/archive`);
+   })
+    unarchiveBtn?.addEventListener('click',e =>{
+        e.stopPropagation();
+        menuWrap.classList.remove('open');
+       softNavigate(`/notes/${row.dataset.id}/unarchive`);
+    });
 
     deleteBtn?.addEventListener('click', e => {
         e.stopPropagation();
@@ -493,7 +498,18 @@ function applyWorkspaceFilter(filter) {
     });
 
     $$('.note-row-item').forEach(row => {
-        const matches = filter === 'all' || row.dataset.workspaceId === filter;
+        const isArchived = row.dataset.archived === 'true';
+
+        let matches;
+
+        if (filter === 'all') {
+            matches = !isArchived;
+        } else if (filter === 'archived') {
+            matches = isArchived;
+        } else {
+            matches = !isArchived && row.dataset.workspaceId === filter;
+        }
+
         row.classList.toggle('filtered-out', !matches);
     });
 }

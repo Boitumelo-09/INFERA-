@@ -15,12 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class ActivityController {
 
-    private final ActivityService activityService;
-    private final NoteService noteService;
-    private final WorkspaceService workspaceService;
-    private final CurrentUserService currentUserService;
-    private final ResourceService resourceService;
-    private final TagService tagService;
+    private final ActivityService activityService;private final WorkspaceService workspaceService;
+    private final CurrentUserService currentUserService;private final TagService tagService;
 
 
     @GetMapping
@@ -36,7 +32,8 @@ public class ActivityController {
         model.addAttribute("longestStreak", activityService.getLongestStreak(user));
         model.addAttribute("categoryBreakdown", activityService.getCategoryBreakdown(user));
         model.addAttribute("monthlyDailyCounts", activityService.getMonthlyDailyCounts(user));
-        model.addAttribute("recentActivities", activityService.getRecentActivities(user, 30));
+        model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
+        model.addAttribute("logItems", activityService.getActivityLog(user));
         model.addAttribute("tagCount", tagService.countTagsForUser(user));
         return "activity";
     }

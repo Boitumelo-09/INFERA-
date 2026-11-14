@@ -111,7 +111,8 @@
                      th:data-notes="${categoryBreakdown.get('NOTE')}"
                      th:data-workspaces="${categoryBreakdown.get('WORKSPACE')}"
                      th:data-resources="${categoryBreakdown.get('RESOURCE')}"
-                     th:data-tags="${categoryBreakdown.get('TAG')}">
+                     th:data-tags="${categoryBreakdown.get('TAG')}"
+                     th:data-members="${categoryBreakdown.get('MEMBER')}">
                     <div class="donut-svg-wrap">
                         <svg viewBox="0 0 100 100" id="donutSvg"></svg>
                     </div>
@@ -123,19 +124,30 @@
         <!-- ── FULL ACTIVITY LOG ── -->
         <div class="dash-panel mt-4">
             <div class="panel-header">
-                <h2 class="panel-title"><i class="bi bi-list-ul"></i> Activity Log</h2>
+                <h2 class="panel-title"><i class="bi bi-list-ul"></i><span id="actLogTitle">Activity Log</span>
+                </h2>
             </div>
-            <div class="panel-body activity-feed activity-feed-scroll">
-                <div th:if="${#lists.isEmpty(recentActivities)}" class="text-center py-4 text-muted" style="color: #ea580c;">
+            <div class="act-ws-pills" th:if="${!#lists.isEmpty(workspaces)}">
+                <button type="button" class="act-ws-pill active" data-filter="mine">My activity</button>
+                <button type="button" class="act-ws-pill" th:each="ws : ${workspaces}"
+                        th:data-filter="${ws.id}" th:data-name="${ws.name}" th:style="'--ws-color:' + ${ws.color}">
+                    <span class="act-ws-pill-dot"></span><span th:text="${ws.name}">Workspace</span>
+                </button>
+            </div>
+            <div class="panel-body activity-feed activity-feed-scroll" id="actLog">
+                <div id="actEmpty" hidden class="text-center py-4 text-muted" style="color: #ea580c;">
                     <i class="bi bi-clock-history fs-3"></i>
                     <p class="mt-2 mb-0">No activity yet.</p>
                 </div>
-                <div class="activity-item" th:each="activity : ${recentActivities}">
+                <div class="activity-item" th:each="activity : ${logItems}"
+                     th:attr="data-ws=${activity.workspace != null ? activity.workspace.id : ''},data-mine=${activity.user.id == user.id}">
                     <div class="act-icon" th:classappend="${activity.type.cssClass}">
                         <i class="bi" th:classappend="${activity.type.icon}"></i>
                     </div>
                     <div class="act-body">
-                        <div class="act-text" th:text="${activity.type.label} + ' '"><strong th:text="${activity.targetName}">Name</strong></div>
+                        <div class="act-text">
+                            <span class="act-actor" th:text="${activity.user.id == user.id} ? 'You' : ${activity.user.firstName + ' ' + activity.user.lastName}">You</span><span class="act-actor-sep"> · </span><span th:text="${activity.type.label}">Created note</span> <strong th:text="${activity.targetName}">Name</strong>
+                        </div>
                         <div class="act-time" th:data-datetime="${activity.createdAt}" th:text="${#temporals.format(activity.createdAt, 'dd MMM yyyy, HH:mm')}">Today</div>
                     </div>
                     <span class="act-workspace" th:if="${activity.workspace != null}" th:style="'--ws-color:' + ${activity.workspace.color}" th:text="${activity.workspace.name}">Workspace</span>

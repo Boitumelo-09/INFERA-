@@ -178,6 +178,7 @@ public class WorkspaceService {
         if (workspaceMemberRepository.deleteNonOwnerById(memberId, workspace, WorkspaceRole.OWNER) == 0) {
             throw new MembershipException("That member is no longer in this workspace.");
         }
+        activityService.log(actor, ActivityType.MEMBER_REMOVED, name, workspace);
         return name;
     }
 
@@ -193,6 +194,7 @@ public class WorkspaceService {
         if (workspaceMemberRepository.deleteNonOwnerMembership(membership.getWorkspace(), user, WorkspaceRole.OWNER) == 0) {
             throw new MembershipException("You are no longer a member of this workspace.");
         }
+        activityService.log(user, ActivityType.MEMBER_LEFT, workspaceName, membership.getWorkspace());
         return workspaceName;
     }
 
@@ -209,8 +211,12 @@ public class WorkspaceService {
             throw new MembershipException("The owner's role can't be changed.");
         }
         String name = displayName(target.getUser());   // read before the update
+        boolean changed = target.getRole() != newRole;
         if (workspaceMemberRepository.updateNonOwnerRole(memberId, workspace, newRole, WorkspaceRole.OWNER) == 0) {
             throw new MembershipException("That member is no longer in this workspace.");
+        }
+        if (changed) {
+            activityService.log(actor, ActivityType.MEMBER_ROLE_CHANGED, name + " to " + newRole.name(), workspace);
         }
         return name;
     }
