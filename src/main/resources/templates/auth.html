@@ -18,6 +18,8 @@
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
     <meta name="theme-color" content="#0d1117" />
     <meta name="recaptcha-site-key" th:content="${recaptchaSiteKey}" />
+    <meta name="google-client-id" th:content="${googleClientId}" />
+    <meta name="one-tap-nonce" th:content="${oneTapNonce}" />
 </head>
 <body>
 
@@ -152,6 +154,7 @@
             <a href="https://policies.google.com/privacy" class="link-accent" target="_blank" rel="noopener">Privacy Policy</a> and
             <a href="https://policies.google.com/terms" class="link-accent" target="_blank" rel="noopener">Terms of Service</a> apply.
         </footer>
+        
     </section>
 </main>
 
@@ -161,6 +164,7 @@
 </div>
 
 <script th:src="'https://www.google.com/recaptcha/api.js?render=' + ${recaptchaSiteKey}"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
