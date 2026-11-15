@@ -7,8 +7,22 @@
 const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
-function authFetch(url, body) {
-    const headers = { 'Content-Type': 'application/json' };
+const recaptchaSiteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.content;
+
+// Tokens are single-use and expire after ~2 min, so fetch a fresh one per request
+function getRecaptchaToken(action) {
+    return new Promise((resolve) => {
+        if (!window.grecaptcha || !recaptchaSiteKey) return resolve(null);
+        grecaptcha.ready(() => {
+            grecaptcha.execute(recaptchaSiteKey, { action })
+                .then(resolve)
+                .catch(() => resolve(null));
+        });
+    });
+}
+
+function authFetch(url, body, extraHeaders = {}) {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
     if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
     return fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
 }
@@ -115,7 +129,8 @@ sendCodeBtn.addEventListener('click', async () => {
 
     setLoading(sendCodeBtn, true);
     try {
-        const res = await authFetch('/auth/request-code', { email });
+        const recaptcha = await getRecaptchaToken('request_otp');
+        const res = await authFetch('/auth/request-code', { email }, { 'X-Recaptcha-Token': recaptcha || '' });
         const data = await res.json();
 
         if (res.ok) {
@@ -236,7 +251,8 @@ verifyBtn.addEventListener('click', verifyCode);
 resendBtn.addEventListener('click', async () => {
     hideAlert();
     try {
-        const res = await authFetch('/auth/request-code', { email: currentEmail });
+        const recaptcha = await getRecaptchaToken('request_otp');
+        const res = await authFetch('/auth/request-code', { email: currentEmail }, { 'X-Recaptcha-Token': recaptcha || '' });
         const data = await res.json();
         if (res.ok) {
             startResendCooldown();
