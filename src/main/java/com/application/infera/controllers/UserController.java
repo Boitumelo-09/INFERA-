@@ -2,6 +2,7 @@ package com.application.infera.controllers;
 
 import com.application.infera.models.User;
 import com.application.infera.services.CurrentUserService;
+import com.application.infera.services.MailService;
 import com.application.infera.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,13 @@ public class UserController {
 
     private final CurrentUserService currentUserService;
     private final UserService userService;
+    private final MailService mailService;
 
     @PostMapping("/mark-welcome-seen")
     public ResponseEntity<Void> markWelcomeSeen(@AuthenticationPrincipal Object principal) {
         User user = currentUserService.resolve(principal);
         if (user == null) return ResponseEntity.status(401).build();
+        mailService.sendWelcomeEmail(user.getEmail());
         userService.markWelcomeSeen(user.getId());
         System.out.println("User " + user.getFirstName() + " marked welcome seen IN CONTROLLER");
         return ResponseEntity.ok().build();
