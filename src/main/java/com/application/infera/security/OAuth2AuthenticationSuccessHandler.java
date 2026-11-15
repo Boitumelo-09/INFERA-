@@ -3,6 +3,7 @@ package com.application.infera.security;
 import com.application.infera.enums.Role;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
+import com.application.infera.services.AuthFlowService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,10 +23,10 @@ import java.util.UUID;
 @Component
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final UserRepository userRepository;
+    private final AuthFlowService authFlowService;
 
-    public OAuth2AuthenticationSuccessHandler(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public OAuth2AuthenticationSuccessHandler(AuthFlowService authFlowService) {
+        this.authFlowService = authFlowService;
         System.out.println("OAuth2AuthenticationSuccessHandler initialized");
     }
 
@@ -48,46 +49,32 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Cannot save a user without an email — redirect with error
         if (email == null || email.isBlank()) {
-            response.sendRedirect("/login?error=email_unavailable");
+            response.sendRedirect("/auth?error=email_unavailable");
             return;
         }
         email = email.trim().toLowerCase();
 
         String avatarUrl = resolveAvatarUrl(oauthUser, provider);
 
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        if (existingUser.isEmpty()) {
-            User user = new User();
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setRole(Role.USER);
-            user.setEnabled(true);
-            user.setAvatarUrl(avatarUrl);
-            userRepository.save(user);
-        } else if (avatarUrl != null) {
-            User user = existingUser.get();
-            user.setAvatarUrl(avatarUrl);
-            userRepository.save(user);
-        }
+        authFlowService.provisionUser(email, firstName, lastName, avatarUrl);
 
-        response.sendRedirect(resolvePostLoginTarget(request));
+        response.sendRedirect(authFlowService.postLoginTarget(request));
     }
 
     // ── ATTRIBUTE RESOLVERS ──────────────────────────────────────────
     // Back to a pending invitation page if one was stored before sign-in, else the dashboard.
     // Only a path that exactly matches /invitations/<43-char token> is ever honoured (no open redirect).
-    private String resolvePostLoginTarget(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            Object stored = session.getAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
-            session.removeAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
-            if (stored instanceof String path && InvitationTokens.RETURN_PATH.matcher(path).matches()) {
-                return path;
-            }
-        }
-        return "/dashboard";
-    }
+//    private String resolvePostLoginTarget(HttpServletRequest request) {
+//        HttpSession session = request.getSession(false);
+//        if (session != null) {
+//            Object stored = session.getAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+//            session.removeAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+//            if (stored instanceof String path && InvitationTokens.RETURN_PATH.matcher(path).matches()) {
+//                return path;
+//            }
+//        }
+//        return "/dashboard";
+//    }
 
     private String resolveAvatarUrl(OAuth2User oauthUser, String provider) {
         if ("google".equals(provider)) return oauthUser.getAttribute("picture");
