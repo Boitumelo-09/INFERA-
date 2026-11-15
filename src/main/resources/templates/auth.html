@@ -5,85 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <title th:text="${pageTitle}"></title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <title th:text="${pageTitle}">Continue to INCAPTUR</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/cssStyles/auth.css" th:href="@{/cssStyles/auth.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
-    <meta name="theme-color" content="#161b22"></head>
+    <meta name="theme-color" content="#0d1117" />
+</head>
 <body>
 
-<nav class="auth-nav">
-    <div class="auth-nav-inner">
-        <a th:href="@{/home}" href="home.html" class="navbar-brand d-flex align-items-center gap-2">
-            <span class="logo-text">incaptur</span>
-        </a>
-    </div>
-</nav>
+<!-- logo sprite (used by the big panel logo and the small brand mark) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="inc-logo" viewBox="38.5 26.5 132.5 147">
+        <g fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110"/>
+            <path d="M94 127.5V98"/>
+        </g>
+        <circle cx="94" cy="72" r="8" fill="currentColor"/>
+    </symbol>
+</svg>
 
-<main class="auth-main">
-    <div class="auth-container">
+<main class="auth">
 
+    <!-- Left: diagonal logo panel (hidden on small screens) -->
+    <aside class="auth-art" aria-hidden="true">
+        <svg class="art-logo" viewBox="38.5 26.5 132.5 147" focusable="false">
+            <!-- resting logo -->
+            <g class="logo-base" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110"/>
+                <path d="M94 98V127.5"/>
+            </g>
+            <circle class="logo-base" cx="94" cy="72" r="8" fill="currentColor"/>
 
-        <!-- Right panel — form -->
-        <div class="auth-panel-right">
-            <div class="auth-form-wrapper">
+            <!-- shine overlay (animated on load) -->
+            <g class="logo-shine" fill="none" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+                <path class="shine shine-main" pathLength="100" d="M94 98V127.5M94 110C94 94 106 86 120 86C134 86 142 96 142 110V140C142 156 132 164 112 164A64 64 0 1 1 162.4 60.6"/>
+                <circle class="shine-dot" cx="94" cy="72" r="8"/>
+            </g>
+        </svg>
+    </aside>
 
-                <div class="auth-heading">
+    <!-- Right: form -->
+    <section class="auth-pane">
 
-                    <h1 class="auth-title">Continue to INCAPTUR</h1>
-                    <p class="auth-sub">Pick up where you left off.</p>
-                </div>
+        <header class="auth-top">
+            <a th:href="@{/home}" href="home.html" class="brand" aria-label="INCAPTUR home">
+                <svg class="brand-mark" focusable="false"><use href="#inc-logo"/></svg>
+                <span class="brand-word">incaptur</span>
+            </a>
+        </header>
 
-                <!-- Alert (shared for both steps) -->
-                <div class="auth-alert d-none" id="authAlert">
+        <div class="auth-body">
+            <div class="auth-form">
+
+                <h1 class="auth-title" id="authTitle">Continue to incaptur.</h1>
+                <p class="auth-sub" id="authSub">Your mind has no save button. We do!</p>
+
+                <div class="auth-alert d-none" id="authAlert" role="alert">
                     <i class="bi bi-exclamation-circle"></i>
                     <span id="authAlertText"></span>
                 </div>
 
-                <!-- OAuth -->
-                <div class="social-btns d-flex flex-column gap-3 mt-4">
-                    <a th:href="@{/oauth2/authorization/google}" class="btn-social">
-                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.576c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.576 9 3.576z" fill="#EA4335"/></svg>
+                <!-- VIEW 1: options -->
+                <div id="authOptions" class="view options">
+                    <a th:href="@{/oauth2/authorization/google}" class="opt">
+                        <span class="opt-ico">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.576c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.576 9 3.576z" fill="#EA4335"/></svg>
+                        </span>
                         Continue with Google
                     </a>
-                    <a th:href="@{/oauth2/authorization/github}" class="btn-social">
-                        <i class="bi bi-github" style="font-size:1.1rem;"></i>
+                    <a th:href="@{/oauth2/authorization/github}" class="opt">
+                        <span class="opt-ico"><i class="bi bi-github"></i></span>
                         Continue with GitHub
                     </a>
-                    <a th:href="@{/oauth2/authorization/microsoft}" class="btn-social">
-                        <i class="bi bi-microsoft" style="font-size:1rem; color:#00A4EF;"></i>
+                    <a th:href="@{/oauth2/authorization/microsoft}" class="opt">
+                        <span class="opt-ico"><i class="bi bi-microsoft"></i></span>
                         Continue with Microsoft
                     </a>
+                    <button type="button" class="opt opt--email" id="emailToggleBtn">
+                        <span class="opt-ico"><i class="bi bi-envelope"></i></span>
+                        Continue with Email
+                        <i class="bi bi-arrow-right opt-go"></i>
+                    </button>
                 </div>
 
-                <div class="divider-text my-4"><span>continue with email instead</span></div>
-
-                <!-- STEP 1: email -->
-                <div id="stepEmail">
+                <!-- VIEW 2: email -->
+                <div id="stepEmail" class="view d-none">
+                    <button type="button" class="back" id="backToOptions">
+                        <i class="bi bi-arrow-left"></i> All options
+                    </button>
                     <div class="form-group">
                         <label class="form-label-custom" for="email">Email address</label>
-                        <div class="input-wrap">
-                            <i class="bi bi-envelope input-icon"></i>
-                            <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
-                        </div>
+                        <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email" />
                         <div class="field-error" id="emailErr"></div>
                     </div>
-
-                    <button type="button" class="btn-submit mt-4 w-100" id="sendCodeBtn">
+                    <button type="button" class="btn-submit" id="sendCodeBtn">
                         <span class="btn-submit-text">Send code</span>
                         <span class="btn-submit-spinner d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
                     </button>
                 </div>
 
-                <!-- STEP 2: code -->
-                <div id="stepCode" class="d-none">
+                <!-- VIEW 3: code -->
+                <div id="stepCode" class="view d-none">
                     <div class="code-step-header">
                         <p class="code-sent-to">Code sent to <strong id="codeEmailDisplay"></strong></p>
                         <button type="button" class="edit-email-btn" id="editEmailBtn">Edit</button>
@@ -100,38 +129,42 @@
                         <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="5" />
                     </div>
 
-                    <button type="button" class="btn-submit mt-4 w-100" id="verifyBtn" disabled>
+                    <button type="button" class="btn-submit" id="verifyBtn" disabled>
                         <span class="btn-submit-text">Verify code</span>
                         <span class="btn-submit-spinner d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
                     </button>
 
-                    <p class="resend-row mt-3">
+                    <p class="resend-row">
                         <span id="resendIdle">Didn't get it? <button type="button" class="link-accent-btn" id="resendBtn">Resend code</button></span>
                         <span id="resendCooldown" class="d-none">Resend available in <span id="resendTimer">60</span>s</span>
                     </p>
                 </div>
 
-                <p class="auth-footer-note mt-4 text-center">
-                    By continuing you agree to INCAPTUR's <a th:href="@{/terms}" class="link-accent">Terms</a> and <a th:href="@{/privacy}" class="link-accent">Privacy Policy</a>.
-                </p>
             </div>
         </div>
 
-    </div>
+        <footer class="auth-foot">
+            By continuing you agree to INCAPTUR's
+            <a th:href="@{/terms}" class="link-accent">Terms</a> and
+            <a th:href="@{/privacy}" class="link-accent">Privacy Policy</a>.
+        </footer>
+    </section>
 </main>
 
-<div class="infera-toast" id="inferaToast" role="status" aria-live="polite" aria-atomic="true">
+<div class="auth-toast" id="authToast" role="status" aria-live="polite" aria-atomic="true">
     <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
-    <span class="toast-msg" id="toastMsg">Done!</span>
+    <span id="toastMsg">Done!</span>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
         if (params.get("logout") === "true") {
-            showToast("Hope had a Dope experience — See you soon!");
+            showToast("Hope had a Dope experience , See you soon!");
+            window.history.replaceState({}, document.title, "/auth");
+        } else if (params.has("error")) {
+            showToast("Invalid email or password. Please try again.", "error");
             window.history.replaceState({}, document.title, "/auth");
         }
     });

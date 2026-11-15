@@ -92,12 +92,14 @@
 
         <!-- Workspace filter pills -->
         <div class="ws-filter-row" th:if="${!#lists.isEmpty(workspaces) and workspaces.size() > 1}">
-            <button class="ws-filter-pill active" data-filter="all">
+            <div class="ws-main-filter-pills-wrap">
+                <button class="ws-filter-pill outsiderFilter active" data-filter="all">
                 <span>All notes</span>
             </button>
-            <button class="ws-filter-pill " data-filter="archived">
+            <button class="ws-filter-pill outsiderFilter" data-filter="archived">
                 <span>Archived</span>
             </button>
+                </div>
             <button class="ws-filter-pill" th:each="ws : ${workspaces}"
                     th:data-filter="${ws.id}"
                     th:style="'--ws-color:' + ${ws.color}">
@@ -161,7 +163,7 @@
                                 <i class="bi bi-archive"></i> Archive
                             </button>
                             <button th:if="${note.archived == true}" class="ws-menu-item note-unarchive-trigger">
-                                <i class="bi bi-box-arrow-up"></i> Unarchive
+                                <i class="bi bi-archive-fill"></i> Restore
                             </button>
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View

@@ -78,9 +78,29 @@
 /* ─── WORKSPACE FILTER PILLS ─────────── */
 .ws-filter-row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
     margin-bottom: 22px;
+
+    max-height: 42px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg) transparent;
+
+    padding-bottom: 4px;
+    transition: all .22s;
+}
+
+/* Prevent pills from shrinking */
+.ws-filter-pill {
+    flex-shrink: 0;
+}
+
+.ws-filter-row:hover{
+    scrollbar-color: var(--accent) transparent;
 }
 
 .ws-filter-pill {
@@ -99,7 +119,6 @@
 }
 
 .ws-filter-pill:hover {
-    /*border-color: rgba(255, 255, 255, 0.16);*/
     color: var(--text);
 }
 
@@ -110,9 +129,22 @@
 }
 
 .ws-filter-pill[data-filter="all"].active {
-    background: var(--secondary);
-    border-color: var(--border);
-    color: var(--accent);
+    background: transparent;
+    border:2px var(--accent) solid;
+    color: var(--text);
+}
+.ws-filter-pill[data-filter="archived"].active {
+    background: transparent;
+    border:2px var(--accent) solid;
+    color: var(--text);
+}
+.ws-main-filter-pills-wrap{
+    display: flex;
+    border: none;
+    flex-wrap: nowrap;
+    padding: 0 12px;
+    gap: 5px;
+    border-right: 1px solid var(--border);
 }
 
 .ws-filter-dot {
@@ -122,6 +154,7 @@
     background: linear-gradient(285deg, var(--ws-color), black);
     flex-shrink: 0;
 }
+
 
 /* ─── EMPTY STATES ───────────────────── */
 .notes-empty {
@@ -175,15 +208,6 @@
     /*overflow: clip;*/
 }
 
-/*.note-row-item:first-child {*/
-/*    border-top-left-radius: var(--radius);*/
-/*    border-top-right-radius: var(--radius);*/
-/*}*/
-
-/*.note-row-item:last-child {*/
-/*    border-bottom-left-radius: var(--radius);*/
-/*    border-bottom-right-radius: var(--radius);*/
-/*}*/
 
 .note-row-item {
     display: flex;
@@ -210,13 +234,6 @@
     z-index: 30;
 }
 
-/*.nri-accent {*/
-/*    width: 4px;*/
-/*    align-self: stretch;*/
-/*    border-radius: 3px;*/
-/*    background: linear-gradient(285deg, var(--ws-color), black);*/
-/*    flex-shrink: 0;*/
-/*}*/
 .nri-accent {
     width: 4px;
     align-self: stretch;

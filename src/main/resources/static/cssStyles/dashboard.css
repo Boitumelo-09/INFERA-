@@ -80,7 +80,7 @@ button { font-family: var(--font-body); }
     position: fixed;
     top: 0; left: 0; bottom: 0;
     width: var(--sidebar-w);
-    background: var(--secondary);
+    background: transparent;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-right: 1px solid transparent;
@@ -91,7 +91,10 @@ button { font-family: var(--font-body); }
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 12px;
+    scrollbar-color: var(--bg) transparent;
+    scrollbar-width: thin;
 }
+
 html.sb-collapsed .sidebar, .sidebar.collapsed { width: 76px; }
 html.sb-collapsed .sidebar ~ .main-wrapper { margin-left: 76px; }
 html.no-sb-transition .sidebar,
@@ -480,7 +483,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 ═══════════════════════════════════════ */
 .topbar {
     height: var(--topbar-h);
-    background: var(--bg);
+    background: transparent;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid transparent;
@@ -542,7 +545,8 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     width: 36px; height: 36px;
     border-radius: 8px;
     border: 1px solid transparent;
-    background: var(--secondary);
+    background: transparent;
+    backdrop-filter: blur(16px);
     color: var(--muted);
     display: flex; align-items: center; justify-content: center;
     font-size: 1rem;
@@ -723,8 +727,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 /* ─── PANELS ────────────────────────── */
 .dash-panel {
-    background: var(--card);
-    /*border: 1px solid var(--border);*/
+    background: transparent;
     border-radius: var(--radius);
     overflow: hidden;
 }
@@ -732,8 +735,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
+    padding: 6px 40px;
 }
 .panel-title {
     font-family: var(--font-display), serif;
@@ -753,7 +755,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     border-radius: 6px;
     transition: background 0.2s;
 }
-.panel-action:hover { background: rgba(234,88,12,0.1); }
+.panel-action:hover { background: var(--accent); }
 
 .panel-body {
     padding: 0 0;
@@ -937,9 +939,8 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 12px 20px;
+    padding: 4px 16px;
     transition: background 0.18s;
-    border-bottom: 1px solid var(--border);
 }
 .activity-item:last-child { border-bottom: none; }
 .activity-item:hover { background: rgba(255,255,255,0.02); }
@@ -950,10 +951,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     font-size: 0.9rem;
     flex-shrink: 0;
 }
-.act-icon.created   { background: rgba(234,88,12,0.12); color: var(--accent); }
-.act-icon.updated   { background: rgba(99,102,241,0.12); color: #818cf8; }
-.act-icon.resource  { background: rgba(16,185,129,0.12); color: #34d399; }
-.act-icon.ws-created{ background: rgba(245,158,11,0.12); color: #fbbf24; }
+.act-icon.created   { color: #21cc21; }
+.act-icon.updated   { color: #818cf8; }
+.act-icon.resource  {  color: #34d399; }
+.act-icon.ws-created{  color: #fbbf24; }
 .act-body { flex: 1; min-width: 0; }
 .act-text { font-size: 0.84rem; color: var(--muted); }
 .act-text strong { color: var(--text); font-weight: 600; }
@@ -962,9 +963,6 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     font-size: 0.68rem;
     font-weight: 600;
     color: var(--ws-color, var(--accent));
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 25%, transparent);
-    border-radius: 99px;
     padding: 2px 10px;
     white-space: nowrap;
     flex-shrink: 0;
@@ -988,13 +986,15 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     backdrop-filter: blur(6px);
 }
 .search-box {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 600px;
-    background: var(--card);
-    border: 1px solid var(--accent-hover);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 580px;
+   background: none;
+     border: none;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(234,88,12,0.08);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px var(--bg);
     margin: 0 16px;
     animation: searchIn 0.2s ease;
 }
@@ -1034,8 +1034,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 .search-hint i { color: var(--accent); }
 .search-result-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 2px 10px;
     cursor: pointer;
     transition: background 0.15s;
     border-bottom: 1px solid var(--border);
@@ -1054,11 +1056,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     color: var(--accent);
 }
 
-.sri-icon.resource { background: rgba(16,185,129,0.12); color: #34d399; }
+.sri-icon.resource {  color: var(--accent); }
 
 .sri-icon.workspace {
-    background: rgba(99, 102, 241, 0.12);
-    color: #818cf8;
+    color: var(--accent);
 }
 
 .sri-body { flex: 1; min-width: 0; }
@@ -1226,10 +1227,11 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .infera-toast {
     position: fixed;
     bottom: 28px; right: 28px;
-    background: var(--card);
+    background: transparent;
+    backdrop-filter: blur(10px);
     border: 1px solid transparent;
     border-radius: 10px;
-    padding: 12px 18px;
+    padding: 6px 9px;
     display: flex; align-items: center; gap: 10px;
     font-size: 0.84rem;
     color: var(--text);
@@ -1284,7 +1286,10 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 
 /* add */
-.act-icon.danger { background: rgba(239,68,68,0.12); color: #f87171; }
+.act-icon.danger {  color: #bc1212; }
+.act-icon.archived {  color: var(--muted); }
+.act-icon.restored {  color: #5ede4a; }
+
 .activity-feed-scroll {
     max-height: 360px;
     overflow-y: auto;

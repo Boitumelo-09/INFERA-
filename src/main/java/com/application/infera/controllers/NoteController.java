@@ -140,7 +140,7 @@ public class NoteController {
         if (user == null) return "redirect:/auth";
         try {
               noteService.setUnarchived(id,user);
-              redirectAttributes.addFlashAttribute("successMessage", "Note unarchived.");
+              redirectAttributes.addFlashAttribute("successMessage", "Note restored.");
           } catch (NoteArchiveException e) {
               redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
           }

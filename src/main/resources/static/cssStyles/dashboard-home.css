@@ -698,9 +698,8 @@
 .dx-tl-text strong { font-weight: 600; color: var(--text); }
 .dx-tl-ws {
     padding: 2px 10px;
-    border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 28%, transparent);
-    border-radius: 99px;
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 12%, transparent);
+    border: none;
+    background: none;
     font-size: 0.68rem;
     font-weight: 600;
     color: var(--ws-color, var(--accent));

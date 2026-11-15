@@ -26,7 +26,6 @@ const editNoteTagWidget = createTagInput({
    linked here), and is available for any future outbound links too.
 ─────────────────────────────────────────────────────────────────── */
 function softNavigate(url) {
-    document.body.classList.add('page-transitioning');
     setTimeout(() => { window.location.href = url; }, 240);
 }
 
@@ -470,8 +469,8 @@ $$('.note-row-item').forEach(row => {
    })
     unarchiveBtn?.addEventListener('click',e =>{
         e.stopPropagation();
-        menuWrap.classList.remove('open');
        softNavigate(`/notes/${row.dataset.id}/unarchive`);
+       applyWorkspaceFilter(activeWorkspaceFilter);
     });
 
     deleteBtn?.addEventListener('click', e => {
@@ -492,7 +491,12 @@ document.addEventListener('click', () => {
 /* ───────────────────────────────────────────────────────────────────
    WORKSPACE FILTER PILLS — pure client-side, no server round trip
 ─────────────────────────────────────────────────────────────────── */
+
+
 function applyWorkspaceFilter(filter) {
+
+    sessionStorage.setItem('notesActiveFilter', filter);
+
     $$('.ws-filter-pill').forEach(p => {
         p.classList.toggle('active', p.dataset.filter === filter);
     });
@@ -513,6 +517,22 @@ function applyWorkspaceFilter(filter) {
         row.classList.toggle('filtered-out', !matches);
     });
 }
+
+// Filter pill listeners
+$$('.ws-filter-pill').forEach(pill => {
+    pill.addEventListener('click', () =>
+        applyWorkspaceFilter(pill.dataset.filter)
+    );
+});
+
+// Restore previously selected filter ONCE
+const savedFilter = sessionStorage.getItem('notesActiveFilter');
+
+const validFilter = savedFilter &&
+    $(`.ws-filter-pill[data-filter="${savedFilter}"]`);
+
+applyWorkspaceFilter(validFilter ? savedFilter : 'all');
+
 
 $$('.ws-filter-pill').forEach(pill => {
     pill.addEventListener('click', () => applyWorkspaceFilter(pill.dataset.filter));

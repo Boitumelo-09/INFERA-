@@ -122,11 +122,11 @@ function buildDonutChart() {
     if (!wrap || !svg) return;
 
     const data = [
-        { label: 'Notes', value: parseInt(wrap.dataset.notes, 10) || 0, color: '#818cf8' },
-        { label: 'Workspaces', value: parseInt(wrap.dataset.workspaces, 10) || 0, color: '#f59e0b' },
+        { label: 'Notes', value: parseInt(wrap.dataset.notes, 10) || 0, color: '#1e2ebf' },
+        { label: 'Workspaces', value: parseInt(wrap.dataset.workspaces, 10) || 0, color: '#4df50b' },
         { label: 'Resources', value: parseInt(wrap.dataset.resources, 10) || 0, color: '#34d399' },
-        { label: 'Tags', value: parseInt(wrap.dataset.tags, 10) || 0, color: '#6a0afa' },
-        { label: 'Collaboration', value: parseInt(wrap.dataset.members, 10) || 0, color: '#38bdf8' }
+        { label: 'Tags', value: parseInt(wrap.dataset.tags, 10) || 0, color: '#fac20a' },
+        { label: 'Collaboration', value: parseInt(wrap.dataset.members, 10) || 0, color: '#e0115f' }
     ];
 
     const total = data.reduce((s, d) => s + d.value, 0);
@@ -139,7 +139,7 @@ function buildDonutChart() {
     }
 
     if (total === 0) {
-        svg.innerHTML = `<circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="16" />`;
+        svg.innerHTML = `<circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14" />`;
         legend.innerHTML = `<p style="color:var(--muted);font-size:0.82rem;text-align:center;">No activity yet.</p>`;
         return;
     }
