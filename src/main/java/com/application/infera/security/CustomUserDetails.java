@@ -32,12 +32,7 @@ public class CustomUserDetails implements UserDetails {
     public @Nullable String getPassword() {
         return "";
     }
-
-//    @Override
-//    public String getPassword() {
-//        return user.getPassword();
-//    }
-
+    
     @Override
     public String getUsername() {
         return user.getEmail();

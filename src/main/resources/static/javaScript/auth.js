@@ -7,8 +7,22 @@
 const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
-function authFetch(url, body) {
-    const headers = { 'Content-Type': 'application/json' };
+const recaptchaSiteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.content;
+
+// Tokens are single-use and expire after ~2 min, so fetch a fresh one per request
+function getRecaptchaToken(action) {
+    return new Promise((resolve) => {
+        if (!window.grecaptcha || !recaptchaSiteKey) return resolve(null);
+        grecaptcha.ready(() => {
+            grecaptcha.execute(recaptchaSiteKey, { action })
+                .then(resolve)
+                .catch(() => resolve(null));
+        });
+    });
+}
+
+function authFetch(url, body, extraHeaders = {}) {
+    const headers = { 'Content-Type': 'application/json', ...extraHeaders };
     if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
     return fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
 }
@@ -115,7 +129,8 @@ sendCodeBtn.addEventListener('click', async () => {
 
     setLoading(sendCodeBtn, true);
     try {
-        const res = await authFetch('/auth/request-code', { email });
+        const recaptcha = await getRecaptchaToken('request_otp');
+        const res = await authFetch('/auth/request-code', { email }, { 'X-Recaptcha-Token': recaptcha || '' });
         const data = await res.json();
 
         if (res.ok) {
@@ -236,7 +251,8 @@ verifyBtn.addEventListener('click', verifyCode);
 resendBtn.addEventListener('click', async () => {
     hideAlert();
     try {
-        const res = await authFetch('/auth/request-code', { email: currentEmail });
+        const recaptcha = await getRecaptchaToken('request_otp');
+        const res = await authFetch('/auth/request-code', { email: currentEmail }, { 'X-Recaptcha-Token': recaptcha || '' });
         const data = await res.json();
         if (res.ok) {
             startResendCooldown();
@@ -265,6 +281,39 @@ function startResendCooldown() {
         }
     }, 1000);
 }
+
+// ─── GOOGLE ONE TAP ─────────────────────────
+const googleClientId = document.querySelector('meta[name="google-client-id"]')?.content;
+const oneTapNonce    = document.querySelector('meta[name="one-tap-nonce"]')?.content;
+
+async function handleOneTap(response) {
+    try {
+        const res = await authFetch('/auth/google-one-tap', { credential: response.credential });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            window.location.href = data.redirect || '/dashboard';
+        } else {
+            showToast(data.message || 'Google sign-in failed. Try again.', 'error');
+        }
+    } catch {
+        showToast('Could not reach the server. Check your connection.', 'error');
+    }
+}
+
+function initOneTap() {
+    // GIS script blocked or offline: stay silent, the normal buttons still work
+    if (!window.google?.accounts?.id || !googleClientId) return;
+    google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleOneTap,
+        nonce: oneTapNonce,
+        auto_select: false,
+        cancel_on_tap_outside: false
+    });
+    google.accounts.id.prompt();
+}
+// 'load' waits for the async GIS script, so no race with auth.js
+window.addEventListener('load', initOneTap);
 
 // ─── INPUT FOCUS LABEL COLOR ────────────────
 document.querySelectorAll('.form-input').forEach(input => {
