@@ -17,6 +17,7 @@
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
     <meta name="theme-color" content="#0d1117" />
+    <meta name="recaptcha-site-key" th:content="${recaptchaSiteKey}" />
 </head>
 <body>
 
@@ -120,7 +121,7 @@
 
                     <div class="otp-boxes" id="otpBoxes">
                         <span class="otp-prefix">INC</span>
-                        <span class="otp-dash">—</span>
+                        <span class="otp-dash">:</span>
                         <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0" />
                         <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1" />
                         <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2" />
@@ -144,9 +145,12 @@
         </div>
 
         <footer class="auth-foot">
-            By continuing you agree to INCAPTUR's
-            <a th:href="@{/terms}" class="link-accent">Terms</a> and
-            <a th:href="@{/privacy}" class="link-accent">Privacy Policy</a>.
+            By continuing you agree to incaptur's
+            <a th:href="@{/terms}" class="link-accent">Terms</a> &
+            <a th:href="@{/privacy}" class="link-accent">Privacy Policy</a>.<br>
+            Protected by reCAPTCHA; the Google
+            <a href="https://policies.google.com/privacy" class="link-accent" target="_blank" rel="noopener">Privacy Policy</a> and
+            <a href="https://policies.google.com/terms" class="link-accent" target="_blank" rel="noopener">Terms of Service</a> apply.
         </footer>
     </section>
 </main>
@@ -156,15 +160,16 @@
     <span id="toastMsg">Done!</span>
 </div>
 
+<script th:src="'https://www.google.com/recaptcha/api.js?render=' + ${recaptchaSiteKey}"></script>
 <script src="/static/javaScript/auth.js" th:src="@{/javaScript/auth.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
         if (params.get("logout") === "true") {
-            showToast("Hope had a Dope experience , See you soon!");
+            showToast("Hope had a Dope experience, See you soon!");
             window.history.replaceState({}, document.title, "/auth");
         } else if (params.has("error")) {
-            showToast("Invalid email or password. Please try again.", "error");
+            showToast("Something went wrong, Our bad! please try again.", "error");
             window.history.replaceState({}, document.title, "/auth");
         }
     });
