@@ -282,6 +282,39 @@ function startResendCooldown() {
     }, 1000);
 }
 
+// ─── GOOGLE ONE TAP ─────────────────────────
+const googleClientId = document.querySelector('meta[name="google-client-id"]')?.content;
+const oneTapNonce    = document.querySelector('meta[name="one-tap-nonce"]')?.content;
+
+async function handleOneTap(response) {
+    try {
+        const res = await authFetch('/auth/google-one-tap', { credential: response.credential });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            window.location.href = data.redirect || '/dashboard';
+        } else {
+            showToast(data.message || 'Google sign-in failed. Try again.', 'error');
+        }
+    } catch {
+        showToast('Could not reach the server. Check your connection.', 'error');
+    }
+}
+
+function initOneTap() {
+    // GIS script blocked or offline: stay silent, the normal buttons still work
+    if (!window.google?.accounts?.id || !googleClientId) return;
+    google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleOneTap,
+        nonce: oneTapNonce,
+        auto_select: false,
+        cancel_on_tap_outside: false
+    });
+    google.accounts.id.prompt();
+}
+// 'load' waits for the async GIS script, so no race with auth.js
+window.addEventListener('load', initOneTap);
+
 // ─── INPUT FOCUS LABEL COLOR ────────────────
 document.querySelectorAll('.form-input').forEach(input => {
     input.addEventListener('focus', () => {
