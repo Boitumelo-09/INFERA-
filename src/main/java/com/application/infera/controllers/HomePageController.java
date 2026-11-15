@@ -20,7 +20,7 @@ public class HomePageController {
     @GetMapping
     public String homePage(Model model) {
         model.addAttribute("activeUsers", userService.countAllUsers());
-        model.addAttribute("pageTitle", "incaptur | capture & collaborate Ideas");
+        model.addAttribute("pageTitle", "incaptur | capture & collaborate ideas");
         model.addAttribute("noteCount", noteService.countAllNotes());
         model.addAttribute("workspaceCount",workspaceService.countAllWorkspaces());
         return "home";

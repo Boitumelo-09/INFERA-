@@ -584,14 +584,17 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.show();
 
     document.getElementById('welcomeContinueBtn').addEventListener('click', () => {
-        markWelcomeSeen();
-        modal.hide();
+        modal.hide(); // hidden.bs.modal below handles markWelcomeSeen()
     });
 
     // Also mark seen if dismissed via backdrop click / esc, so it doesn't reappear
     welcomeModalEl.addEventListener('hidden.bs.modal', markWelcomeSeen, { once: true });
 });
+let welcomeMarked = false;
 function markWelcomeSeen() {
+    if (welcomeMarked) return;
+    welcomeMarked = true;
+
     const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
     const headers = {};

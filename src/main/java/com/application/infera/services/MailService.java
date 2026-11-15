@@ -101,7 +101,15 @@ public void sendOtpEmail(String toEmail, String code) {
             throw new RuntimeException("Failed to send invitation email", e);
         }
     }
-
+     public void sendWelcomeEmail( String toEmail){
+        SimpleMailMessage message = new SimpleMailMessage();
+         message.setFrom(fromAddress);
+         message.setTo(toEmail);
+         message.setSubject("Welcome to INCAPTUR");
+         message.setText("Welcome to INCAPTUR! Hope You Enjoy");
+         mailSender.send(message);
+         System.out.println("Email sent successfully");
+     }
     // Header values must be one line (stops header injection through a workspace or user name)
     private static String oneLine(String s) {
         return s == null ? "" : s.replaceAll("[\\r\\n]+", " ").trim();
