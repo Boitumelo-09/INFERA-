@@ -423,6 +423,8 @@ button { font: inherit; color: inherit; }
 .toast-icon { display: flex; font-size: 1.05rem; color: var(--ok); }
 .toast-icon.error { color: var(--danger); }
 
+.grecaptcha-badge { visibility: hidden; }
+
 /* ─── RESPONSIVE ────────────────────── */
 @media (max-width: 1100px) {
     :root { --split-top: 52vw; --split-bottom: 34vw; --art-w: min(47vw, 100dvh); }
