@@ -8,10 +8,13 @@ import com.application.infera.services.MailService;
 import com.application.infera.services.OtpService;
 import com.application.infera.dtos.requests.EmailRequest;
 import com.application.infera.dtos.requests.VerifyCodeRequest;
+import com.application.infera.services.RecaptchaService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,28 +29,36 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final OtpService otpService;
     private final MailService mailService;
     private final UserRepository userRepository;
+    private final RecaptchaService recaptchaService;
 
-    public AuthController(OtpService otpService, MailService mailService, UserRepository userRepository) {
-        this.otpService = otpService;
-        this.mailService = mailService;
-        this.userRepository = userRepository;
-    }
+    @Value("${recaptcha.site-key}")
+    private String recaptchaSiteKey;
 
     @GetMapping
     public String authPage(Model model) {
         model.addAttribute("pageTitle", "authenticate | incaptur");
+        model.addAttribute("recaptchaSiteKey", recaptchaSiteKey);
         return "auth";
     }
 
     @PostMapping("/request-code")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request) throws MessagingException {
+    public ResponseEntity<Map<String, Object>> requestCode(@Valid @RequestBody EmailRequest request,
+                                                           @RequestHeader(value = "X-Recaptcha-Token", required = false) String recaptchaToken,
+                                                           HttpServletRequest httpRequest) throws MessagingException {
         Map<String, Object> body = new HashMap<>();
+
+        if (!recaptchaService.verify(recaptchaToken, "request_otp", httpRequest.getRemoteAddr())) {
+            body.put("status", "captcha_failed");
+            body.put("message", "We couldn't verify you're human. Please refresh and try again.");
+            return ResponseEntity.status(400).body(body);
+        }
         String email = request.getEmail().trim().toLowerCase();
 
         OtpService.RequestOutcome outcome = otpService.requestCode(email);
