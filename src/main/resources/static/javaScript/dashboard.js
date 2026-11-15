@@ -572,7 +572,6 @@ function createTagInput({ wrapId, chipsId, textInputId, suggestionsId, hiddenInp
         flushPending() { if (textInput.value.trim()) addTag(textInput.value); }
     };}
 
-
 // Welcome modal — first-time trigger
 document.addEventListener('DOMContentLoaded', () => {
     const welcomeModalEl = document.getElementById('welcomeModal');
@@ -582,38 +581,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!showWelcome) return;
 
     const modal = new bootstrap.Modal(welcomeModalEl);
-
-    welcomeModalEl.addEventListener(
-        'hidden.bs.modal',
-        markWelcomeSeen,
-        { once: true }
-    );
-
     modal.show();
+
+    document.getElementById('welcomeContinueBtn').addEventListener('click', () => {
+        modal.hide(); // hidden.bs.modal below handles markWelcomeSeen()
+    });
+
+    // Also mark seen if dismissed via backdrop click / esc, so it doesn't reappear
+    welcomeModalEl.addEventListener('hidden.bs.modal', markWelcomeSeen, { once: true });
 });
-
+let welcomeMarked = false;
 function markWelcomeSeen() {
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    if (welcomeMarked) return;
+    welcomeMarked = true;
+
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
     const headers = {};
+    if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
 
-    if (csrfToken && csrfHeader) {
-        headers[csrfHeader] = csrfToken;
-    }
-
-    fetch('/api/user/mark-welcome-seen', {
-        method: 'POST',
-        headers
-    })
+    fetch('/api/user/mark-welcome-seen', { method: 'POST', headers })
         .then(res => {
-            if (!res.ok) {
-                console.error('Failed to mark welcome seen:', res.status);
-            }
+            if (!res.ok) console.error('Failed to mark welcome seen:', res.status);
         })
-        .catch(err => console.error('Network error:', err));
+        .catch(err => console.error('Network error marking welcome seen:', err));
 }
-
 const taglines = [
     "overthinking is also an idea.",
     "procrastination is also an idea.",

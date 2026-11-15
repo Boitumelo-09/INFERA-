@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+  <title>Welcome to INCAPTUR</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #0d1117;
+    font-family: 'Inter', 'Segoe UI', Helvetica, Arial, sans-serif;
+">
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+       style="width: 100%; background-color: #0d1117; padding: 48px 15px;">
+  <tr>
+    <td align="center">
+
+      <!-- MAIN CARD -->
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+             style="
+                       max-width: 560px;
+                       width: 100%;
+                       background-color: #0d1117;
+                       border: 1px solid #2a303a;
+                       border-radius: 16px;
+                       overflow: hidden;
+                   ">
+
+        <!-- HEADER -->
+        <tr>
+          <td align="center"
+              style="padding: 24px 30px 20px; background-color: #161b22;">
+
+            <img src="cid:logo"
+                 alt="INCAPTUR"
+                 width="120"
+                 style="
+                                 display: block;
+                                 width: 120px;
+                                 max-width: 100%;
+                                 height: auto;
+                                 border: 0;
+                                 margin-bottom: 12px;
+                             "/>
+
+          </td>
+        </tr>
+
+        <!-- CONTENT -->
+        <tr>
+          <td style="padding: 44px 36px 40px;">
+
+            <!-- GREETING -->
+            <p style="
+                            margin: 0 0 18px;
+                            color: #b3b9c1;
+                            font-size: 12px;
+                            font-weight: 700;
+                            letter-spacing: 2px;
+                            text-transform: uppercase;
+                        ">
+              YOUR NOTES CALLED. THEY'RE EXCITED.
+            </p>
+
+            <h1 style="
+                            margin: 0 0 18px;
+                            font-family: 'Sora', 'Segoe UI', Arial, sans-serif;
+                            color: #f8fafc;
+                            font-size: 29px;
+                            font-weight: 800;
+                            line-height: 1.3;
+                        ">
+              Welcome aboard,
+              <span th:text="${firstName}" style="color: #b3b9c1;">friend</span>!
+            </h1>
+
+            <p style="
+                            margin: 0 0 20px;
+                            color: #8b94a1;
+                            font-size: 15px;
+                            line-height: 1.9;
+                        ">
+              Congratulations, your brain just got a filing cabinet that
+              actually works. No more notes scattered across six apps,
+              three notebooks, and that one napkin you swore you'd keep.
+            </p>
+
+            <p style="
+                            margin: 0 0 20px;
+                            color: #8b94a1;
+                            font-size: 15px;
+                            line-height: 1.9;
+                        ">
+              That idea from the shower? The half-formed plan you keep
+              rehearsing at 2 a.m.? The link you saved "for later" and
+              never saw again? They all have a home now, and they'll
+              still be there tomorrow.
+            </p>
+
+            <!-- HIGHLIGHT -->
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
+                   border="0"
+                   style="
+                                   margin: 30px 0;
+                                   background-color: #161b22;
+                                   border-left: 3px solid #b3b9c1;
+                                   border-radius: 8px;
+                               ">
+              <tr>
+                <td style="padding: 22px 24px;">
+
+                  <p style="
+                                        margin: 0 0 10px;
+                                        color: #b3b9c1;
+                                        font-size: 11px;
+                                        font-weight: 700;
+                                        letter-spacing: 1.5px;
+                                    ">
+                    A LITTLE FRIENDLY REMINDER
+                  </p>
+
+                  <p style="
+                                        margin: 0;
+                                        color: #f8fafc;
+                                        font-size: 15px;
+                                        font-weight: 600;
+                                        line-height: 1.8;
+                                    ">
+                    A messy note you captured beats a perfect idea you forgot.
+                    Start small. Tidy up later.
+                  </p>
+
+                </td>
+              </tr>
+            </table>
+
+            <!-- WHAT TO DO -->
+            <h2 style="
+                            margin: 0 0 14px;
+                            color: #f8fafc;
+                            font-family: 'Sora', 'Segoe UI', Arial, sans-serif;
+                            font-size: 18px;
+                            font-weight: 700;
+                        ">
+              So, what happens now?
+            </h2>
+
+            <p style="
+                            margin: 0 0 12px;
+                            color: #8b94a1;
+                            font-size: 14px;
+                            line-height: 1.9;
+                        ">
+              Capture notes before they escape. Sort them into workspaces
+              so future you can find them without a search party. Then
+              invite the people you think best alongside, and let the
+              ideas get better in good company.
+            </p>
+
+            <p style="
+                            margin: 0 0 28px;
+                            color: #8b94a1;
+                            font-size: 14px;
+                            line-height: 1.9;
+                        ">
+              Collaboration works best when nobody has to ask "wait,
+              which version is the latest?" One workspace, everyone on
+              the same page. Literally.
+            </p>
+
+            <!-- CTA -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+                   width="100%">
+              <tr>
+                <td align="center">
+
+                  <a href="https://incaptur.co.za/dashboard"
+                     style="
+                                           display: inline-block;
+                                           padding: 15px 30px;
+                                           background-color: #b3b9c1;
+                                           border-radius: 8px;
+                                           color: #0d1117;
+                                           font-size: 14px;
+                                           font-weight: 700;
+                                           text-decoration: none;
+                                           letter-spacing: 0.3px;
+                                       ">
+                    Let's capture something
+                  </a>
+
+                </td>
+              </tr>
+            </table>
+
+            <!-- CLOSING -->
+            <p style="
+                            margin: 36px 0 8px;
+                            color: #8b94a1;
+                            font-size: 14px;
+                            line-height: 1.8;
+                        ">
+              We're genuinely glad you're here. Now go write something down.
+            </p>
+
+            <p style="
+                            margin: 0;
+                            color: #f8fafc;
+                            font-size: 14px;
+                            font-weight: 700;
+                            line-height: 1.8;
+                        ">
+              Welcome to the family.
+            </p>
+
+            <p style="
+                            margin: 5px 0 0;
+                            color: #687383;
+                            font-size: 12px;
+                        ">
+              The INCAPTUR Team
+            </p>
+
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="
+                        padding: 24px 30px;
+                        background-color: #161b22;
+                        border-top: 1px solid #2a303a;
+                        text-align: center;
+                    ">
+
+            <p style="
+                            margin: 0 0 10px;
+                            color: #8b94a1;
+                            font-size: 12px;
+                            font-weight: 600;
+                        ">
+              Your mind has no save button. We do!
+            </p>
+
+            <p style="
+                            margin: 0;
+                            color: #5a6472;
+                            font-size: 11px;
+                            line-height: 1.8;
+                            letter-spacing: 0.3px;
+                        ">
+              © 2026 incaptur.co.za
+              &nbsp;·&nbsp;
+              Capture &amp; Collaborate Ideas.
+            </p>
+
+            <p style="
+                            margin: 12px 0 0;
+                            color: #5a6472;
+                            font-size: 10px;
+                        ">
+              You received this email because you created an INCAPTUR account.
+            </p>
+
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
+```
