@@ -169,6 +169,9 @@
                         <i class="bi bi-journal-text"></i>
                         <span th:text="${(wsNoteCount[ws.id] ?: 0) + ((wsNoteCount[ws.id] ?: 0) == 1 ? ' note' : ' notes')}">0 notes</span>
                     </span>
+                    <span class="ws-tile-favorite" alt="Favorite">
+                        <i class="bi bi-heart"></i>
+                    </span>
                 </div>
 
                 <div class="ws-tile-footer">

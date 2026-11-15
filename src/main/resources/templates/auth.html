@@ -163,6 +163,9 @@
         if (params.get("logout") === "true") {
             showToast("Hope had a Dope experience , See you soon!");
             window.history.replaceState({}, document.title, "/auth");
+        } else if (params.has("error")) {
+            showToast("Invalid email or password. Please try again.", "error");
+            window.history.replaceState({}, document.title, "/auth");
         }
     });
 </script>
