@@ -944,3 +944,8 @@ body.drawing-expanded { overflow: hidden; }
                                                                  .is-readonly .drawing-move-cluster { display: none; }
 .drawing-node.is-blocked .drawing-page-btn,
 .drawing-node.is-blocked .drawing-props-toggle { display: none; }
+.conflict-reload {
+    margin-left: 12px; padding: 4px 12px; border: 1px solid var(--border);
+    border-radius: 8px; background: transparent; color: var(--text);
+    font-size: 0.8rem; font-weight: 600; cursor: pointer;
+}
