@@ -4,6 +4,7 @@ import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,10 +24,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     // Used only AFTER membership is verified (see WorkspaceAccessService.requireNote)
     Optional<Note> findByIdAndWorkspace(Long id, Workspace workspace);
-
-
-
-
 
 
     List<Note> findByWorkspace_User(User user);   // notes in workspaces this user OWNS: account deletion only
@@ -53,4 +50,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             Collection<Workspace> workspaces2, String contentQuery);
 
     long countByWorkspace_User(User user);
+    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)
+    @Modifying
+    @Query("UPDATE Note n SET n.updatedAt = :now WHERE n.id = :id")
+    int touch(@Param("id") Long id, @Param("now") java.time.LocalDateTime now);
 }
