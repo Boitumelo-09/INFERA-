@@ -1,11 +1,11 @@
 package com.application.infera.services;
 
-import jakarta.mail.MessagingException;
+import com.application.infera.exception.emailSendingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,8 +14,13 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender mailSender;
@@ -27,11 +32,6 @@ public class MailService {
     private String fromName;
     @Value("${app.base-url}")
     private String baseUrl;
-
-    public MailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
-    }
 
 
 public void sendOtpEmail(String toEmail, String code) {
@@ -52,7 +52,7 @@ public void sendOtpEmail(String toEmail, String code) {
         // Give the HTML template its dynamic values
         Context context = new Context();
         context.setVariable("code", code);
-
+        context.setVariable("currentYear", String.valueOf(Year.now().getValue()));
         String htmlContent = templateEngine.process(
                 "mails/otp-email",
                 context
@@ -64,12 +64,7 @@ public void sendOtpEmail(String toEmail, String code) {
         helper.addInline("logo", new ClassPathResource("static/favicons/android-chrome-192x192.png"), "image/png");
         mailSender.send(message);
 
-    } catch (Exception e) {
-        throw new RuntimeException(
-                "Failed to send verification email",
-                e
-        );
-    }
+    } catch (Exception e) { throw new emailSendingException("Failed to send verification email");}
 }
 
     // Call this AFTER the invitation is committed: a mail failure must not undo the invitation.
@@ -78,8 +73,7 @@ public void sendOtpEmail(String toEmail, String code) {
                                     String roleLabel, String rawToken, int expiryDays) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(
-                    message, MimeMessageHelper.MULTIPART_MODE_RELATED, StandardCharsets.UTF_8.name());
+            MimeMessageHelper helper = new MimeMessageHelper( message, MimeMessageHelper.MULTIPART_MODE_RELATED, StandardCharsets.UTF_8.name());
 
             helper.setFrom(buildFromHeader());
             helper.setTo(toEmail);
@@ -92,23 +86,40 @@ public void sendOtpEmail(String toEmail, String code) {
             context.setVariable("roleLabel", roleLabel);
             context.setVariable("expiryDays", expiryDays);
             context.setVariable("link", base + "/invitations/" + rawToken);
+            context.setVariable("currentYear", String.valueOf(Year.now().getValue()));
 
             String htmlContent = templateEngine.process("mails/invitation-email", context);
             helper.setText(htmlContent, true);   // text before inline resources, same as the OTP mail
             helper.addInline("logo", new ClassPathResource("static/favicons/android-chrome-192x192.png"), "image/png");
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send invitation email", e);
+            throw new emailSendingException("Failed to send invitation email");
         }
     }
-     public void sendWelcomeEmail( String toEmail){
-        SimpleMailMessage message = new SimpleMailMessage();
-         message.setFrom(buildFromHeader());
-         message.setTo(toEmail);
-         message.setSubject("Welcome to INCAPTUR");
-         message.setText("Welcome to INCAPTUR! Hope You Enjoy");
-         mailSender.send(message);
-         System.out.println("Email sent successfully");
+     public void sendWelcomeEmail(String name, String toEmail){
+        List<String> welcomeMessages = List.of("Welcome to incaptur","Welkom by incaptur","Siyakwamukela ku-incaptur",
+                 "Re a go amogela go-incaptur", "Wamkelekile kwi-incaptur","U amukeriwile eka-incaptur", "Vho tanganedzwa kha-incaptur",
+                "Kena ka kgotso ho-incaptur", "O amogetswe go-incaptur");
+           int randomWelcomeMessageIndex = ThreadLocalRandom.current().nextInt(welcomeMessages.size());
+           String welcomeMessage = welcomeMessages.get(randomWelcomeMessageIndex);
+        try{
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_RELATED, StandardCharsets.UTF_8.name());
+
+             helper.setFrom(buildFromHeader());
+             helper.setSubject("Welcome to INCAPTUR");
+             helper.setTo(toEmail);
+
+             Context context = new Context();
+             context.setVariable("firstName",name);
+             context.setVariable("welcomeText",welcomeMessage);
+             context.setVariable("currentYear", String.valueOf(Year.now().getValue()));
+             String htmlContent = templateEngine.process("mails/welcome-email",context);
+             helper.setText(htmlContent,true);
+             helper.addInline("logo", new ClassPathResource("static/favicons/android-chrome-192x192.png"),"image/png");
+             mailSender.send(message);
+        } catch (Exception e) { throw new emailSendingException("Failed to send welcome email");}
+
      }
     // Header values must be one line (stops header injection through a workspace or user name)
     private static String oneLine(String s) {
