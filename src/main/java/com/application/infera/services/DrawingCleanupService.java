@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 import com.application.infera.repositories.DrawingRepository;
+import org.springframework.transaction.annotation.Propagation;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class DrawingCleanupService {
     private final ObjectMapper objectMapper;
 
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void reconcile(Long noteId, String documentJson) {
         if (noteId == null || documentJson == null || documentJson.isBlank()) return;
 
