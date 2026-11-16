@@ -36,6 +36,9 @@ let loggingEdit = false;
 let saveBlockedText = null;
 let retryDelayMs = 4000;
 
+// The note version this editor last saw. Sent with every save; the server answers 409 if it moved on.
+let noteVersion = window.__NOTE_VERSION__;
+
 function setStatus(state, errorText = 'Retrying…') {
     if (!statusEl) return;
     statusEl.classList.remove('saving', 'error');
@@ -138,6 +141,17 @@ function lockEditorAfterAccessChange(status) {
             ? 'Your access changed to view-only. Your latest text is still here: copy it if you need it.'
             : 'You can no longer access this note (removed, or it was deleted). Your latest text is still here: copy it if you need it.';
     }
+    if (status === 409) {
+        if (text) text.textContent = 'Someone else changed this note, so your last edits were not saved. Your text is still here: copy it, then reload to get the latest version.';
+        if (banner && !banner.querySelector('.conflict-reload')) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'conflict-reload';
+            btn.textContent = 'Reload latest';
+            btn.addEventListener('click', () => location.reload());
+            banner.appendChild(btn);
+        }
+    }
     banner?.removeAttribute('hidden');
 }
 
@@ -156,7 +170,7 @@ async function performSave(isExit = false) {
     isSaving = true;
     reportStatus('note', 'saving');
     const snapshot = currentSnapshot();
-    const body = JSON.stringify(snapshot);
+    const body = JSON.stringify({ ...snapshot, version: noteVersion });
 
     // keepalive only makes sense (and is only safe) for the exit-time
     // save: it lets the request survive the page tearing down, but
@@ -184,6 +198,10 @@ async function performSave(isExit = false) {
             failure.redirected = res.redirected || res.type === 'opaqueredirect';            throw failure;
         }
 
+        try {
+            const saved = await res.json();
+            if (saved && saved.version != null) noteVersion = saved.version;
+        } catch (_) { /* body unreadable: keep the version we have */ }
         lastSavedSnapshot = JSON.stringify(snapshot);
         window.__inferaCommitWorkspace?.(snapshot.workspaceId);
         retryDelayMs = 4000; // healthy again, so reset the back-off
@@ -197,6 +215,12 @@ async function performSave(isExit = false) {
             reportStatus('note', 'saved');
             lastSavedSnapshot = null;   // force the next save to go through
             dirtyDuringSave = true;     // the finally block reschedules it
+            return;
+        }
+        if (err.status === 409) {
+            // Someone else saved this note first: stop saving, keep the text on screen
+            blockSaving('Not saved: changed elsewhere');
+            lockEditorAfterAccessChange(409);
             return;
         }
         const blockedText = blockedTextFor(err);
