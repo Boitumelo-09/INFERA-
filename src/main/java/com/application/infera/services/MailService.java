@@ -103,7 +103,7 @@ public void sendOtpEmail(String toEmail, String code) {
     }
      public void sendWelcomeEmail( String toEmail){
         SimpleMailMessage message = new SimpleMailMessage();
-         message.setFrom(fromAddress);
+         message.setFrom(buildFromHeader());
          message.setTo(toEmail);
          message.setSubject("Welcome to INCAPTUR");
          message.setText("Welcome to INCAPTUR! Hope You Enjoy");
