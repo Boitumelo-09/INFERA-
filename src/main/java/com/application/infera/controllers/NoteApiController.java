@@ -38,7 +38,7 @@ public class NoteApiController {
 
         try {
             Note note = noteService.autosaveNote(id, request, user);
-            return ResponseEntity.ok(new AutosaveResponse(note.getUpdatedAt()));
+            return ResponseEntity.ok(new AutosaveResponse(note.getUpdatedAt(), note.getVersion()));
         } catch (NoteNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InvalidMoveTargetException e) {
@@ -62,5 +62,5 @@ public class NoteApiController {
         }
     }
 
-    public record AutosaveResponse(LocalDateTime updatedAt) {}
+    public record AutosaveResponse(LocalDateTime updatedAt, Long version) {}
 }
