@@ -24,7 +24,7 @@ public class UserController {
     public ResponseEntity<Void> markWelcomeSeen(@AuthenticationPrincipal Object principal) {
         User user = currentUserService.resolve(principal);
         if (user == null) return ResponseEntity.status(401).build();
-        mailService.sendWelcomeEmail(user.getEmail());
+        mailService.sendWelcomeEmail(user.getFirstName(),user.getEmail());
         userService.markWelcomeSeen(user.getId());
         System.out.println("User " + user.getFirstName() + " marked welcome seen IN CONTROLLER");
         return ResponseEntity.ok().build();
