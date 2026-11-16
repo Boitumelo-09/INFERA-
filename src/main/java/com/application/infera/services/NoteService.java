@@ -15,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.application.infera.util.TiptapTextExtractor;
 import com.application.infera.repositories.DrawingRepository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -124,9 +128,11 @@ public class NoteService {
     private void syncPlainText(Note note) {
         note.setPlainText(TiptapTextExtractor.extract(note.getDocumentJson()));
     }
+    // Bulk UPDATE on purpose: it changes only updated_at and leaves the version alone, so a drawing
+    // or resource save never makes the editor's next text save look stale.
+    @Transactional
     public void touchNote(Note note) {
-        note.setUpdatedAt(LocalDateTime.now());
-        noteRepository.save(note);// @PreUpdate on Note bumps updatedAt automatically
+        noteRepository.touch(note.getId(), LocalDateTime.now());// @PreUpdate on Note bumps updatedAt automatically
 
     }
 
@@ -134,8 +140,13 @@ public class NoteService {
     // log (would spam the feed every debounce cycle), no workspace/tag
     // changes. Just title + documentJson, the two things the editor page
     // actually owns.
+    @Transactional
     public Note autosaveNote(Long id, NoteUpdateRequest request, User user) {
         Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
+        // The editor says which version it started from. Anything else means someone saved in between.
+        if (request.getVersion() == null || !request.getVersion().equals(note.getVersion())) {
+            throw new StaleNoteException();
+        }
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             note.setTitle(request.getTitle());
@@ -164,14 +175,21 @@ public class NoteService {
             note.setTags(tagService.resolveTags(request.getTags(), user));
         }
 
-        noteRepository.save(note);
-        // Housekeeping: mark / expire drawings that no saved version of the note references any more.
-        // It must never be able to fail a save.
-        try {
-            drawingCleanupService.reconcile(note.getId(), note.getDocumentJson());
-        } catch (RuntimeException e) {
-            log.warn("Drawing cleanup failed for note {}", note.getId(), e);
-        }
+        noteRepository.saveAndFlush(note);   // flush now: a lost race surfaces here as a 409, before any cleanup
+        // Housekeeping runs only AFTER the save has committed, so a rejected stale save can never
+        // mark or delete drawings. It must never be able to fail a save.
+        final Long savedNoteId = note.getId();
+        final String savedJson = note.getDocumentJson();
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    drawingCleanupService.reconcile(savedNoteId, savedJson);
+                } catch (RuntimeException e) {
+                    log.warn("Drawing cleanup failed for note {}", savedNoteId, e);
+                }
+            }
+        });
         if (workspaceChanged) {
             activityService.log(user, ActivityType.NOTE_UPDATED, note.getTitle(), note.getWorkspace());
         }
