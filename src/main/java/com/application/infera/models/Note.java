@@ -37,6 +37,9 @@ public class Note {
 
     private boolean archived = false;   // matches your original spec's "Archive Note" feature
 
+    @Version
+    private Long version;   // optimistic locking: bumped by Hibernate on every entity update
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
