@@ -17,6 +17,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalApiExceptionHandler {
 
+    @ExceptionHandler({StaleNoteException.class,
+            org.springframework.orm.ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<String> handleConflict(Exception ex, HttpServletRequest request) {
+        log.info("Edit conflict: {} {}", request.getMethod(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("This was changed by someone else. Reload to get the latest version.");
+    }
+
+    @ExceptionHandler(WorkspaceNotFoundException.class)
+    public ResponseEntity<String> handleWorkspaceNotFound(WorkspaceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     @ExceptionHandler(WorkspaceAccessDeniedException.class)
     public ResponseEntity<String> handleAccessDenied(WorkspaceAccessDeniedException ex,
                                                      HttpServletRequest request) {
