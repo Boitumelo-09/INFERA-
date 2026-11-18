@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+
 /* JSON/API endpoints: a clean 403 the front-end can react to, never a redirect.
    Higher precedence than the MVC handler, because @RestController counts as a @Controller too. */
 @Slf4j
@@ -35,5 +37,10 @@ public class GlobalApiExceptionHandler {
                                                      HttpServletRequest request) {
         log.warn("Access denied: {} {} - {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+    @ExceptionHandler(NoteArchiveException.class)
+    public ResponseEntity<Map<String, String>> handleArchived(NoteArchiveException e) {
+        return ResponseEntity.status(HttpStatus.LOCKED)
+                .body(Map.of("message", e.getMessage()));
     }
 }
