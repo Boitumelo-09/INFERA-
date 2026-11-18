@@ -1,5 +1,6 @@
 package com.application.infera.services;
 
+import com.application.infera.enums.Role;
 import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.exception.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.application.infera.repositories.ResourceRepository;
 import com.application.infera.repositories.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /* The ONE place that decides who may do what inside a workspace.
    Services call requireWorkspace(...) instead of writing their own ownership/role checks. */
@@ -58,5 +61,8 @@ public class WorkspaceAccessService {
         }
         return resourceRepository.findByIdAndNote_Workspace(resourceId, membership.getWorkspace())
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+    }
+    public Optional<WorkspaceMember> requireRole(Long workspaceId, User user) {
+        return workspaceMemberRepository.findMembership(workspaceId,user);
     }
 }
