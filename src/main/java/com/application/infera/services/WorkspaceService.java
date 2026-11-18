@@ -230,4 +230,13 @@ public class WorkspaceService {
     public long countAllWorkspaces() {
         return workspaceRepository.count();
     }
+    
+    @Transactional(readOnly = true)
+    public Map<Long, WorkspaceRole> getRolesByWorkspaceId(User user) {
+        Map<Long, WorkspaceRole> roles = new HashMap<>();
+        for (WorkspaceMember m : workspaceMemberRepository.findByUser(user)) {
+            roles.put(m.getWorkspace().getId(), m.getRole());
+        }
+        return roles;
+    }
 }

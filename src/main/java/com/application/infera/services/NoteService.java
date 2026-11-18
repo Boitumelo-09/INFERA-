@@ -143,6 +143,9 @@ public class NoteService {
     @Transactional
     public Note autosaveNote(Long id, NoteUpdateRequest request, User user) {
         Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
+        if (note.isArchived()){
+            throw new NoteArchiveException("This note is archived by owner.");
+        }
         // The editor says which version it started from. Anything else means someone saved in between.
         if (request.getVersion() == null || !request.getVersion().equals(note.getVersion())) {
             throw new StaleNoteException();

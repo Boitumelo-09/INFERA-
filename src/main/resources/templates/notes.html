@@ -158,17 +158,17 @@
                         <button class="ws-menu-btn nri-menu-btn" aria-label="Note options">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <div class="ws-menu-dropdown">
-                            <button th:if="${note.archived == false}" class="ws-menu-item note-archive-trigger">
+                        <div class="ws-menu-dropdown" th:with="role=${workspaceRoles[note.workspace.id]}">
+                            <button th:if="${note.archived == false && role.name() == 'OWNER'}" class="ws-menu-item note-archive-trigger">
                                 <i class="bi bi-archive"></i> Archive
                             </button>
-                            <button th:if="${note.archived == true}" class="ws-menu-item note-unarchive-trigger">
+                            <button th:if="${note.archived == true && role.name() =='OWNER'} " class="ws-menu-item note-unarchive-trigger">
                                 <i class="bi bi-archive-fill"></i> Restore
                             </button>
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View
                             </button>
-                            <button class="ws-menu-item note-edit-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
+                            <button class="ws-menu-item note-edit-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id) && note.archived == false }">
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
 

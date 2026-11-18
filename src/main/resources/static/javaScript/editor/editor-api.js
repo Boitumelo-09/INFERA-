@@ -120,6 +120,7 @@ async function logEditIfChanged() {
 function blockedTextFor(err) {
     if (err.redirected || err.status === 401) return 'Not saved: please sign in again';
     if (err.status === 403) return 'Not saved: no permission';
+    if (err.status === 423) return 'Not saved: note is archived';
     if (err.status === 404) return 'Not saved: note not found';
     if (err.status >= 400 && err.status < 500 && err.status !== 408 && err.status !== 429) {
         return 'Not saved: request refused';
@@ -141,6 +142,9 @@ function lockEditorAfterAccessChange(status) {
             ? 'Your access changed to view-only. Your latest text is still here: copy it if you need it.'
             : 'You can no longer access this note (removed, or it was deleted). Your latest text is still here: copy it if you need it.';
     }
+    if (status === 423) {
+        if (text) text.textContent = 'This note is archived, so it is view-only. Your latest text is still here: copy it if you need it.';
+    }
     if (status === 409) {
         if (text) text.textContent = 'Someone else changed this note, so your last edits were not saved. Your text is still here: copy it, then reload to get the latest version.';
         if (banner && !banner.querySelector('.conflict-reload')) {
@@ -151,6 +155,7 @@ function lockEditorAfterAccessChange(status) {
             btn.addEventListener('click', () => location.reload());
             banner.appendChild(btn);
         }
+
     }
     banner?.removeAttribute('hidden');
 }
@@ -215,6 +220,13 @@ async function performSave(isExit = false) {
             reportStatus('note', 'saved');
             lastSavedSnapshot = null;   // force the next save to go through
             dirtyDuringSave = true;     // the finally block reschedules it
+            return;
+        }
+        if (err.status === 423) {
+            // Note was archived while open: stop saving, lock the editor, keep the text on screen
+            blockSaving('Not saved: note is archived');
+            lockEditorAfterAccessChange(423);
+            window.showToast?.('This note is archived and can no longer be edited.', 'error');
             return;
         }
         if (err.status === 409) {
