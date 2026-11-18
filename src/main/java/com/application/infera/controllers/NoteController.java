@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -38,13 +39,15 @@ public class NoteController {
         if (user == null) return "redirect:/auth";
 
         List<Note> notes = noteService.getNotesForUser(user);
-
+        Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+        Map<Long, WorkspaceRole> workspaceRoles = workspaceService.getRolesByWorkspaceId(user);
         model.addAttribute("pageTitle", "notes | incaptur");
         model.addAttribute("user", user);
         model.addAttribute("notes", notes);
         model.addAttribute("noteCount", notes.size());
-        Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+
         model.addAttribute("editableWorkspaceIds", editableIds);
+        model.addAttribute("workspaceRoles", workspaceRoles);
         model.addAttribute("editableWorkspaces", workspaceService.getWorkspacesForUser(user).stream()
                 .filter(w -> editableIds.contains(w.getId())).toList());
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
