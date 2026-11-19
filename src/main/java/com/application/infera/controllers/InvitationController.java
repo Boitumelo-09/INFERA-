@@ -2,6 +2,7 @@ package com.application.infera.controllers;
 
 import com.application.infera.exception.InvitationEmailMismatchException;
 import com.application.infera.exception.InvitationInvalidException;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.Invitation;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -83,7 +84,7 @@ public class InvitationController {
             Workspace workspace = invitationService.acceptByToken(token, user);
             redirectAttributes.addFlashAttribute("successMessage", "You joined " + workspace.getName() + ".");
             return "redirect:/workspaces";
-        } catch (InvitationInvalidException | InvitationEmailMismatchException e) {
+        } catch (InvitationInvalidException | InvitationEmailMismatchException | WorkspaceNotFoundException e) {
             return "redirect:/invitations/" + token;     // the landing page shows the matching state
         }
     }
