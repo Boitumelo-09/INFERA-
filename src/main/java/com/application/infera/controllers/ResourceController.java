@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.dtos.requests.ResourceRequest;
+import com.application.infera.exception.NoteArchiveException;
 import com.application.infera.exception.NoteNotFoundException;
 import com.application.infera.exception.ResourceNotFoundException;
 import com.application.infera.models.User;
@@ -40,6 +41,8 @@ public class ResourceController {
             redirectAttributes.addFlashAttribute("errorMessage", "That note could not be found.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid resource category.");
+        } catch (NoteArchiveException e){
+            redirectAttributes.addFlashAttribute("errorMessage", "This note is archived.");
         }
 
         return "redirect:/notes";
@@ -58,6 +61,8 @@ public class ResourceController {
             redirectAttributes.addFlashAttribute("successMessage", "Resource updated!");
         } catch (ResourceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (NoteArchiveException e){
+            redirectAttributes.addFlashAttribute("errorMessage", "This note is archived.");
         }
 
         return "redirect:/notes";

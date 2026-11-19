@@ -756,9 +756,9 @@
 }
 .theater-menu-item:hover { color: var(--text); }
 .theater-menu-item.danger { color: #f87171; }
-.theater-menu-item.danger:hover { background: rgba(239,68,68,0.1); }
+.theater-menu-item.danger:hover { color: #cd0404; }
 
-.drawer-close-btn:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+.drawer-close-btn:hover { color: var(--text);  }
 /* Stronger blur behind the modal in theater mode — deepens the focus effect */
 .modal-backdrop.theater-backdrop {
     backdrop-filter: blur(10px);

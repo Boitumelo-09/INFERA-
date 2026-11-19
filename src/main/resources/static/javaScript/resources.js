@@ -2,66 +2,6 @@
 const $  = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-/* Cursor + sidebar — same as notes.js */
-const dot = $('#cursorDot'), ring = $('#cursorRing');
-let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-if (dot && ring) {
-    document.addEventListener('mousemove', e => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        dot.style.left = mouseX + 'px';
-        dot.style.top = mouseY + 'px';
-    });
-    (function animateRing() {
-        ringX += (mouseX - ringX) * 0.14;
-        ringY += (mouseY - ringY) * 0.14;
-        ring.style.left = ringX + 'px';
-        ring.style.top = ringY + 'px';
-        requestAnimationFrame(animateRing);
-    })();
-}
-
-/* ─── SHELF DRAG-TO-SCROLL ─── */
-$$('.shelf-track').forEach(track => {
-    let isDown = false, startX, scrollLeft, velocity = 0, lastX = 0, momentumId;
-
-    track.addEventListener('mousedown', e => {
-        cancelAnimationFrame(momentumId);
-        isDown = true; track.classList.add('dragging');
-        startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft;
-        lastX = e.pageX; velocity = 0;
-    });
-
-    window.addEventListener('mouseup', () => {
-        if (!isDown) return;
-        isDown = false; track.classList.remove('dragging');
-        applyMomentum();
-    });
-
-    track.addEventListener('mousemove', e => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - track.offsetLeft;
-        track.scrollLeft = scrollLeft - (x - startX);
-        velocity = e.pageX - lastX;
-        lastX = e.pageX;
-    });
-
-    function applyMomentum() {
-        if (Math.abs(velocity) < 0.5) return;
-        track.scrollLeft -= velocity;
-        velocity *= 0.94;
-        momentumId = requestAnimationFrame(applyMomentum);
-    }
-});
-
-/* ─── SHELF ARROW BUTTONS ─── */
-$$('.shelf-arrow').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const track = btn.closest('.res-shelf').querySelector('.shelf-track');
-        track.scrollBy({ left: 260 * Number(btn.dataset.dir), behavior: 'smooth' });
-    });
-});
 
 /* ─── PREVIEW MODAL ─── */
 function getYoutubeEmbedUrl(url) {

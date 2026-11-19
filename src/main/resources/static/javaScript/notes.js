@@ -59,6 +59,7 @@ function showToast(msg, type = 'success') {
 function escapeHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
 /* ───────────────────────────────────────────────────────────────────
    VIEW NOTE MODAL — the default action when clicking a row
 ─────────────────────────────────────────────────────────────────── */
@@ -87,11 +88,13 @@ function openViewNoteModal(row) {
     $('#viewNoteDate').innerHTML    = `<i class="bi bi-clock-history"></i> Updated ${dateText}`;
 
     // Controls come from the server flag on the row (data-can-edit); JS only reads it.
-    const canEdit = row.dataset.canEdit === 'true';
-    ['#viewNoteEditBtn', '#theaterEditBtn', '#addResourceBtn'].forEach(sel => {
+    const canEdit = row.dataset.canEdit === 'true' && row.dataset.archived !== 'true';
+    ['#viewNoteEditBtn', '#theaterEditBtn'].forEach(sel => {
         const el = $(sel);
         if (el) el.style.display = canEdit ? '' : 'none';
     });
+    const addRes = $('#addResourceBtn');
+    if (addRes) addRes.style.display = canEdit ? '' : 'none';
 
     renderNoteContent(content, row.dataset.id);
     renderResourcesForRow(row);
@@ -106,7 +109,7 @@ function openViewNoteModal(row) {
 
 /* "Edit this note" button inside the View modal — hands off to the Edit modal */
 $('#viewNoteEditBtn')?.addEventListener('click', () => {
-    if (!currentlyViewedRow) return;
+    if (!currentlyViewedRow || currentlyViewedRow.dataset.canEdit !== 'true') return;
     softNavigate(`/notes/${currentlyViewedRow.dataset.id}/edit`);
 })
 
@@ -255,7 +258,7 @@ document.addEventListener('click', e => {
 
 $('#theaterEditBtn')?.addEventListener('click', () => {
     closeTheaterMenu();
-    if (!currentlyViewedRow) return;
+    if (!currentlyViewedRow || currentlyViewedRow.dataset.canEdit !== 'true') return;
     softNavigate(`/notes/${currentlyViewedRow.dataset.id}/edit`);
 });
 $('#theaterResourcesBtn')?.addEventListener('click', () => {
@@ -319,7 +322,9 @@ function getYoutubeEmbedUrl(url) {
     const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);
     return match ? `https://www.youtube.com/embed/${match[1]}` : null;
 }
-
+function safeUrl(u) {
+    return /^https?:\/\//i.test(u || '') ? escapeHtml(u) : '#';
+}
 function renderResourcesForRow(row) {
     const container = $('#viewNoteResourcesList');
     if (!container) return;
@@ -338,11 +343,11 @@ function renderResourcesForRow(row) {
             const embed = getYoutubeEmbedUrl(url);
             body = embed
                 ? `<iframe src="${embed}" class="vnr-video-embed" allowfullscreen></iframe>`
-                : `<a href="${url}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
+                : `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
         } else if (category === 'IMAGE') {
-            body = `<img src="${url}" class="vnr-image" alt="${escapeHtml(title)}" onerror="this.src='';this.alt='Image failed to load — check if the link is publicly viewable.';" />`;
+            body = `<img src="${safeUrl(url)}" class="vnr-image" alt="${escapeHtml(title)}" onerror="this.src='';this.alt='Image failed to load — check if the link is publicly viewable.';" />`;
         } else {
-            body = `<a href="${url}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
+            body = `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="vnr-link"><i class="bi bi-box-arrow-up-right"></i> ${escapeHtml(url)}</a>`;
         }
 
         return `
@@ -363,7 +368,7 @@ function renderResourcesForRow(row) {
         </div>`;
     }).join('');
 
-    if (row.dataset.canEdit !== 'true') {
+    if (row.dataset.canEdit !== 'true' || row.dataset.archived === 'true') {
         $$('.vnr-card .ws-tile-menu', container).forEach(m => m.remove());
     }
     wireResourceCardMenus();
@@ -391,7 +396,7 @@ const addResourceModalEl = $('#addResourceModal');
 const addResourceModal   = addResourceModalEl ? new bootstrap.Modal(addResourceModalEl) : null;
 
 $('#addResourceBtn')?.addEventListener('click', () => {
-    if (!currentlyViewedRow) return;
+    if (!currentlyViewedRow || currentlyViewedRow.dataset.canEdit !== 'true' || currentlyViewedRow.dataset.archived === 'true') return;
     $('#addResourceNoteId').value = currentlyViewedRow.dataset.id;
     addResourceModal?.show();
 });
