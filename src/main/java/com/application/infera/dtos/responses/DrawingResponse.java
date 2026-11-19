@@ -11,10 +11,11 @@ public record DrawingResponse(Long id,
                               String sceneJson,
                               String previewSvg,
                               LocalDateTime createdAt,
-                              LocalDateTime updatedAt) {
+                              LocalDateTime updatedAt,
+                              Long version) {
 
     public static DrawingResponse from(Drawing d) {
         return new DrawingResponse(d.getId(), d.getNote().getId(), d.getMode(),
-                d.getSceneJson(), d.getPreviewSvg(), d.getCreatedAt(), d.getUpdatedAt());
+                d.getSceneJson(), d.getPreviewSvg(), d.getCreatedAt(), d.getUpdatedAt(), d.getVersion());
     }
 }
