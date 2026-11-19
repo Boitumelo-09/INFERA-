@@ -3,6 +3,7 @@ package com.application.infera.models;
 
 import com.application.infera.enums.DrawingMode;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OptimisticLock;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,7 +39,11 @@ public class Drawing {
     // Set when no saved version of the note references this drawing any more, cleared if it is
     // referenced again. Rows are only deleted once this is older than the grace period (see
     // DrawingCleanupService), so undoing a deleted block never points at a missing row.
+    @OptimisticLock(excluded = true)   // cleanup bookkeeping must not look like a user edit
     private LocalDateTime orphanedAt;
+
+    @Version
+    private Long version;
 
 
     @Column(nullable = false, updatable = false)
