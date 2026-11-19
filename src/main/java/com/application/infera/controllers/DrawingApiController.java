@@ -6,6 +6,7 @@ import com.application.infera.dtos.responses.DrawingResponse;
 import com.application.infera.exception.DrawingNotFoundException;
 import com.application.infera.exception.DrawingTooLargeException;
 import com.application.infera.exception.NoteNotFoundException;
+import com.application.infera.exception.StaleDrawingException;
 import com.application.infera.models.Drawing;
 import com.application.infera.models.User;
 import com.application.infera.services.CurrentUserService;
@@ -13,6 +14,7 @@ import com.application.infera.services.DrawingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,9 +88,11 @@ public class DrawingApiController {
 
         try {
             Drawing drawing = drawingService.saveDrawing(noteId, drawingId, request, user);
-            return ResponseEntity.ok(new SaveResponse(drawing.getUpdatedAt()));
+            return ResponseEntity.ok(new SaveResponse(drawing.getUpdatedAt(), drawing.getVersion()));
         } catch (DrawingNotFoundException e) {
             return notFound(e.getMessage());
+        } catch (StaleDrawingException | ObjectOptimisticLockingFailureException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("This drawing was changed by someone else");
         } catch (DrawingTooLargeException e) {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(e.getMessage());
         }
@@ -98,5 +102,5 @@ public class DrawingApiController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
 
-    public record SaveResponse(LocalDateTime updatedAt) {}
+    public record SaveResponse(LocalDateTime updatedAt, Long version) {}
 }
