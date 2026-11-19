@@ -4,6 +4,7 @@ import com.application.infera.dtos.requests.ResourceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.ResourceCategory;
 import com.application.infera.enums.WorkspaceRole;
+import com.application.infera.exception.NoteArchiveException;
 import com.application.infera.exception.ResourceNotFoundException;
 import com.application.infera.models.Note;
 import com.application.infera.models.Resource;
@@ -30,6 +31,9 @@ public class ResourceService {
     // same principle as NoteService checking workspace ownership first
     public void createResource(ResourceRequest request, User user) {
         Note note = noteService.getNoteForUser(request.getNoteId(), user, WorkspaceRole.EDITOR);
+        if(note.isArchived()){
+            throw new NoteArchiveException("Note is archived");
+        }
         Resource resource = new Resource();
         resource.setTitle(request.getTitle());
         resource.setUrl(request.getUrl());
@@ -60,7 +64,9 @@ public class ResourceService {
 
     public void updateResource(Long id, ResourceRequest request, User user) {
         Resource resource = getResourceForUser(id, user, WorkspaceRole.EDITOR);
-
+        if(resource.getNote().isArchived()){
+            throw new NoteArchiveException("Note is archived");
+        }
         resource.setTitle(request.getTitle());
         resource.setUrl(request.getUrl());
         resource.setDescription(request.getDescription());
