@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
@@ -46,12 +47,9 @@
             <a href="#" data-f="0">Features</a>
             <a href="#why">Why incaptur</a>
             <a href="#" data-open="faq">FAQ</a>
-            <a href="/auth" th:href="@{/auth}" class="only-m">Sign in</a>
-            <a href="/auth" th:href="@{/auth}" class="only-m">Sign up free</a>
+            <a href="/auth" th:href="@{/auth}" class="only-m">Get Started</a>
         </nav>
         <div class="nav-actions">
-            <a href="/auth" th:href="@{/auth}" class="btn ghost">Sign in</a>
-            <a href="/auth" th:href="@{/auth}" class="btn solid">Sign up free</a>
         </div>
         <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     </div>
@@ -62,7 +60,7 @@
     <section class="screen hero" id="hero">
         <div class="wrap">
             <div class="hero-text">
-                <h1>Your mind has no save button. We do!</h1>
+                <h1>Your mind has no save button. <span class="we-do">We do!</span> </h1>
                 <p class="lead">Capture & collaborate notes, resources and ideas. Add anyone you like to your workspace, remove them when they misbehave. In a bad mood today? just archive the note - make it untouchable.</p>
                 <div class="cta">
                     <a href="/auth" th:href="@{/auth}" class="btn solid lg">Get started free</a>
@@ -115,15 +113,15 @@
     <!-- VIEWPORT 3: CTA + FOOTER -->
     <section class="screen end" id="join">
         <div class="wrap join">
-            <h2>Your ideas deserve a better home.</h2>
-            <p class="lead">No credit card. No trial countdown. Free while incaptur is in active development.</p>
+            <h2>cuppa & incaptur?</h2>
+            <p class="lead">to think is to dream; to capture is to create. </p>
             <a href="/auth" th:href="@{/auth}" class="btn solid lg">Create your free account</a>
         </div>
 
         <footer class="foot">
             <div class="wrap foot-grid">
                 <div class="foot-brand">
-                    <a class="brand on" href="#hero"><svg class="ico"><use href="#lg"/></svg><span>incaptur</span></a>
+                    <a class="brand on" href="#hero"><svg class="ico"><use href="#lg"/></svg><span>incaptur.co.za</span></a>
                     <p>capture &amp; collaborate ideas.</p>
                     <div class="socials">
                         <a href="mailto:belmiredub4@gmail.com" aria-label="Email"><i class="bi bi-envelope-at-fill"></i></a>
@@ -137,15 +135,13 @@
                     <li><a href="#" data-open="faq">FAQ</a></li>
                 </ul>
                 <ul class="foot-col">
-                    <li><a href="/auth" th:href="@{/auth}">Sign in</a></li>
-                    <li><a href="/auth" th:href="@{/auth}">Sign up</a></li>
+                    <li><a href="/auth" th:href="@{/auth}">Account</a></li>
                     <li><a href="/privacy" th:href="@{/privacy}">Privacy policy</a></li>
                     <li><a href="/terms" th:href="@{/terms}">Terms &amp; conditions</a></li>
                 </ul>
             </div>
             <div class="wrap foot-bottom">
-                <span>&copy; <span id="year"></span> incaptur. All rights reserved.</span>
-                <span>Built for your mind. Built by Belmire.</span>
+                <span>&copy; <span id="year"></span> incaptur.co.za All rights reserved.</span>
                 <a href="#hero" class="top" aria-label="Back to top"><i class="bi bi-arrow-up"></i></a>
             </div>
             <div class="giant-wrap" aria-hidden="true"><div class="giant">incaptur</div></div>
