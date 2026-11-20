@@ -1,6 +1,8 @@
 package com.application.infera.controllers;
 
+import com.application.infera.dtos.modalviews.InviteModalView;
 import com.application.infera.enums.Role;
+import com.application.infera.models.Invitation;
 import com.application.infera.models.User;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.security.CustomUserDetails;
@@ -37,6 +39,7 @@ public class AuthController {
     private final RecaptchaService recaptchaService;
     private final GoogleIdTokenService googleIdTokenService;
     private final AuthFlowService authFlowService;
+    private final InvitationService invitationService;
 
     private static final String ONE_TAP_NONCES = "oneTapNonces";
     private static final int MAX_ONE_TAP_NONCES = 5;
@@ -54,6 +57,12 @@ public class AuthController {
     public String authPage(Model model, HttpSession session) {
         model.addAttribute("pageTitle", "authenticate | incaptur");
         model.addAttribute("recaptchaSiteKey", recaptchaSiteKey);
+
+        // "invalid" arrives as a flash attribute; otherwise rebuild the sign-in modal from the stored invitation path
+        if (!model.containsAttribute("inviteModal")) {
+            InviteModalView pending = pendingInvitationModal(session);
+            if (pending != null) model.addAttribute("inviteModal", pending);
+        }
 
         String nonce = UUID.randomUUID().toString();
         @SuppressWarnings("unchecked")
@@ -117,7 +126,7 @@ public class AuthController {
                 loginUser(user, httpRequest, httpResponse);
 
                 body.put("status", "success");
-                body.put("redirect", "/dashboard");
+                body.put("redirect", authFlowService.postLoginTarget(httpRequest));
                 return ResponseEntity.ok(body);
             }
             case EXPIRED -> {
@@ -173,6 +182,19 @@ public class AuthController {
         return ResponseEntity.ok(body);
     }
 
+    // Only a path matching /invitations/<43-char token> is ever read back from the session.
+    private InviteModalView pendingInvitationModal(HttpSession session) {
+        Object stored = session.getAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+        if (!(stored instanceof String path) || !InvitationTokens.RETURN_PATH.matcher(path).matches()) return null;
+        String token = path.substring("/invitations/".length());
+        Optional<Invitation> found = invitationService.previewByToken(token);
+        if (found.isEmpty()) {                       // expired / revoked / used since: drop the stale path
+            session.removeAttribute(InvitationTokens.RETURN_PATH_SESSION_KEY);
+            return null;
+        }
+        return InviteModalView.signIn(found.get());
+    }
+
     private User createUser(String email) {
         User user = new User();
         user.setEmail(email);
@@ -191,6 +213,12 @@ public class AuthController {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authToken);
         SecurityContextHolder.setContext(context);
+
+        // Rotate the session id on login (session-fixation protection). Attributes, including a
+        // pending invitation path, are carried over. Skipped if there is no session yet.
+        if (request.getSession(false) != null) {
+            request.changeSessionId();
+        }
 
         new HttpSessionSecurityContextRepository().saveContext(context, request, response);
     }

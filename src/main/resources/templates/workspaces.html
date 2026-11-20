@@ -355,6 +355,81 @@
         </div>
     </div>
 </div>
+<!-- ═══════════════════════════════════════════════════════════════
+     INVITATION MODAL (from /invitations/{token}: ready | mismatch | invalid)
+════════════════════════════════════════════════════════════════ -->
+<div class="modal fade infera-modal" id="inviteModal" tabindex="-1" aria-hidden="true"
+     th:if="${inviteModal != null}" th:with="im=${inviteModal}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" th:switch="${im.state()}">
+
+            <!-- Signed in with the invited address -->
+            <th:block th:case="'ready'">
+                <div class="modal-header">
+                    <h5 class="modal-title">Join <span th:text="${im.workspaceName()}">Workspace</span></h5>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0" style="color:var(--muted);font-size:.9rem;">
+                        <strong style="color:var(--text);font-weight:500;" th:text="${im.inviterName()}">Someone</strong> invited you as
+                        <strong style="color:var(--text);font-weight:500;" th:text="${im.roleLabel()}">Viewer</strong>
+                        <span th:text="${im.roleLabel() == 'Editor'} ? '(can create and edit notes)' : '(can read only)'"></span>.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <form th:action="@{/invitations/mine/{id}/decline(id=${im.invitationId()})}" method="post" style="margin:0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-modal-ghost">Decline</button>
+                    </form>
+                    <form th:action="@{/invitations/mine/{id}/accept(id=${im.invitationId()})}" method="post" style="margin:0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-modal-accent">Accept invitation</button>
+                    </form>
+                </div>
+            </th:block>
+
+            <!-- Signed in with a different address -->
+            <th:block th:case="'mismatch'">
+                <div class="modal-header">
+                    <h5 class="modal-title">Wrong account</h5>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0" style="color:var(--muted);font-size:.9rem;" th:unless="${im.githubHidden()}">
+                        This invitation was sent to <strong style="color:var(--text);font-weight:500;" th:text="${im.maskedEmail()}">s***@example.com</strong>,
+                        but you're signed in with a different account.
+                    </p>
+                    <p class="mb-0" style="color:var(--muted);font-size:.9rem;" th:if="${im.githubHidden()}">
+                        This invitation was sent to <strong style="color:var(--text);font-weight:500;" th:text="${im.maskedEmail()}">s***@example.com</strong>.
+                        Your GitHub account keeps its email address private, so we can't match it. Sign in with Google, Microsoft or an email code using that address instead.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
+                    <form th:action="@{/invitations/switch-account}" method="post" style="margin:0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-modal-accent">Switch account</button>
+                    </form>
+                </div>
+            </th:block>
+
+            <!-- Bad, expired, used or revoked: deliberately all the same -->
+            <th:block th:case="*">
+                <div class="modal-header">
+                    <h5 class="modal-title">Invitation unavailable</h5>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0" style="color:var(--muted);font-size:.9rem;">This invitation is invalid or has expired. Ask the workspace owner to send a new one.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
+                </div>
+            </th:block>
+
+        </div>
+    </div>
+</div>
 <div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
     <div class="search-backdrop" id="searchBackdrop"></div>
     <div class="search-box">

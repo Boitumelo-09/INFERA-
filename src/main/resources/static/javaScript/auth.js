@@ -324,4 +324,9 @@ document.querySelectorAll('.form-input').forEach(input => {
         input.closest('.form-group')?.querySelector('.form-label-custom')?.style.setProperty('color', 'var(--muted)');
     });
 });
-
+// ─── INVITATION DIALOG ──────────────────────
+// Rendered only when a valid pending invitation (or an invalid link) exists. Esc or the button closes it.
+(() => {
+    const dlg = document.getElementById('inviteDialog');
+    if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+})();
