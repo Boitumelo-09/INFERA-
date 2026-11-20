@@ -111,7 +111,11 @@ public void sendOtpEmail(String toEmail, String code) {
              helper.setTo(toEmail);
 
              Context context = new Context();
-             context.setVariable("firstName",name);
+             if(name.equals("User")) {
+                 name = "!";
+                 context.setVariable("firstName", name);
+             }
+             else { context.setVariable("firstName", ",".concat(name.concat("!")));}
              context.setVariable("welcomeText",welcomeMessage);
              context.setVariable("currentYear", String.valueOf(Year.now().getValue()));
              String htmlContent = templateEngine.process("mails/welcome-email",context);
