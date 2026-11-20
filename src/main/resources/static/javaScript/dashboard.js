@@ -154,7 +154,7 @@ newWorkspaceForm?.addEventListener('submit', e => {
     // if valid, do nothing — browser submits the form to th:action="@{/workspaces}"
 });
 
-f
+
 
 /* ───────────────────────────────────────────────────────────────────
    NAV ROUTING STUBS
