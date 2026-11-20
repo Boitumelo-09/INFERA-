@@ -702,10 +702,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     padding: 2px 8px;
 }
 
-.sc-trend.up {
 
-    color: #4ade80;
-}
 
 .sc-value {
     font-family: var(--font-display);
@@ -884,15 +881,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     transition: r 0.15s, fill 0.15s;
 }
 
-.chart-point:hover {
-    stroke: var(--muted);
-    r: 6;
-}
 
-.chart-grid-line {
-    stroke: rgba(255, 255, 255, 0.05);
-    stroke-width: 1;
-}
 [data-theme="light"] .chart-grid-line, [data-theme="light"] .chart-grid-line-v{
     stroke: var(--bg);
 }

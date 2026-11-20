@@ -373,4 +373,13 @@ hubModalEl?.addEventListener('keydown', e => {
     closeHubMenus();
   }
 }, true);
+/* Invitation modal (from /invitations/{token}): opens itself on load; blocks a double submit */
+(() => {
+  const el = $('#inviteModal');
+  if (!el || !window.bootstrap) return;
+  new bootstrap.Modal(el).show();
+  el.addEventListener('submit', () => {
+    $$('button[type="submit"]', el).forEach(b => { b.disabled = true; });
+  });
+})();
 

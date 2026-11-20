@@ -124,6 +124,7 @@ const BLOCK_TEXT = {
     permission: ['Not saved: no permission', 'You no longer have permission to edit this drawing, so your changes can’t be saved.'],
     login:      ['Not saved: sign in again', 'Your session has ended, so your changes can’t be saved. Sign in again in another tab, then reload.'],
     gone:       ['Not saved: drawing not found', 'This drawing is no longer available, so your changes can’t be saved.'],
+    conflict:   ['Not saved: changed elsewhere', 'Someone else changed this drawing, so your changes can’t be saved. Leave the drawing and open it again to see the latest version.'],
 };
 
 // The server refused for good (retrying can't help): stop sending saves and say why, once.
@@ -156,7 +157,7 @@ async function doSave(s) {
         if (s.mode === 'HANDWRITING') sceneJson = withPageCount(sceneJson, s.pages);        const previewSvg = elements.length
             ? await renderPreview(s, elements, appState, files)
             // added-but-empty pages still get a preview (blank pages); a single empty page uses the placeholder
-            : (s.mode === 'HANDWRITING' && s.pages > 1 ? composeHandwritingPreview(s, null, []) : '');        const body = JSON.stringify({ sceneJson, previewSvg });
+            : (s.mode === 'HANDWRITING' && s.pages > 1 ? composeHandwritingPreview(s, null, []) : '');        const body = JSON.stringify({ sceneJson, previewSvg, version: s.version });
 
         const res = await fetch(`/api/notes/${s.ctx.noteId}/drawings/${s.ctx.drawingId}`, {
             method: 'PUT',
@@ -168,6 +169,7 @@ async function doSave(s) {
         if (res.type === 'opaqueredirect' || res.status === 401) { blockDrawing(s, 'login'); return false; }
         if (res.status === 403) { blockDrawing(s, 'permission'); return false; }
         if (res.status === 404) { blockDrawing(s, 'gone'); return false; }
+        if (res.status === 409) { blockDrawing(s, 'conflict'); return false; }
         if (res.status === 413) {
             setPill('error');
             toast('This drawing is too large to save.', 'error');
@@ -175,7 +177,8 @@ async function doSave(s) {
         }
         if (!res.ok) throw new Error('Save failed: ' + res.status);
 
-        const { updatedAt } = await res.json();
+        const { updatedAt, version: newVersion } = await res.json();
+        s.version = newVersion; // the next save must carry the number the server just issued
         s.savedVersion = version;
         s.forcePreview = false;        // A drawing edit is a content edit for the activity log (see editor-api.js)
         window.__inferaDrawingRevision = (window.__inferaDrawingRevision || 0) + 1;
@@ -758,6 +761,7 @@ export const drawingSession = {
                 home: { x: 0, y: 0 }, clamping: false, mode, pages: startPages, forcePreview: false,
                 root: lib.createRoot(host),
                 chain: Promise.resolve(),
+                version: data.version, // from GET; every save sends it and takes the new one from the response
                 savedVersion: sceneVersion(initialData.elements || []),
                 lastVersion: sceneVersion(initialData.elements || []),
                 cleanup: [],

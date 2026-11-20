@@ -7,6 +7,7 @@ import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.DrawingNotFoundException;
 import com.application.infera.exception.DrawingTooLargeException;
 import com.application.infera.exception.NoteNotFoundException;
+import com.application.infera.exception.StaleDrawingException;
 import com.application.infera.models.Drawing;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
@@ -70,7 +71,12 @@ public class DrawingService {
     public Drawing saveDrawing(Long noteId, Long drawingId, DrawingSaveRequest request, User user) {
         Drawing drawing = loadDrawing(noteId, drawingId, user, WorkspaceRole.EDITOR);
 
-        if (request.getSceneJson() != null && request.getSceneJson().length() > MAX_SCENE_CHARS) {
+        // Permission is checked first, so a viewer gets 403, never a 409
+        if (request.getVersion() == null || !request.getVersion().equals(drawing.getVersion())) {
+            throw new StaleDrawingException("This drawing was changed by someone else");
+        }
+
+        if (request.getSceneJson()!= null && request.getSceneJson().length() > MAX_SCENE_CHARS) {
             throw new DrawingTooLargeException("Drawing is too large to save");
         }
         if (request.getPreviewSvg() != null && request.getPreviewSvg().length() > MAX_PREVIEW_CHARS) {
@@ -79,7 +85,7 @@ public class DrawingService {
 
         if (request.getSceneJson() != null)  drawing.setSceneJson(request.getSceneJson());
         if (request.getPreviewSvg() != null) drawing.setPreviewSvg(request.getPreviewSvg());
-        drawingRepository.save(drawing);
+        drawing = drawingRepository.saveAndFlush(drawing); // flush now so a concurrent write fails here, with the new version in hand
 
         // A drawing edit is a note edit: bump the note's updatedAt so it
         // sorts/dates correctly in the notes list.

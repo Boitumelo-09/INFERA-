@@ -1,6 +1,7 @@
 package com.application.infera.controllers;
 
 import com.application.infera.exception.InvitationInvalidException;
+import com.application.infera.exception.WorkspaceNotFoundException;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import com.application.infera.services.*;
@@ -35,7 +36,7 @@ public class InvitationInboxController {
             // use the SAME flash attribute name you fixed in InvitationController.accept
             redirectAttributes.addFlashAttribute("successMessage", "You joined " + workspace.getName() + ".");
             return "redirect:/workspaces";
-        } catch (InvitationInvalidException e) {
+        } catch (InvitationInvalidException | WorkspaceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/workspaces";
         }
@@ -50,7 +51,7 @@ public class InvitationInboxController {
         try {
             invitationService.declineById(id, user);
             redirectAttributes.addFlashAttribute("successMessage", "Invitation declined.");
-        } catch (InvitationInvalidException e) {
+        } catch (InvitationInvalidException | WorkspaceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/workspaces";

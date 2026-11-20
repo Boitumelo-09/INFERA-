@@ -158,6 +158,32 @@
     </section>
 </main>
 
+<!-- Invitation modal: "signin" (built from the stored invitation path) or "invalid" -->
+<dialog class="invite-dialog" id="inviteDialog" th:if="${inviteModal != null}" aria-labelledby="inviteTitle">
+    <div class="invite-card">
+        <div th:switch="${inviteModal.state()}">
+            <th:block th:case="'signin'">
+                <h2 class="invite-title" id="inviteTitle">Join <span th:text="${inviteModal.workspaceName()}">Workspace</span></h2>
+                <p class="invite-text">
+                    <strong th:text="${inviteModal.inviterName()}">Someone</strong> invited you as
+                    <strong th:text="${inviteModal.roleLabel()}">Viewer</strong>.
+                    Sign in with the email address this invitation was sent to
+                    (<strong th:text="${inviteModal.maskedEmail()}">s***@example.com</strong>) and we'll bring you straight back.
+                </p>
+            </th:block>
+            <th:block th:case="*">
+                <h2 class="invite-title" id="inviteTitle">Invitation unavailable</h2>
+                <p class="invite-text">This invitation is invalid or has expired. Ask the workspace owner to send a new one.</p>
+            </th:block>
+        </div>
+        <form method="dialog" class="invite-actions">
+            <button class="btn-submit" autofocus>
+                <span th:text="${inviteModal.state() == 'signin'} ? 'Continue to sign in' : 'Close'">Continue</span>
+            </button>
+        </form>
+    </div>
+</dialog>
+
 <div class="auth-toast" id="authToast" role="status" aria-live="polite" aria-atomic="true">
     <div class="toast-icon" id="toastIcon"><i class="bi bi-check2-circle"></i></div>
     <span id="toastMsg">Done!</span>
