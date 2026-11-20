@@ -3,355 +3,181 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title th:text="${pageTitle}">INCAPTUR — Capture Ideas.</title>
-    <meta name="description" content="INCAPTUR is where your notes, resources, and research live together — organized your way." />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <title th:text="${pageTitle}">incaptur - capture &amp; collaborate ideas</title>
+    <meta name="description" content="incaptur is where your notes, resources and research live together, and where your people can join in." />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
-    <meta name="theme-color" content="#161b22"></head>
+    <meta name="theme-color" content="#0b0e14">
+</head>
 <body>
 
-<!-- ─── NAVBAR ─────────────────────────────────────────────────── -->
-<nav class="infera-nav" id="mainNav">
-    <div class="nav-inner">
-        <a class="brand" href="#hero">
-            <span class="brand-name">incaptur</span>
-        </a>
-
-        <ul class="nav-links">
-            <li><a href="#showcase">Features</a></li>
-            <li><a href="#why">Why INCAPTUR</a></li>
-            <li><a href="#faq">FAQ</a></li>
-        </ul>
-
-        <div class="nav-actions">
-            <a th:href="@{/auth}" class="btn-ghost">Sign in</a>
-            <a th:href="@{/auth}" class="btn-accent">Sign up free</a>
-        </div>
-
-        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileMenu">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-</nav>
-
-<div class="mobile-menu-backdrop" id="menuBackdrop"></div>
-<nav class="mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
-    <a href="#showcase">Features</a>
-    <a href="#why">Why INCAPTUR</a>
-    <a href="#faq">FAQ</a>
-    <div class="mobile-menu-actions">
-        <a th:href="@{/auth}"  class="btn-outline">Sign in</a>
-        <a th:href="@{/auth}"  class="btn-accent-lg">Sign up free</a>
-    </div>
-</nav>
-
-<!-- ─── HERO ──────────────────────────────────────────────────── -->
-<section class="hero-section" id="hero">
-    <div class="hero-inner">
-        <div class="hero-logo-col">
-            <span class="hero-logo-mark">
-                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
-    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V104" fill="none" stroke="currentColor" stroke-width="13"/>
-    <path d="M94 134V92M94 110C94 94 106 86 120 86C134 86 142 96 142 110" fill="none" stroke="currentColor" stroke-width="13"/>
-    <circle cx="94" cy="72" r="8" fill="currentColor"/>
+<!-- shared logo symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="lg" viewBox="38.5 26.5 132.5 147">
+        <g fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110"/>
+            <path d="M94 127.5V98"/>
+        </g>
+        <circle cx="94" cy="72" r="8" fill="currentColor"/>
+    </symbol>
 </svg>
-            </span>
-        </div>
 
-        <div class="hero-text">
-            <h1 class="hero-headline">Capture ideas.<br /><em>Keep them findable.</em></h1>
-            <p class="hero-sub">
-                INCAPTUR is where your notes, resources, and research live together —
-                sorted into workspaces, connected by tags, and one search away from wherever you left them.
-            </p>
-            <div class="hero-cta">
-                <a th:href="@{/auth}" class="btn-accent-lg">
-                    Sign In <i class="bi bi-arrow-right"></i>
-                </a>
-                <a href="#showcase" class="btn-outline">
-                    See how it works
-                </a>
-            </div>
-            <div class="hero-stats">
-                <span><strong th:text="${noteCount}">0</strong> notes captured so far</span>
-                <span><strong th:text="${workspaceCount}">0</strong> workspaces created</span>
-                <span><strong th:text="${activeUsers}">0</strong> people using INCAPTUR</span>
-            </div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- background layers -->
+<div class="bg-photo" aria-hidden="true"
+     th:style="|background-image:url(@{/images/incapturDashboard.png})|"
+     style="background-image:url(/static/images/incapturDashboard.png)"></div>
+<canvas id="bg3d" aria-hidden="true"></canvas>
 
-<!-- ─── VALUE STATEMENTS ──────────────────────────────────────── -->
-<section class="values-section section-pad">
-    <div class="wave-divider wave-top" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,22 C60,4 120,4 180,22 C240,40 300,40 360,22 C420,4 480,4 540,22 C600,40 660,40 720,22 C780,4 840,4 900,22 C960,40 1020,40 1080,22 C1110,13 1140,13 1200,22 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
-    <div class="wave-divider wave-bottom" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,18 C50,32 110,2 170,18 C230,34 290,4 350,18 C410,32 470,2 530,18 C590,34 650,4 710,18 C770,32 830,2 890,18 C950,34 1010,4 1070,18 C1110,26 1150,10 1200,18 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
-    <div class="container-narrow">
-        <div class="values-grid">
-            <div class="value-item">
-                <h3>Your notes stay structured.</h3>
-                <p>Every subject, project, or role gets its own workspace — so nothing you're working on bleeds into everything else you're working on.</p>
-            </div>
-            <div class="value-item">
-                <h3>Your knowledge stays connected.</h3>
-                <p>Tags cut across workspaces. Group ideas by what they mean to you, not by which folder they happen to sit in.</p>
-            </div>
-            <div class="value-item">
-                <h3>Your research stays findable.</h3>
-                <p>One search bar covers notes, resources, and tags at once. If you wrote it or saved it, you can get back to it.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ─── FEATURE SHOWCASE ──────────────────────────────────────── -->
-<section class="section-pad" id="showcase">
-    <div class="container-narrow">
-        <div class="eyebrow text-center mb-2">What it does</div>
-        <h2 class="section-title text-center mx-auto">Built around how you actually think</h2>
-
-        <div style="margin-top: 64px;">
-
-            <div class="showcase-row">
-                <div class="showcase-text">
-                    <h3>Workspaces for every part of your life</h3>
-                    <p>Coursework, side projects, a job search, a novel you're writing — each gets a dedicated space with its own notes, resources, and activity, so they never get tangled together.</p>
-                </div>
-                <div class="showcase-visual">
-                    <div class="shot-placeholder">
-                        <i class="bi bi-image"></i>
-                        <span>SCREENSHOT — Workspace view</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-row reverse">
-                <div class="showcase-text">
-                    <h3>A note editor that gets out of your way</h3>
-                    <p>Markdown, math, and code, rendered cleanly as you write. Tag notes as you go, and INCAPTUR autocompletes tags you've already used so your system stays consistent.</p>
-                    <div class="showcase-tags">
-                        <span class="showcase-tag">#literature</span>
-                        <span class="showcase-tag">#research</span>
-                        <span class="showcase-tag">#thesis</span>
-                    </div>
-                </div>
-                <div class="showcase-visual">
-                    <div class="shot-placeholder">
-                        <i class="bi bi-image"></i>
-                        <span>SCREENSHOT — Note editor</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-row">
-                <div class="showcase-text">
-                    <h3>A resource library that isn't a bookmarks folder</h3>
-                    <p>Save articles, docs, and videos with real context attached — which workspace they belong to, which notes reference them, why you saved them in the first place.</p>
-                </div>
-                <div class="showcase-visual">
-                    <div class="shot-placeholder">
-                        <i class="bi bi-image"></i>
-                        <span>SCREENSHOT — Resource shelf</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="showcase-row reverse">
-                <div class="showcase-text">
-                    <h3>Search that actually finds it</h3>
-                    <p>One bar, everything in it — note titles, note bodies, resource links, workspace names, tags. Type a few characters and stop scrolling through folders.</p>
-                </div>
-                <div class="showcase-visual">
-                    <div class="shot-placeholder">
-                        <i class="bi bi-image"></i>
-                        <span>SCREENSHOT — Global search</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ─── WHY INCAPTUR ────────────────────────────────────────────── -->
-<section class="why-section section-pad" id="why">
-    <div class="container-narrow">
-        <div class="eyebrow mb-2">Why choose INCAPTUR</div>
-        <h2 class="section-title">A few honest reasons</h2>
-
-        <div class="why-list">
-            <div class="why-item">
-                <span class="why-num">01</span>
-                <div>
-                    <h4>It's built for structure, not just storage</h4>
-                    <p>Workspaces aren't a nice-to-have folder feature — they're the backbone of how INCAPTUR organizes everything else you do in it.</p>
-                </div>
-            </div>
-            <div class="why-item">
-                <span class="why-num">02</span>
-                <div>
-                    <h4>Tags work across your whole vault</h4>
-                    <p>A tag isn't trapped inside one workspace. Use the same tag in your coursework and your side project, and search still finds both.</p>
-                </div>
-            </div>
-            <div class="why-item">
-                <span class="why-num">03</span>
-                <div>
-                    <h4>Nothing here is a placeholder</h4>
-                    <p>If a feature is on the page, it works. No "coming soon" buttons, no fake integrations — what you see is what you can use today.</p>
-                </div>
-            </div>
-            <div class="why-item">
-                <span class="why-num">04</span>
-                <div>
-                    <h4>It's built by someone who uses it daily</h4>
-                    <p>INCAPTUR isn't a boardroom product. It's built by one developer who takes their own lecture notes and project notes in it — every decision comes from actually using the thing.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ─── FAQ ────────────────────────────────────────────────────── -->
-<section class="faq-section section-pad" id="faq" style="position: relative;">
-    <div class="wave-divider wave-top" aria-hidden="true"><svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,16 C55,30 115,4 175,18 C235,32 295,4 355,18 C415,32 475,4 535,18 C595,32 655,4 715,18 C775,32 835,4 895,18 C955,32 1015,4 1075,18 C1115,26 1155,10 1200,18 L1200,40 L0,40 Z" fill="currentColor"/></svg></div>
-    <div class="container-narrow">
-        <div class="eyebrow mb-2">FAQ</div>
-        <h2 class="section-title">Questions people actually ask</h2>
-
-        <div class="faq-list">
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    Is INCAPTUR free to use?
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <div class="faq-answer">
-                    <div class="faq-answer-inner">Yes — INCAPTUR is free while it's in active development. If pricing is introduced later, anything you've already built will stay yours to access.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    Can I sign in with Google or GitHub?
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <div class="faq-answer">
-                    <div class="faq-answer-inner">Yes. You can sign up and sign in with email and password, or with Google or GitHub OAuth — whichever you already use day to day.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    Where is my data stored?
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <div class="faq-answer">
-                    <div class="faq-answer-inner">Your notes, resources, and workspaces are stored in a PostgreSQL database and scoped to your account. Nobody else can see your workspaces.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    What happens if I delete my account?
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <div class="faq-answer">
-                    <div class="faq-answer-inner">Everything goes — resources, notes, tags, activity history, and workspaces are permanently removed. There's no recovery period, so it's worth exporting anything you want to keep first.</div>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    Is there a mobile app?
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <div class="faq-answer">
-                    <div class="faq-answer-inner">Not yet — INCAPTUR is a responsive web app, so it works in your phone's browser today. A dedicated app isn't built, and we won't claim otherwise until it is.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ─── CTA BANNER ────────────────────────────────────────────── -->
-<section class="cta-banner section-pad">
-    <div class="container-narrow">
-        <h2 class="cta-headline">Start capturing ideas.</h2>
-        <p class="cta-sub">No credit card. No trial countdown. Just a place to put your thinking.</p>
-        <a th:href="@{/auth}" href="auth.html" class="btn-accent-lg" style="margin-top: 28px;">
-            Create your free account <i class="bi bi-arrow-right"></i>
+<!-- NAV -->
+<header class="nav" id="nav">
+    <div class="nav-in">
+        <a class="brand" href="#hero" aria-label="incaptur home">
+            <svg class="ico"><use href="#lg"/></svg>
+            <span>incaptur</span>
         </a>
-        <p class="cta-note">Free while INCAPTUR is in active development.</p>
+        <nav class="nav-links" id="navLinks" aria-label="Main">
+            <a href="#" data-f="0">Features</a>
+            <a href="#why">Why incaptur</a>
+            <a href="#" data-open="faq">FAQ</a>
+            <a href="/auth" th:href="@{/auth}" class="only-m">Sign in</a>
+            <a href="/auth" th:href="@{/auth}" class="only-m">Sign up free</a>
+        </nav>
+        <div class="nav-actions">
+            <a href="/auth" th:href="@{/auth}" class="btn ghost">Sign in</a>
+            <a href="/auth" th:href="@{/auth}" class="btn solid">Sign up free</a>
+        </div>
+        <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     </div>
-</section>
+</header>
 
-<!-- ─── FOOTER ────────────────────────────────────────────────── -->
-<footer class="infera-footer">
-    <div class="container-narrow">
-        <div class="footer-grid">
-            <div>
-                <a class="brand" href="#hero" style="margin-bottom: 14px; display: inline-flex;">
-                    <span class="logo-mark" style="width:48px;height:48px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="486 673 1009 653">
-                            <circle class="logo-bg" cx="812" cy="1000" r="286"/>
-                            <g class="logo-icon" transform="translate(0,2000) scale(0.1,-0.1)">
-                                <path d="M9171 12179 c-131 -26 -277 -142 -339 -269 -147 -302 39 -655 376
--712 148 -25 315 31 426 145 201 205 193 518 -19 715 -118 110 -279 154 -444
-121z M11754 10769 c-186 -20 -395 -125 -561 -282 l-53 -50 0 132 0 131 -425 0
--425 0 0 -1230 0 -1230 423 2 422 3 5 750 5 750 35 70 c49 98 152 200 250 248
-130 64 281 68 400 10 94 -46 194 -166 231 -278 11 -31 15 -208 19 -795 l5
--755 423 -3 422 -2 0 857 c0 702 -3 873 -14 938 -31 173 -96 303 -215 429
--191 203 -618 341 -947 305z M8850 9460 l0 -1220 420 0 420 0 0 1220 0 1220
--420 0 -420 0 0 -1220z M13883 9255 c-199 -43 -379 -233 -413 -437 -37 -220
-54 -433 241 -557 148 -99 368 -113 534 -35 116 54 227 173 273 291 162 412
--200 832 -635 738z"/>
-                            </g>
-                        </svg>
-                    </span>
-                    <span class="brand-name">incaptur</span>
-                </a>
-                <p class="footer-tagline">Capture ideas. Keep them structured. Never lose track of your own thinking.</p>
-                <div class="footer-socials">
-                    <a href="mailto:belmiredub4@gmail.com" class="social-link" aria-label="Email"><i class="bi bi-envelope-at-fill"></i></a>
-                    <a href="https://github.com/Boitumelo-09" class="social-link" aria-label="GitHub"><i class="bi bi-github"></i></a>
-                    <a href="https://www.linkedin.com/in/boitumelo-mkhondo/" class="social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+<main>
+    <!-- VIEWPORT 1: HERO -->
+    <section class="screen hero" id="hero">
+        <div class="wrap">
+            <div class="hero-text">
+                <h1>Your mind has no save button. We do!</h1>
+                <p class="lead">Capture & collaborate notes, resources and ideas. Add anyone you like to your workspace, remove them when they misbehave. In a bad mood today? just archive the note - make it untouchable.</p>
+                <div class="cta">
+                    <a href="/auth" th:href="@{/auth}" class="btn solid lg">Get started free</a>
+                    <a href="#" data-f="0" class="btn ghost lg">See what it does</a>
+                </div>
+                <p class="stats">
+                    <span><strong th:text="${noteCount}">0</strong> notes captured</span>
+                    <span><strong th:text="${workspaceCount}">0</strong> workspaces created</span>
+                    <span><strong th:text="${activeUsers}">0</strong> people using incaptur</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIEWPORT 2: WHAT + WHY -->
+    <section class="screen" id="why">
+        <div class="wrap two">
+            <div class="glass">
+                <h2>Everything you think, in one place.</h2>
+                <p class="sub">Open any of these for the details.</p>
+                <ul class="feat-list">
+                    <li><button data-f="0"><i class="bi bi-people"></i><span>Workspaces you can share</span><i class="bi bi-chevron-right"></i></button></li>
+                    <li><button data-f="1"><i class="bi bi-pencil-square"></i><span>A note editor that stays out of your way</span><i class="bi bi-chevron-right"></i></button></li>
+                    <li><button data-f="2"><i class="bi bi-bookmarks"></i><span>A resource library with context</span><i class="bi bi-chevron-right"></i></button></li>
+                    <li><button data-f="3"><i class="bi bi-search"></i><span>Search that actually finds it</span><i class="bi bi-chevron-right"></i></button></li>
+                </ul>
+            </div>
+            <div class="why">
+                <h2>Why incaptur</h2>
+                <div class="why-item">
+                    <h3>Structure comes first</h3>
+                    <p>Every subject, project or team gets its own workspace, so the thing you are working on never bleeds into everything else.</p>
+                </div>
+                <div class="why-item">
+                    <h3>Built to be shared</h3>
+                    <p>Invite people into a workspace and give each one a role. You think together in the same place instead of passing files around.</p>
+                </div>
+                <div class="why-item">
+                    <h3>Tags that cross the whole vault</h3>
+                    <p>Use the same tag in coursework and in a side project, and one search finds both. You group ideas by what they mean to you.</p>
+                </div>
+                <div class="why-item">
+                    <h3>Made by someone who uses it daily</h3>
+                    <p>incaptur is built by one developer who keeps their own lecture and project notes in it. Every decision comes from real use.</p>
                 </div>
             </div>
-            <div>
-                <h6 class="footer-col-title">Product</h6>
-                <ul class="footer-links">
-                    <li><a href="#showcase">Features</a></li>
-                    <li><a href="#why">Why INCAPTUR</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
-            </div>
-            <div>
-                <h6 class="footer-col-title">Account</h6>
-                <ul class="footer-links">
-                    <li><a th:href="@{/auth}" >Sign in</a></li>
-                    <li><a th:href="@{/auth}">Sign up</a></li>
-                </ul>
-            </div>
-            <div>
-                <h6 class="footer-col-title">Legal</h6>
-                <ul class="footer-links">
-                    <li><a th:href="@{/privacy}" >Privacy policy</a></li>
-                    <li><a th:href="@{/terms}" >Terms &amp; conditions</a></li>
-                </ul>
-            </div>
         </div>
-        <div class="footer-bottom">
-            <span class="footer-copy">&copy; <span id="year"></span> INCAPTUR. All rights reserved.</span>
-            <span class="footer-built">Built for your mind.<br>Built by Belmire.</span>
-        </div>
-    </div>
-</footer>
+    </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <!-- VIEWPORT 3: CTA + FOOTER -->
+    <section class="screen end" id="join">
+        <div class="wrap join">
+            <h2>Your ideas deserve a better home.</h2>
+            <p class="lead">No credit card. No trial countdown. Free while incaptur is in active development.</p>
+            <a href="/auth" th:href="@{/auth}" class="btn solid lg">Create your free account</a>
+        </div>
+
+        <footer class="foot">
+            <div class="wrap foot-grid">
+                <div class="foot-brand">
+                    <a class="brand on" href="#hero"><svg class="ico"><use href="#lg"/></svg><span>incaptur</span></a>
+                    <p>capture &amp; collaborate ideas.</p>
+                    <div class="socials">
+                        <a href="mailto:belmiredub4@gmail.com" aria-label="Email"><i class="bi bi-envelope-at-fill"></i></a>
+                        <a href="https://github.com/Boitumelo-09" aria-label="GitHub" target="_blank" rel="noopener"><i class="bi bi-github"></i></a>
+                        <a href="https://www.linkedin.com/in/boitumelo-mkhondo/" aria-label="LinkedIn" target="_blank" rel="noopener"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <ul class="foot-col">
+                    <li><a href="#" data-f="0">Features</a></li>
+                    <li><a href="#why">Why incaptur</a></li>
+                    <li><a href="#" data-open="faq">FAQ</a></li>
+                </ul>
+                <ul class="foot-col">
+                    <li><a href="/auth" th:href="@{/auth}">Sign in</a></li>
+                    <li><a href="/auth" th:href="@{/auth}">Sign up</a></li>
+                    <li><a href="/privacy" th:href="@{/privacy}">Privacy policy</a></li>
+                    <li><a href="/terms" th:href="@{/terms}">Terms &amp; conditions</a></li>
+                </ul>
+            </div>
+            <div class="wrap foot-bottom">
+                <span>&copy; <span id="year"></span> incaptur. All rights reserved.</span>
+                <span>Built for your mind. Built by Belmire.</span>
+                <a href="#hero" class="top" aria-label="Back to top"><i class="bi bi-arrow-up"></i></a>
+            </div>
+            <div class="giant-wrap" aria-hidden="true"><div class="giant">incaptur</div></div>
+        </footer>
+    </section>
+</main>
+
+<!-- MODALS -->
+<dialog id="featureModal" aria-labelledby="fTitle">
+    <button class="x" data-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <div class="dlg-in">
+        <div class="tabs" id="fTabs" role="tablist"></div>
+        <h3 id="fTitle"></h3>
+        <p id="fBody"></p>
+        <div class="tags" id="fTags"></div>
+    </div>
+</dialog>
+
+<dialog id="faqModal" aria-labelledby="qTitle">
+    <button class="x" data-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <div class="dlg-in">
+        <h3 id="qTitle">Questions people actually ask</h3>
+        <details open><summary>Is incaptur free to use?</summary><p>Yes. incaptur is free while it is in active development. If pricing is introduced later, anything you have already built stays yours to access.</p></details>
+        <details><summary>How do I sign in?</summary><p>With a one-time code sent to your email, or with Google, GitHub or Microsoft. There is no password to remember.</p></details>
+        <details><summary>Can I work with other people?</summary><p>Yes. Invite people to a workspace and give each one a role. Only the people you invite can see it.</p></details>
+        <details><summary>Where is my data stored?</summary><p>Your notes, resources and workspaces are stored in a PostgreSQL database and scoped to your account and the workspaces you belong to.</p></details>
+        <details><summary>What happens if I delete my account?</summary><p>Everything in your account is permanently removed, with no recovery period. Export anything you want to keep first.</p></details>
+        <details><summary>Is there a mobile app?</summary><p>Not yet. incaptur is a responsive web app, so it works in your phone's browser today.</p></details>
+    </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script th:src="@{/javaScript/home.js}" src="/static/javaScript/home.js"></script>
 </body>
 </html>
