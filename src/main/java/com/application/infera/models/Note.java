@@ -37,6 +37,16 @@ public class Note {
 
     private boolean archived = false;   // matches your original spec's "Archive Note" feature
 
+    // Recycle bin: null = live note. Set together on delete, cleared together on restore.
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;   // null while live, or if that user's account was later deleted
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
     @Version
     private Long version;   // optimistic locking: bumped by Hibernate on every entity update
 
