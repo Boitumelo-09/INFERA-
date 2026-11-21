@@ -212,6 +212,62 @@ membersBtn?.addEventListener('click', e => {
 });
 
 /* ───────────────────────────────────────────────────────────────────
+   FAVORITE (heart) — per-user pin, any role. Favourites first, then
+   the original server order (data-order), which matches a page reload.
+─────────────────────────────────────────────────────────────────── */
+function sortTiles() {
+  const grid = $('.ws-grid');
+  if (!grid) return;
+  $$('.ws-tile', grid)
+      .sort((a, b) =>
+          (b.dataset.favorite === 'true') - (a.dataset.favorite === 'true') ||
+          Number(a.dataset.order) - Number(b.dataset.order))
+      .forEach(t => grid.appendChild(t));
+}
+
+async function toggleFavorite(tile, btn) {
+  if (btn.disabled) return;
+  const next = tile.dataset.favorite !== 'true';
+  btn.disabled = true;                                   // no double-send while in flight
+
+  try {
+    const res = await fetch(`/workspaces/${tile.dataset.id}/favorite`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        favorite: String(next),
+        _csrf: $('input[name="_csrf"]')?.value || ''
+      })
+    });
+    if (res.redirected || res.status === 401) { showToast('Your session may have expired. Reload the page.', 'error'); return; }
+    if (!res.ok) { showToast('Could not update favorite. Try again.', 'error'); return; }
+
+    tile.dataset.favorite = String(next);
+    btn.classList.toggle('is-fav', next);
+    btn.setAttribute('aria-pressed', String(next));
+    const icon = btn.querySelector('i');
+    icon.classList.toggle('bi-heart-fill', next);
+    icon.classList.toggle('bi-heart', !next);
+
+    sortTiles();
+    tile.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    showToast(next ? `"${tile.dataset.name}" pinned to the top` : `"${tile.dataset.name}" unpinned`);
+  } catch (err) {
+    showToast('Network problem. Check your connection and try again.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$$('.ws-tile-favorite').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();                                 // don't open the tile (notes) or close menus
+    toggleFavorite(btn.closest('.ws-tile'), btn);
+  });
+});
+
+/* ───────────────────────────────────────────────────────────────────
    SIDEBAR WORKSPACE LINKS — same soft filter-navigate as the tiles
 ─────────────────────────────────────────────────────────────────── */
 $$('#workspaceList .ws-item').forEach(link => {
