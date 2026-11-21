@@ -35,6 +35,10 @@ public class WorkspaceMember {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Per-user pin: each member has their own favourite flag for this workspace
+    @Column(nullable = false)
+    private boolean favorite = false;
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();
