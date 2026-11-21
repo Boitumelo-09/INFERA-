@@ -77,6 +77,21 @@ public class WorkspaceService {
         return ids;
     }
 
+       // Workspaces page: this user's favourites first, then newest first
+    public List<Workspace> getWorkspacesForUserFavoritesFirst(User user) {
+        return workspaceRepository.findAccessibleByUserFavoritesFirst(user);
+    }
+    public List<Workspace> getWorkspacesForUserFavorites(User user) {
+        return workspaceRepository.findAccessibleByUserFavorites(user);
+    }
+    // Any member (OWNER, EDITOR or VIEWER) may pin/unpin for themselves only
+    @Transactional
+    public void setFavorite(Long workspaceId, User user, boolean favorite) {
+        if (workspaceMemberRepository.updateFavorite(workspaceId, user, favorite) == 0) {
+            throw new WorkspaceNotFoundException("Workspace not found");
+        }
+    }
+
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
         return workspaceRepository.countAccessibleByUser(user);
@@ -123,7 +138,7 @@ public class WorkspaceService {
     }
 
     // What one tile needs: my role, how many members, and the first few to draw as avatars
-    public record TileMembers(WorkspaceRole myRole, int total, List<WorkspaceMember> preview) {
+    public record TileMembers(WorkspaceRole myRole, boolean favorite, int total, List<WorkspaceMember> preview) {
         public boolean isOwner() { return myRole == WorkspaceRole.OWNER; }
     }
 
@@ -139,11 +154,12 @@ public class WorkspaceService {
 
         Map<Long, TileMembers> result = new HashMap<>();
         byWorkspace.forEach((wsId, members) -> {
-            WorkspaceRole mine = members.stream()
+            WorkspaceMember mine = members.stream()
                     .filter(m -> m.getUser().getId().equals(user.getId()))
-                    .map(WorkspaceMember::getRole)
-                    .findFirst().orElse(WorkspaceRole.VIEWER);   // least privilege if the row is somehow missing
-            result.put(wsId, new TileMembers(mine, members.size(), members.stream().limit(3).toList()));
+                    .findFirst().orElse(null);
+            WorkspaceRole myRole = mine != null ? mine.getRole() : WorkspaceRole.VIEWER;   // least privilege if the row is somehow missing
+            boolean favorite = mine != null && mine.isFavorite();
+            result.put(wsId, new TileMembers(myRole, favorite, members.size(), members.stream().limit(3).toList()));
         });
         return result;
     }
