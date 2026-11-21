@@ -4,77 +4,76 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>privacy policy | incaptur</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/cssStyles/legal.css" th:href="@{/cssStyles/legal.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
-    <meta name="theme-color" content="#161b22"></head>
+    <meta name="theme-color" content="#0b0e14">
+</head>
 <body>
+<div class="shell">
 
-<nav class="infera-nav scrolled">
-    <div class="nav-inner">
+    <header class="wrap bar">
         <a class="brand" th:href="@{/home}" href="home.html">
-            <span class="logo-mark">
-               <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
-    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V104" fill="none" stroke="currentColor" stroke-width="13"/>
-    <path d="M94 134V92M94 110C94 94 106 86 120 86C134 86 142 96 142 110" fill="none" stroke="currentColor" stroke-width="13"/>
-    <circle cx="94" cy="72" r="8" fill="currentColor"/>
-</svg>
-            </span>
-            <span class="brand-name">INCAPTUR</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110"/>
+                    <path d="M94 127.5V98"/>
+                </g>
+                <circle cx="94" cy="72" r="8" fill="currentColor"/>
+            </svg>
+            <span>incaptur</span>
         </a>
-        <a th:href="@{/home}" href="home.html" class="btn-ghost">Back to home</a>
-    </div>
-</nav>
+        <a th:href="@{/home}" href="home.html" class="back">Back to home</a>
+    </header>
 
-<main class="container-narrow">
-    <div class="legal-page">
-        <h1>Privacy Policy</h1>
-        <p class="legal-updated">Last updated: August 2026</p>
+    <main class="wrap page">
+        <h1>Privacy policy</h1>
+        <p class="updated">Last updated: November 2026</p>
+        <p class="intro">This page explains what incaptur keeps about you and why. We have tried to say it plainly.</p>
 
-        <p>This policy explains what INCAPTUR stores, why, and how you can remove it. It covers the account, workspace, note, resource, and activity data created while using the app.</p>
+        <div class="grid">
+            <section>
+                <h2>What we keep</h2>
+                <p>Your name, email and profile picture, plus the workspaces, notes, tags and resources you create. We also keep activity records that power your streak and dashboard.</p>
+            </section>
+            <section>
+                <h2>How you sign in</h2>
+                <p>With a one-time email code, or with Google, GitHub or Microsoft. From those providers we receive only your name, email and avatar, never your password.</p>
+            </section>
+            <section>
+                <h2>Who can see your content</h2>
+                <p>Your content is private to you. A workspace is visible only to the people you invite, with the access you give them.</p>
+            </section>
+            <section>
+                <h2>What we never do</h2>
+                <p>We do not sell your data or share it with advertisers. We do not read your notes for any reason other than showing them back to you.</p>
+            </section>
+            <section>
+                <h2>Where it is stored</h2>
+                <p>In a database, scoped to your account and the workspaces you belong to.</p>
+            </section>
+            <section>
+                <h2>Deleting your account</h2>
+                <p>Deleting your account permanently removes your data, with no recovery. Please export anything you want to keep first.</p>
+            </section>
+            <section>
+                <h2>Contact</h2>
+                <p>Questions about this policy can be sent to <a href="mailto:belmiredub4@gmail.com">belmiredub4@gmail.com</a>.</p>
+            </section>
+        </div>
+    </main>
 
-        <h2>What we store</h2>
-        <ul>
-            <li>Account details: name, email, and password hash, or your Google/GitHub profile ID and avatar if you sign in with OAuth.</li>
-            <li>Workspaces, notes, tags, and resources you create.</li>
-            <li>Activity records used to calculate your streak and dashboard stats.</li>
-            <li>An uploaded profile avatar, if you add one.</li>
-        </ul>
+    <footer class="wrap foot">
+        &copy; <span id="year"></span> incaptur.co.za. All rights reserved.
+    </footer>
 
-        <h2>What we don't do</h2>
-        <ul>
-            <li>We don't sell your data or share it with advertisers.</li>
-            <li>We don't read your notes for anything other than displaying them back to you.</li>
-            <li>We don't share your workspaces with other users unless you explicitly do so yourself.</li>
-        </ul>
-
-        <h2>Where it's stored</h2>
-        <p>All data is stored in a PostgreSQL database, scoped to your account. Only you can access your workspaces, notes, and resources when signed in.</p>
-
-        <h2>OAuth sign-in</h2>
-        <p>If you sign in with Google or GitHub, we receive your name, email, and avatar URL from that provider to create and update your INCAPTUR profile. We don't receive your password for either service.</p>
-
-        <h2>Deleting your account</h2>
-        <p>Deleting your account permanently removes your resources, notes, tags, activity history, and workspaces. This action can't be undone, so export anything you want to keep beforehand.</p>
-
-        <h2>Contact</h2>
-        <p>Questions about this policy can be sent to <a th:href="'mailto:belmiredub4@gmail.com'" href="mailto:belmiredub4@gmail.com" style="color: var(--accent);">belmiredub4@gmail.com</a>.</p>
-    </div>
-</main>
-
-<footer class="infera-footer" style="margin-top: 0;">
-    <div class="container-narrow footer-bottom" style="border-top: none;">
-        <span class="footer-copy">&copy; <span id="year"></span> incaptur.co.za | All rights reserved.</span>
-    </div>
-</footer>
-
+</div>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
