@@ -1,5 +1,6 @@
 package com.application.infera.services;
 
+import com.application.infera.config.RecycleBinProperties;
 import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.dtos.requests.NoteUpdateRequest;
 import com.application.infera.enums.ActivityType;
@@ -36,6 +37,7 @@ public class NoteService {
     private final DrawingRepository drawingRepository;
     private final DrawingCleanupService drawingCleanupService;
     private final WorkspaceAccessService workspaceAccessService;
+    private final RecycleBinProperties recycleBinProperties;
 
     // Create a note — the workspace ownership check happens BEFORE the note is ever built
     public Note createNote(NoteRequest request, User user) {
@@ -111,6 +113,22 @@ public class NoteService {
             throw new NoteNotFoundException("Note not found");   // someone else deleted it a moment ago
         }
         activityService.log(user, ActivityType.NOTE_DELETED, title, ws);
+    }
+
+    // Brings a note back from the bin (EDITOR or OWNER). Its resources, drawings and tags were never
+    // touched, so they come back with it. Returns the title for the toast.
+    @Transactional
+    public String restoreNote(Long id, User user) {
+        java.time.LocalDateTime cutoff = recycleBinProperties.cutoff();
+        Note note = workspaceAccessService.requireDeletedNote(id, user, WorkspaceRole.EDITOR, cutoff);
+        String title = note.getTitle();
+        Workspace ws = note.getWorkspace();
+
+        if (noteRepository.restore(id, cutoff) == 0) {
+            throw new NoteNotFoundException("That note is no longer in the bin.");   // restored by someone else, or just expired
+        }
+        activityService.log(user, ActivityType.NOTE_RESTORED, title, ws);
+        return title;
     }
 
     // The old hard delete. NO CALLERS YET: step 5 (purge job / empty bin) will use it. Untested until then.
