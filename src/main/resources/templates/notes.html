@@ -20,6 +20,7 @@
     <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/bin.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
@@ -55,6 +56,9 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
+            <button type="button" class="topbar-icon-btn" data-bin-open="workspace">
+                <i class="bi bi-recycle"></i>
+            </button>
             <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
                 <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
@@ -74,10 +78,13 @@
                     workspaces.
                 </p>
             </div>
-            <button class="btn-topbar-accent" id="newNoteBtnHeader" th:if="${!#lists.isEmpty(editableWorkspaces)}">
-                <i class="bi bi-plus-lg"></i>
-                <span>New note</span>
-            </button>
+            <div class="page-header-actions" th:if="${!#lists.isEmpty(editableWorkspaces)}">
+
+                <button class="btn-topbar-accent" id="newNoteBtnHeader">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>New note</span>
+                </button>
+            </div>
         </div>
 
         <!-- No workspaces yet -->
@@ -473,6 +480,10 @@
         </div>
     </div>
 </div>
+
+<th:block th:if="${!#lists.isEmpty(editableWorkspaces)}">
+    <th:block th:replace="~{fragments/bin-modal :: binModal('workspace')}"></th:block>
+</th:block>
 
 <div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
     <div class="search-backdrop" id="searchBackdrop"></div>
