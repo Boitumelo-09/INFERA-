@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/workspaces")
@@ -46,6 +47,8 @@ public class WorkspaceController {
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
         model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));
+        Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+        model.addAttribute("editableWorkspaces", workspaces.stream().filter(w -> editableIds.contains(w.getId())).toList());
         IO.println("WORKSPACES END");
         return "workspaces";
 
