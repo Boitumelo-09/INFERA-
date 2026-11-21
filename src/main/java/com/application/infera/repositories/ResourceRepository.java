@@ -23,22 +23,23 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
 
 
-    @Query("SELECT r FROM Resource r WHERE r.note.workspace.id IN " +
-            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user) " +
+    // A resource belongs to its note's fate: hidden when its note or its workspace is in the bin
+    @Query("SELECT r FROM Resource r WHERE r.note.deletedAt IS NULL AND r.note.workspace.id IN " +
+            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user AND m.workspace.deletedAt IS NULL) " +
             "ORDER BY r.updatedAt DESC")
     List<Resource> findAccessibleByUserOrderByUpdatedAtDesc(@Param("user") User user);
 
-    @Query("SELECT COUNT(r) FROM Resource r WHERE r.note.workspace.id IN " +
-            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user)")
+    @Query("SELECT COUNT(r) FROM Resource r WHERE r.note.deletedAt IS NULL AND r.note.workspace.id IN " +
+            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user AND m.workspace.deletedAt IS NULL)")
     long countAccessibleByUser(@Param("user") User user);
 
-    @Query("SELECT r.note.workspace.id, COUNT(r) FROM Resource r WHERE r.note.workspace.id IN " +
-            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user) " +
+    @Query("SELECT r.note.workspace.id, COUNT(r) FROM Resource r WHERE r.note.deletedAt IS NULL AND r.note.workspace.id IN " +
+            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user AND m.workspace.deletedAt IS NULL) " +
             "GROUP BY r.note.workspace.id")
     List<Object[]> countAccessibleGroupedByWorkspace(@Param("user") User user);
 
-    // Search inside the given workspaces (the caller never passes an empty collection)
-    List<Resource> findTop5ByNote_WorkspaceInAndTitleContainingIgnoreCase(Collection<Workspace> workspaces, String query);
+    // Search inside the given (live) workspaces; resources of notes in the bin are excluded
+    List<Resource> findTop5ByNote_WorkspaceInAndNote_DeletedAtIsNullAndTitleContainingIgnoreCase(Collection<Workspace> workspaces, String query);
 
 
 
