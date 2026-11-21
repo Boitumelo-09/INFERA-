@@ -47,7 +47,7 @@ public class WorkspaceAccessService {
         if (!membership.getRole().atLeast(minimum)) {
             throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
         }
-        return noteRepository.findByIdAndWorkspace(noteId, membership.getWorkspace())
+        return noteRepository.findByIdAndWorkspaceAndDeletedAtIsNull(noteId, membership.getWorkspace())
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
     }
 
