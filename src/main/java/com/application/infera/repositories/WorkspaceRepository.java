@@ -1,5 +1,6 @@
 package com.application.infera.repositories;
 
+import com.application.infera.dtos.responses.BinRow;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,6 +55,14 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     @Query("UPDATE Workspace w SET w.deletedAt = :now, w.deletedBy = :user WHERE w.id = :id AND w.deletedAt IS NULL")
     int softDelete(@Param("id") Long id, @Param("user") User user,
                    @Param("now") java.time.LocalDateTime now);
+
+    // GLOBAL BIN (workspaces): workspaces I own and deleted, not expired, newest first
+    @Query("SELECT new com.application.infera.dtos.responses.BinRow(w.id, w.name, w.name, w.color, d.id, d.firstName, d.lastName, w.deletedAt) " +
+            "FROM Workspace w LEFT JOIN w.deletedBy d " +
+            "WHERE w.user = :user AND w.deletedBy = :user AND w.deletedAt IS NOT NULL AND w.deletedAt > :cutoff " +
+            "ORDER BY w.deletedAt DESC")
+    List<BinRow> findBinRowsDeletedByOwner(@Param("user") User user,
+                                           @Param("cutoff") java.time.LocalDateTime cutoff);
 
     // Recycle bin restore: atomic, same shape as softDelete. 0 rows = not in the bin, or expired.
     // Children (notes, members, invitations) were never touched, so nothing else needs restoring.
