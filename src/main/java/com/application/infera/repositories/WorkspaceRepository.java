@@ -21,6 +21,11 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
             "ORDER BY w.createdAt DESC")
     List<Workspace> findAccessibleByUser(@Param("user") User user);
 
+    // Same set as findAccessibleByUser, but this user's favourites first (used by the workspaces page only)
+    @Query("SELECT w FROM WorkspaceMember m JOIN m.workspace w WHERE m.user = :user " +
+            "ORDER BY m.favorite DESC, w.createdAt DESC")
+    List<Workspace> findAccessibleByUserFavoritesFirst(@Param("user") User user);
+
     @Query("SELECT COUNT(m) FROM WorkspaceMember m WHERE m.user = :user")
     long countAccessibleByUser(@Param("user") User user);
 
@@ -35,4 +40,11 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     @Query("SELECT w FROM Workspace w WHERE w.user = :user AND EXISTS " +
             "(SELECT 1 FROM WorkspaceMember m WHERE m.workspace = w AND m.user <> :user)")
     List<Workspace> findOwnedSharedWorkspaces(@Param("user") User user);
+
+    // Only this user's favourites, newest first
+    @Query("SELECT w FROM WorkspaceMember m JOIN m.workspace w WHERE m.user = :user AND m.favorite = true " +
+            "ORDER BY w.createdAt DESC")
+    List<Workspace> findAccessibleByUserFavorites(@Param("user") User user);
+
+
 }
