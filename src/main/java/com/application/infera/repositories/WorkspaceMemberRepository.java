@@ -74,6 +74,23 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     Optional<WorkspaceMember> findMembershipForNote(@Param("noteId") Long noteId,
                                                     @Param("user") User user);
 
+    // RESTORE gate, note: the user's membership in the (live) workspace of a note that is in the bin and not expired
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
+            "WHERE m.user = :user AND w.deletedAt IS NULL " +
+            "AND w.id = (SELECT n.workspace.id FROM Note n WHERE n.id = :noteId " +
+            "AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff)")
+    Optional<WorkspaceMember> findMembershipForDeletedNote(@Param("noteId") Long noteId,
+                                                           @Param("user") User user,
+                                                           @Param("cutoff") java.time.LocalDateTime cutoff);
+
+    // RESTORE gate, workspace: the user's membership in a workspace that is in the bin and not expired
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
+            "WHERE w.id = :workspaceId AND m.user = :user " +
+            "AND w.deletedAt IS NOT NULL AND w.deletedAt > :cutoff")
+    Optional<WorkspaceMember> findMembershipForDeletedWorkspace(@Param("workspaceId") Long workspaceId,
+                                                                @Param("user") User user,
+                                                                @Param("cutoff") java.time.LocalDateTime cutoff);
+
     // Same lookup, starting from a resource id (resource -> its note -> that note's workspace)
     @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
             "WHERE m.user = :user AND w.deletedAt IS NULL " +
