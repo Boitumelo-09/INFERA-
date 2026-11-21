@@ -1,5 +1,6 @@
 package com.application.infera.repositories;
 
+import com.application.infera.dtos.responses.BinRow;
 import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
@@ -66,8 +67,27 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     int softDelete(@Param("id") Long id, @Param("user") User user,
                    @Param("now") java.time.LocalDateTime now);
 
-    // Recycle bin restore: atomic. Only a note that is in the bin AND not expired matches, so a second click,
-    // a concurrent restore, or an expiry between the gate and this UPDATE returns 0 rows.
+    // WORKSPACE BIN: every note in the bin for one workspace (any deleter), not expired, newest first.
+    // The caller has already checked the user is EDITOR+ in a LIVE workspace.
+    @Query("SELECT new com.application.infera.dtos.responses.BinRow(n.id, n.title, w.name, w.color, d.id, d.firstName, d.lastName, n.deletedAt) " +
+            "FROM Note n JOIN n.workspace w LEFT JOIN n.deletedBy d " +
+            "WHERE w.id = :workspaceId AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff " +
+            "ORDER BY n.deletedAt DESC")
+    List<BinRow> findBinRowsByWorkspace(@Param("workspaceId") Long workspaceId,
+                                                                    @Param("cutoff") java.time.LocalDateTime cutoff);
+
+    // GLOBAL BIN (notes): notes I deleted, in workspaces I OWN, where the workspace itself is live.
+    // An editor's deletions never match (deleted_by is the editor); notes of a binned workspace are left out
+    // (restore the workspace first).
+    @Query("SELECT new com.application.infera.dtos.responses.BinRow(n.id, n.title, w.name, w.color, d.id, d.firstName, d.lastName, n.deletedAt) " +
+            "FROM Note n JOIN n.workspace w LEFT JOIN n.deletedBy d " +
+            "WHERE n.deletedBy = :user AND w.user = :user AND w.deletedAt IS NULL " +
+            "AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff " +
+            "ORDER BY n.deletedAt DESC")
+    List<BinRow> findBinRowsDeletedByOwner(@Param("user") User user,
+                                      @Param("cutoff") java.time.LocalDateTime cutoff);
+
+    // Recycle bin restore: atomic. Only a note that is in the bin AND not expired matches, so a second click,    // a concurrent restore, or an expiry between the gate and this UPDATE returns 0 rows.
     // Bumps the version so a tab still holding the pre-delete version can't autosave over the restored note.
     @Modifying
     @Query("UPDATE Note n SET n.deletedAt = NULL, n.deletedBy = NULL, n.version = n.version + 1 " +
