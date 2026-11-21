@@ -30,6 +30,17 @@ public class Workspace {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Recycle bin: null = live workspace. Set together on delete, cleared together on restore.
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
