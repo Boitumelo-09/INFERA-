@@ -94,6 +94,8 @@ public class WorkspaceService {
         }
     }
 
+   
+
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
         return workspaceRepository.countAccessibleByUser(user);
