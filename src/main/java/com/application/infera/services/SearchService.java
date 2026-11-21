@@ -37,11 +37,11 @@ public class SearchService {
             results.add(new SearchResultDTO("workspace", ws.getId(), ws.getName(), "Workspace"));
         }
 
-        for (Note note :noteRepository.findTop5ByWorkspaceInAndTitleContainingIgnoreCaseOrWorkspaceInAndPlainTextContainingIgnoreCase(accessible, query, accessible, query)) {
+        for (Note note :noteRepository.findTop5ByWorkspaceInAndDeletedAtIsNullAndTitleContainingIgnoreCaseOrWorkspaceInAndDeletedAtIsNullAndPlainTextContainingIgnoreCase(accessible, query, accessible, query)) {
             results.add(new SearchResultDTO("note", note.getId(), note.getTitle(), note.getWorkspace().getName()));
         }
 
-        for (Resource res :resourceRepository.findTop5ByNote_WorkspaceInAndTitleContainingIgnoreCase(accessible, query)) {
+        for (Resource res :resourceRepository.findTop5ByNote_WorkspaceInAndNote_DeletedAtIsNullAndTitleContainingIgnoreCase(accessible, query)) {
             results.add(new SearchResultDTO("resource", res.getNote().getId(), res.getTitle(), res.getCategory().name()));
         }
 
