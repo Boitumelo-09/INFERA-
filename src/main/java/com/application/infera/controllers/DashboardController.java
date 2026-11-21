@@ -39,10 +39,11 @@ public class DashboardController {
         model.addAttribute("showWelcomeModal", !user.isHasSeenWelcome());
         System.out.println(".".repeat(50));
         System.out.println("LOGGED IN USER    : "+ "\u001B[32m" + user.getFirstName() + " " + user.getLastName() + "\u001B[0m");
-        System.out.println("Browser Session ID: "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
+        System.out.println("DATE              : "+ "\u001B[32m" + LocalTime.now(ZoneId.of("Africa/Johannesburg")).format(DateTimeFormatter.ofPattern("HH:mm:ss")) +"\u001B[0m");
         System.out.println(".".repeat(50));
         model.addAttribute("pageTitle","dashboard | incaptur");
         model.addAttribute("workspaces", workspaceService.getWorkspacesForUser(user));
+        model.addAttribute("favoriteWorkspaces", workspaceService.getWorkspacesForUserFavorites(user));
         model.addAttribute("notesCount", noteService.countNotesForUser(user));
         List<Note> allNotes = noteService.getNotesForUser(user);
         model.addAttribute("notes", allNotes);

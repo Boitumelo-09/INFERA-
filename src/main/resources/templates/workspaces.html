@@ -18,6 +18,7 @@
     <link rel="stylesheet" th:href="@{/cssStyles/workspaces.css}"/>
     <link rel="stylesheet" th:href="@{/cssStyles/notes.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
+    <link rel="stylesheet" th:href="@{/cssStyles/bin.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
@@ -50,6 +51,9 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
+            <button type="button" class="topbar-icon-btn" data-bin-open="workspace" th:if="${!#lists.isEmpty(editableWorkspaces)}">
+                <i class="bi bi-recycle"></i>
+            </button>
             <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
             <div th:class="${user.avatarUrl} ? 'topbar-avatar' : 'topbar-avatar'"
@@ -68,10 +72,12 @@
                     <span th:text="${workspaceCount}">0</span> workspace<span th:if="${workspaceCount != 1}">s</span> - have your ideas captured in a workspace.
                 </p>
             </div>
-            <button class="btn-topbar-accent" id="newWorkspaceBtnHeader">
-                <i class="bi bi-plus-lg"></i>
-                <span>New workspace</span>
-            </button>
+            <div class="page-header-actions">
+                <button class="btn-topbar-accent" id="newWorkspaceBtnHeader">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>New workspace</span>
+                </button>
+            </div>
         </div>
 
         <!-- Pending invitations (only rendered when there are some) -->
@@ -130,8 +136,10 @@
         <!-- Workspace grid -->
         <div class="ws-grid" th:unless="${#lists.isEmpty(workspaces)}">
             <div class="ws-tile"
-                 th:each="ws : ${workspaces}"
+                 th:each="ws, st : ${workspaces}"
                  th:with="tm=${tileMembers[ws.id]}"
+                 th:data-order="${st.index}"
+                 th:data-favorite="${tm.favorite()}"
                  th:style="'--ws-color:' + ${ws.color}"
                  th:data-id="${ws.id}"
                  th:data-name="${ws.name}"
@@ -169,9 +177,12 @@
                         <i class="bi bi-journal-text"></i>
                         <span th:text="${(wsNoteCount[ws.id] ?: 0) + ((wsNoteCount[ws.id] ?: 0) == 1 ? ' note' : ' notes')}">0 notes</span>
                     </span>
-                    <span class="ws-tile-favorite" alt="Favorite">
-                        <i class="bi bi-heart"></i>
-                    </span>
+                    <button type="button" class="ws-tile-favorite"
+                            th:classappend="${tm.favorite()} ? 'is-fav'"
+                            th:attr="aria-pressed=${tm.favorite()}"
+                            aria-label="Favorite workspace" title="Favorite">
+                        <i class="bi" th:classappend="${tm.favorite()} ? 'bi-heart-fill' : 'bi-heart'"></i>
+                    </button>
                 </div>
 
                 <div class="ws-tile-footer">
@@ -430,6 +441,10 @@
         </div>
     </div>
 </div>
+<th:block th:if="${!#lists.isEmpty(editableWorkspaces)}">
+    <th:block th:replace="~{fragments/bin-modal :: binModal('workspace')}"></th:block>
+</th:block>
+
 <div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
     <div class="search-backdrop" id="searchBackdrop"></div>
     <div class="search-box">

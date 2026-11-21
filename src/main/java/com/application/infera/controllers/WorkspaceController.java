@@ -9,6 +9,7 @@ import com.application.infera.models.Workspace;
 import com.application.infera.repositories.UserRepository;
 import com.application.infera.services.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/workspaces")
@@ -36,7 +39,7 @@ public class WorkspaceController {
 
         if (user == null) return "redirect:/auth";
         IO.println("WORKSPACES:");
-        List<Workspace> workspaces = workspaceService.getWorkspacesForUser(user);
+        List<Workspace> workspaces = workspaceService.getWorkspacesForUserFavoritesFirst(user);
         model.addAttribute("pageTitle", "workspaces | incaptur");
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
@@ -44,6 +47,8 @@ public class WorkspaceController {
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
         model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));
+        Set<Long> editableIds = workspaceService.getEditableWorkspaceIds(user);
+        model.addAttribute("editableWorkspaces", workspaces.stream().filter(w -> editableIds.contains(w.getId())).toList());
         IO.println("WORKSPACES END");
         return "workspaces";
 
@@ -88,6 +93,23 @@ public class WorkspaceController {
         return "redirect:/workspaces";
     }
 
+    // POST /workspaces/{id}/favorite — pin/unpin for the signed-in user (any role). Returns JSON, no redirect.
+    @PostMapping("/{id}/favorite")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> setFavorite(@AuthenticationPrincipal Object principal,
+                                                           @PathVariable Long id,
+                                                           @RequestParam boolean favorite) {
+        User user = currentUserService.resolve(principal);
+        if (user == null) return ResponseEntity.status(401).build();
+
+        try {
+            workspaceService.setFavorite(id, user, favorite);
+            return ResponseEntity.ok(Map.of("favorite", favorite));
+        } catch (WorkspaceNotFoundException e) {
+            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // POST /workspaces/{id}/delete — remove a workspace
     @PostMapping("/{id}/delete")
     public String deleteWorkspace(@AuthenticationPrincipal Object principal,
@@ -98,7 +120,7 @@ public class WorkspaceController {
 
         try {
             workspaceService.deleteWorkspace(id, user);
-            redirectAttributes.addFlashAttribute("successMessage", "Workspace deleted.");
+            redirectAttributes.addFlashAttribute("successMessage", "Workspace moved to the recycle bin.");
         } catch (WorkspaceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

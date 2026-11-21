@@ -42,22 +42,19 @@
                 <li><a th:href="@{/resources}" class="nav-item" data-page="resources" th:classappend="${active == 'resources'} ? 'active'">
                     <i class="bi bi-link-45deg"></i><span>Resources</span>
                     <span th:text="${resourceCount}" class="nav-badge" id="navResourcesBadge">0</span></a></li>
+                <li><button type="button" class="nav-item nav-item-btn" data-bin-open="global">
+                    <i class="bi bi-trash2"></i><span>Bin</span></button></li>
             </ul>
-            <th:block th:if="${active == 'dashboard' and workspaces != null}">
-                <div class="nav-section-label mt-3">Workspaces</div>
+            <th:block th:if="${active == 'dashboard' and favoriteWorkspaces != null}">
+                <div class="nav-section-label mt-3">Pinned workspaces</div>
                 <ul class="nav-list" id="workspaceList">
-                    <li th:each="ws : ${workspaces}">
+                    <li th:each="ws : ${favoriteWorkspaces}">
                         <a th:href="@{/workspaces}" class="nav-item ws-item">
                             <span class="ws-dot" th:style="'--ws-color:' + ${ws.color}"></span>
                             <span class="ws-nav-name" th:text="${ws.name}">Workspace</span>
                         </a>
                     </li>
-                    <li>
-                        <button class="nav-item nav-item-btn" id="newWorkspaceBtn">
-                            <i class="bi bi-plus"></i>
-                            <span>New workspace</span>
-                        </button>
-                    </li>
+
                 </ul>
             </th:block>
 
@@ -88,4 +85,9 @@
 
     </aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Recycle bin: the personal (global) modal, plus its styles and script, ride along with the sidebar so every page has them -->
+    <link rel="stylesheet" th:href="@{/cssStyles/bin.css}" />
+    <th:block th:replace="~{fragments/bin-modal :: binModal('global')}"></th:block>
+    <script th:src="@{/javaScript/bin.js}" defer></script>
 </th:block>

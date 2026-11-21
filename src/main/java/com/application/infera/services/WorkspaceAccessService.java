@@ -47,7 +47,7 @@ public class WorkspaceAccessService {
         if (!membership.getRole().atLeast(minimum)) {
             throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
         }
-        return noteRepository.findByIdAndWorkspace(noteId, membership.getWorkspace())
+        return noteRepository.findByIdAndWorkspaceAndDeletedAtIsNull(noteId, membership.getWorkspace())
                 .orElseThrow(() -> new NoteNotFoundException("Note not found"));
     }
 
@@ -62,6 +62,30 @@ public class WorkspaceAccessService {
         return resourceRepository.findByIdAndNote_Workspace(resourceId, membership.getWorkspace())
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
+    // RESTORE gate for a note in the bin. The note's workspace must be live (a note in a binned workspace
+    // is refused: restore the workspace first), the note must not be expired, and the role must be enough.
+    public Note requireDeletedNote(Long noteId, User user, WorkspaceRole minimum, java.time.LocalDateTime cutoff) {
+        WorkspaceMember membership = workspaceMemberRepository.findMembershipForDeletedNote(noteId, user, cutoff)
+                .orElseThrow(() -> new NoteNotFoundException("That note is no longer in the bin."));
+
+        if (!membership.getRole().atLeast(minimum)) {
+            throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
+        }
+        return noteRepository.findByIdAndWorkspace(noteId, membership.getWorkspace())
+                .orElseThrow(() -> new NoteNotFoundException("That note is no longer in the bin."));
+    }
+
+    // RESTORE gate for a workspace in the bin (not expired). Callers pass OWNER.
+    public Workspace requireDeletedWorkspace(Long workspaceId, User user, WorkspaceRole minimum, java.time.LocalDateTime cutoff) {
+        WorkspaceMember membership = workspaceMemberRepository.findMembershipForDeletedWorkspace(workspaceId, user, cutoff)
+                .orElseThrow(() -> new WorkspaceNotFoundException("That workspace is no longer in the bin."));
+
+        if (!membership.getRole().atLeast(minimum)) {
+            throw new WorkspaceAccessDeniedException("You are not permitted to do that in this workspace");
+        }
+        return membership.getWorkspace();
+    }
+
     public Optional<WorkspaceMember> requireRole(Long workspaceId, User user) {
         return workspaceMemberRepository.findMembership(workspaceId,user);
     }

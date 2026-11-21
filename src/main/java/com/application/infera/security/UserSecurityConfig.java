@@ -34,7 +34,8 @@ public class UserSecurityConfig {
                                 "/cssStyles/**",
                                 "/javaScript/**",
                                 "/app_resources/**",
-                                "/favicons/**"
+                                "/favicons/**",
+                                "/images/**"
                         ).permitAll()
                         // invitation landing page: public GET only (read-only); accepting is a POST and stays authenticated
                         .requestMatchers(HttpMethod.GET, "/invitations/*").permitAll()

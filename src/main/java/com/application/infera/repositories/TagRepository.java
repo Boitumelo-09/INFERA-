@@ -16,8 +16,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByNameIgnoreCase(String name);
 
     // Tags that appear on notes in workspaces this user belongs to (any role): what autocomplete may suggest
-    @Query("SELECT DISTINCT t FROM Note n JOIN n.tags t WHERE n.workspace.id IN " +
-            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user)")
+    @Query("SELECT DISTINCT t FROM Note n JOIN n.tags t WHERE n.deletedAt IS NULL AND n.workspace.id IN " +
+            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user AND m.workspace.deletedAt IS NULL)")
     List<Tag> findAccessibleByUser(@Param("user") User user);
 
     // Race-safe create. If two requests insert the same new tag at once, the database keeps one row
@@ -29,7 +29,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     int insertIfAbsent(@Param("name") String name, @Param("createdAt") LocalDateTime createdAt);
 
 
-    @Query("SELECT COUNT(DISTINCT t) FROM Note n JOIN n.tags t WHERE n.workspace.id IN " +
-            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user)")
+    @Query("SELECT COUNT(DISTINCT t) FROM Note n JOIN n.tags t WHERE n.deletedAt IS NULL AND n.workspace.id IN " +
+            "(SELECT m.workspace.id FROM WorkspaceMember m WHERE m.user = :user AND m.workspace.deletedAt IS NULL)")
     long countDistinctTagsForUser(@Param("user") User user);
 }

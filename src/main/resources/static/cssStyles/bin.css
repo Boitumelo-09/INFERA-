@@ -1,0 +1,72 @@
+/* ─────────────────────────────────────────
+   INFERA — bin.css  (recycle bin: header button, modal, panel)
+   Loaded on the notes and workspaces pages.
+───────────────────────────────────────── */
+
+/* the toast must show above an open modal (Bootstrap modals sit at z-index 1055) */
+.infera-toast { z-index: 2100; }
+
+/* header button group (New note / New workspace + Recycle bin) */
+.page-header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.btn-bin {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px; border-radius: 10px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 0.84rem; font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+.btn-bin:hover {
+    color: var(--text);
+}
+
+/* modal pieces */
+.bin-sub { font-size: 0.8rem; color: var(--muted); margin: 0; padding: 0 16px; }
+.bin-toolbar { padding: 12px 16px 0; }
+.bin-toolbar .form-label-custom { display: block; margin-bottom: 6px; }
+
+.bin-state { padding: 36px 20px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+.bin-state.error { color: #f87171; }
+
+.bin-empty { text-align: center; padding: 36px 16px; color: var(--muted); }
+.bin-empty i { display: block; font-size: 1.8rem; margin-bottom: 10px; color: var(--accent); }
+.bin-empty p { margin: 0; font-size: 0.88rem; }
+
+/* the list */
+.bin-list { list-style: none; margin: 0; padding: 0; }
+.bin-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.bin-item:last-child { border-bottom: none; }
+.bin-icon { width: 28px; flex-shrink: 0; font-size: 1.1rem; color: var(--ws-color, var(--accent)); }
+.bin-main { flex: 1; min-width: 0; }
+.bin-title {
+    color: var(--text); font-size: 0.92rem; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bin-meta {
+    display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 3px;
+    font-size: 0.74rem; color: var(--muted);
+}
+.bin-meta strong { color: var(--text); font-weight: 500; }
+.bin-ws { color: var(--ws-color, var(--accent)); }
+.bin-left { font-family: 'JetBrains Mono', monospace; }
+.bin-left.urgent { color: #f87171; }
+
+.bin-restore-form { margin: 0; flex-shrink: 0; }
+.bin-restore-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.78rem; }
+.bin-restore-btn:disabled { opacity: 0.5; cursor: default; }
+
+.bin-note { font-size: 0.72rem; color: var(--muted); margin: 14px 0 0; line-height: 1.5; }
+
+@media (max-width: 576px) {
+    .bin-item { flex-wrap: wrap; }
+    .bin-restore-form, .bin-restore-btn { width: 100%; justify-content: center; }
+    .page-header-actions { width: 100%; }
+    .page-header-actions > * { flex: 1; justify-content: center; }
+}
