@@ -117,7 +117,7 @@ public class WorkspaceController {
 
         try {
             workspaceService.deleteWorkspace(id, user);
-            redirectAttributes.addFlashAttribute("successMessage", "Workspace deleted.");
+            redirectAttributes.addFlashAttribute("successMessage", "Workspace moved to the recycle bin.");
         } catch (WorkspaceNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
