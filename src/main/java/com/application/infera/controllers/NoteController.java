@@ -113,7 +113,7 @@ public class NoteController {
 
         try {
             noteService.deleteNote(id, user);
-            redirectAttributes.addFlashAttribute("successMessage", "Note deleted.");
+            redirectAttributes.addFlashAttribute("successMessage", "Note moved to the recycle bin.");
         } catch (NoteNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
