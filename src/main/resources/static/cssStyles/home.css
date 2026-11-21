@@ -121,7 +121,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.1; le
 .top { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); display: grid; place-items: center; color: var(--muted); transition: transform .25s, color .2s, border-color .2s; }
 .top:hover { transform: translateY(-4px); color: var(--text); border-color: var(--accent); }
 .giant-wrap { font-size: clamp(4rem, 21vw, 19rem); height: .66em; overflow: hidden; margin-top: 8px; user-select: none; }
-.giant { font: 700 1em/.9 'Fraunces', sans-serif;; letter-spacing: -.04em; text-align: center; white-space: nowrap; background: linear-gradient(180deg, var(--accent), rgba(179,185,193,0) 88%); -webkit-background-clip: text; background-clip: text; color: transparent; transition: letter-spacing .6s cubic-bezier(.16,1,.3,1); }
+.giant { font: 700 1em/.9 var(--display); letter-spacing: -.04em; text-align: center; white-space: nowrap; background: linear-gradient(180deg, var(--accent), rgba(179,185,193,0) 88%); -webkit-background-clip: text; background-clip: text; color: transparent; transition: letter-spacing .6s cubic-bezier(.16,1,.3,1); }
 .foot:hover .giant { letter-spacing: -.02em; }
 
 /* modals */
