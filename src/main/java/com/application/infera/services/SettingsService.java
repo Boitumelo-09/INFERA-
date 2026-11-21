@@ -50,6 +50,8 @@ public class SettingsService {
       for (var ws : workspaceRepository.findByUserOrderByCreatedAtDesc(user)) {
           activityRepository.deleteAll(activityRepository.findByWorkspace(ws));
           invitationRepository.deleteByWorkspace(ws);
+          // Every member's row, not just mine: a workspace in the bin may still have other members
+          workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(ws));
       }
       invitationRepository.deleteByEmail(user.getEmail());   // invitations addressed to this person
       workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByUser(user));
