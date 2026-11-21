@@ -2,6 +2,7 @@ package com.application.infera.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@DynamicUpdate   // write only changed columns, so a rename can't overwrite deleted_at
 @Table(name = "workspaces")
 public class Workspace {
 
@@ -29,6 +31,17 @@ public class Workspace {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // Recycle bin: null = live workspace. Set together on delete, cleared together on restore.
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

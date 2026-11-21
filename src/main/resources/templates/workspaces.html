@@ -130,8 +130,10 @@
         <!-- Workspace grid -->
         <div class="ws-grid" th:unless="${#lists.isEmpty(workspaces)}">
             <div class="ws-tile"
-                 th:each="ws : ${workspaces}"
+                 th:each="ws, st : ${workspaces}"
                  th:with="tm=${tileMembers[ws.id]}"
+                 th:data-order="${st.index}"
+                 th:data-favorite="${tm.favorite()}"
                  th:style="'--ws-color:' + ${ws.color}"
                  th:data-id="${ws.id}"
                  th:data-name="${ws.name}"
@@ -169,9 +171,12 @@
                         <i class="bi bi-journal-text"></i>
                         <span th:text="${(wsNoteCount[ws.id] ?: 0) + ((wsNoteCount[ws.id] ?: 0) == 1 ? ' note' : ' notes')}">0 notes</span>
                     </span>
-                    <span class="ws-tile-favorite" alt="Favorite">
-                        <i class="bi bi-heart"></i>
-                    </span>
+                    <button type="button" class="ws-tile-favorite"
+                            th:classappend="${tm.favorite()} ? 'is-fav'"
+                            th:attr="aria-pressed=${tm.favorite()}"
+                            aria-label="Favorite workspace" title="Favorite">
+                        <i class="bi" th:classappend="${tm.favorite()} ? 'bi-heart-fill' : 'bi-heart'"></i>
+                    </button>
                 </div>
 
                 <div class="ws-tile-footer">

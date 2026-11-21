@@ -30,8 +30,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     // Id lists must be non-empty (callers pass a -1 sentinel).
     @Query("""
             SELECT a FROM Activity a JOIN FETCH a.user LEFT JOIN FETCH a.workspace
-            WHERE a.user = :me
-               OR (a.workspace.id IN :wsIds AND (a.type IN :publicTypes OR a.workspace.id IN :ownedIds))
+                        WHERE (a.workspace IS NULL OR a.workspace.id NOT IN (SELECT d.id FROM Workspace d WHERE d.deletedAt IS NOT NULL))
+                          AND (a.user = :me
+                               OR (a.workspace.id IN :wsIds AND (a.type IN :publicTypes OR a.workspace.id IN :ownedIds)))
             ORDER BY a.createdAt DESC
             """)
     List<Activity> findLog(@Param("me") User me,

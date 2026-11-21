@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 
+import com.application.infera.config.RecycleBinProperties;
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
@@ -31,6 +32,7 @@ public class WorkspaceService {
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceAccessService workspaceAccessService;
     private final InvitationRepository invitationRepository;
+    private final RecycleBinProperties recycleBinProperties;
 
     // Create a new workspace linked to the logged-in user
     @Transactional
@@ -38,7 +40,7 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
-        if (workspaceRepository.countByUser(user) > 8) {
+        if (workspaceRepository.countByUserAndDeletedAtIsNull(user) > 8) {
             // the limit applies to workspaces you OWN, not ones shared with you
             throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
         }
@@ -77,6 +79,21 @@ public class WorkspaceService {
         return ids;
     }
 
+       // Workspaces page: this user's favourites first, then newest first
+    public List<Workspace> getWorkspacesForUserFavoritesFirst(User user) {
+        return workspaceRepository.findAccessibleByUserFavoritesFirst(user);
+    }
+    public List<Workspace> getWorkspacesForUserFavorites(User user) {
+        return workspaceRepository.findAccessibleByUserFavorites(user);
+    }
+    // Any member (OWNER, EDITOR or VIEWER) may pin/unpin for themselves only
+    @Transactional
+    public void setFavorite(Long workspaceId, User user, boolean favorite) {
+        if (workspaceMemberRepository.updateFavorite(workspaceId, user, favorite) == 0) {
+            throw new WorkspaceNotFoundException("Workspace not found");
+        }
+    }
+
     // Count workspaces for dashboard stat card
     public long countWorkspacesForUser(User user) {
         return workspaceRepository.countAccessibleByUser(user);
@@ -102,10 +119,41 @@ public class WorkspaceService {
         activityService.log(user, ActivityType.WORKSPACE_UPDATED, workspace.getName(), workspace);
     }
 
-    // Delete a workspace — only if it belongs to this user
+    // Moves the workspace to the recycle bin. Notes, members and invitations are untouched,
+    // so a restore brings everything back.
     @Transactional
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = workspaceAccessService.requireWorkspace(id, user, WorkspaceRole.OWNER);
+        String name = workspace.getName();
+        if (workspaceRepository.softDelete(id, user, java.time.LocalDateTime.now()) == 0) {
+            throw new WorkspaceNotFoundException("Workspace not found");
+        }
+        // null workspace on purpose: the row must stay visible in the feed while the workspace is in the bin
+        activityService.log(user, ActivityType.WORKSPACE_DELETED, name, null);
+    }
+
+    // Brings a workspace back from the bin (OWNER only). Notes, members and invitations were never touched,
+    // so they all return with it. Refused at the 9-workspace limit, same rule as createWorkspace.
+    // Returns the name for the toast.
+    @Transactional
+    public String restoreWorkspace(Long id, User user) {
+        java.time.LocalDateTime cutoff = recycleBinProperties.cutoff();
+        Workspace workspace = workspaceAccessService.requireDeletedWorkspace(id, user, WorkspaceRole.OWNER, cutoff);
+        String name = workspace.getName();
+
+        if (workspaceRepository.countByUserAndDeletedAtIsNull(user) > 8) {
+            throw new WorkspaceLimitReachedException("You've reached the limit of 9 workspaces. Delete one before restoring \"" + name + "\".");
+        }
+        if (workspaceRepository.restore(id, cutoff) == 0) {
+            throw new WorkspaceNotFoundException("That workspace is no longer in the bin.");
+        }
+        // null workspace on purpose: mirrors WORKSPACE_DELETED, so members never see "restored" for something they never saw deleted
+        activityService.log(user, ActivityType.WORKSPACE_RESTORED, name, null);
+        return name;
+    }
+
+    // The old hard delete. NO CALLERS YET: step 5 will use it. Untested until then.
+    void purgeWorkspace(Workspace workspace) {
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
         var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
         drawingRepository.deleteAll(wsDrawings);
@@ -119,11 +167,11 @@ public class WorkspaceService {
         invitationRepository.deleteByWorkspace(workspace);
         workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
         workspaceRepository.delete(workspace);
-        activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
+//        activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }
 
     // What one tile needs: my role, how many members, and the first few to draw as avatars
-    public record TileMembers(WorkspaceRole myRole, int total, List<WorkspaceMember> preview) {
+    public record TileMembers(WorkspaceRole myRole, boolean favorite, int total, List<WorkspaceMember> preview) {
         public boolean isOwner() { return myRole == WorkspaceRole.OWNER; }
     }
 
@@ -139,11 +187,12 @@ public class WorkspaceService {
 
         Map<Long, TileMembers> result = new HashMap<>();
         byWorkspace.forEach((wsId, members) -> {
-            WorkspaceRole mine = members.stream()
+            WorkspaceMember mine = members.stream()
                     .filter(m -> m.getUser().getId().equals(user.getId()))
-                    .map(WorkspaceMember::getRole)
-                    .findFirst().orElse(WorkspaceRole.VIEWER);   // least privilege if the row is somehow missing
-            result.put(wsId, new TileMembers(mine, members.size(), members.stream().limit(3).toList()));
+                    .findFirst().orElse(null);
+            WorkspaceRole myRole = mine != null ? mine.getRole() : WorkspaceRole.VIEWER;   // least privilege if the row is somehow missing
+            boolean favorite = mine != null && mine.isFavorite();
+            result.put(wsId, new TileMembers(myRole, favorite, members.size(), members.stream().limit(3).toList()));
         });
         return result;
     }
