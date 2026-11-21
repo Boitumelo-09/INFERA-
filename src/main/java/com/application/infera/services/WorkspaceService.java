@@ -38,7 +38,7 @@ public class WorkspaceService {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
             throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
         }
-        if (workspaceRepository.countByUser(user) > 8) {
+        if (workspaceRepository.countByUserAndDeletedAtIsNull(user) > 8) {
             // the limit applies to workspaces you OWN, not ones shared with you
             throw new WorkspaceLimitReachedException("Workspace Creation Limit Reached");
         }
@@ -117,10 +117,21 @@ public class WorkspaceService {
         activityService.log(user, ActivityType.WORKSPACE_UPDATED, workspace.getName(), workspace);
     }
 
-    // Delete a workspace — only if it belongs to this user
+    // Moves the workspace to the recycle bin. Notes, members and invitations are untouched,
+    // so a restore brings everything back.
     @Transactional
     public void deleteWorkspace(Long id, User user) {
         Workspace workspace = workspaceAccessService.requireWorkspace(id, user, WorkspaceRole.OWNER);
+        String name = workspace.getName();
+        if (workspaceRepository.softDelete(id, user, java.time.LocalDateTime.now()) == 0) {
+            throw new WorkspaceNotFoundException("Workspace not found");
+        }
+        // null workspace on purpose: the row must stay visible in the feed while the workspace is in the bin
+        activityService.log(user, ActivityType.WORKSPACE_DELETED, name, null);
+    }
+
+    // The old hard delete. NO CALLERS YET: step 5 will use it. Untested until then.
+    void purgeWorkspace(Workspace workspace) {
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
         var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
         drawingRepository.deleteAll(wsDrawings);
@@ -134,7 +145,7 @@ public class WorkspaceService {
         invitationRepository.deleteByWorkspace(workspace);
         workspaceMemberRepository.deleteAll(workspaceMemberRepository.findByWorkspace(workspace));
         workspaceRepository.delete(workspace);
-        activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
+//        activityService.log(user, ActivityType.WORKSPACE_DELETED, workspace.getName(), null);
     }
 
     // What one tile needs: my role, how many members, and the first few to draw as avatars
