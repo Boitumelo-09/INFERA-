@@ -65,7 +65,8 @@ public class NoteService {
     // matters: never trust a workspaceId alone, always confirm it's the
     // user's before touching anything that belongs to it.
     public List<Note> getNotesForWorkspace(Long workspaceId, User user) {
-        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.VIEWER);        return noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
+        Workspace workspace = workspaceAccessService.requireWorkspace(workspaceId, user, WorkspaceRole.VIEWER);
+        return noteRepository.findByWorkspaceAndDeletedAtIsNullOrderByUpdatedAtDesc(workspace);
     }
 
     // Count for dashboard stat card
@@ -98,16 +99,27 @@ public class NoteService {
     // Update — re-verifies both the note AND the (possibly new) target workspace belong to the user
 //
 
+    // Moves the note to the recycle bin. Its resources, drawings and tags are NOT touched,
+    // so a restore brings back everything.
+    @Transactional
     public void deleteNote(Long id, User user) {
         Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
         String title = note.getTitle();
         Workspace ws = note.getWorkspace();
 
+        if (noteRepository.softDelete(id, user, LocalDateTime.now()) == 0) {
+            throw new NoteNotFoundException("Note not found");   // someone else deleted it a moment ago
+        }
+        activityService.log(user, ActivityType.NOTE_DELETED, title, ws);
+    }
+
+    // The old hard delete. NO CALLERS YET: step 5 (purge job / empty bin) will use it. Untested until then.
+    void purgeNote(Note note) {
         resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
-        drawingRepository.deleteAll(drawingRepository.findByNote(note));        note.getTags().clear();
+        drawingRepository.deleteAll(drawingRepository.findByNote(note));
+        note.getTags().clear();
         noteRepository.save(note);
         noteRepository.delete(note);
-        activityService.log(user, ActivityType.NOTE_DELETED, title, ws);
     }
     public Long countAllNotes(){
         return noteRepository.count();
