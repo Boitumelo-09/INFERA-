@@ -1,0 +1,51 @@
+/* incaptur - legal.css (shared by privacy.html and terms.html) */
+
+:root {
+    --bg: #0b0e14; --accent: #b3b9c1; --text: #eef1f6;
+    --muted: #9aa2b1; --dim: #5c6373; --border: rgba(255,255,255,.1);
+    --display: 'Outfit', Georgia, serif;
+    --body: 'Inter', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font: 400 1rem/1.6 var(--body); overflow-x: clip; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+/* logo watermark, flat and quiet */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='38.5 26.5 132.5 147'%3E%3Cg fill='none' stroke='%23b3b9c1' stroke-width='13' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110'/%3E%3Cpath d='M94 127.5V98'/%3E%3C/g%3E%3Ccircle cx='94' cy='72' r='8' fill='%23b3b9c1'/%3E%3C/svg%3E") 92% 50% / auto 125vh no-repeat;
+    opacity: .06;
+}
+
+.shell { position: relative; z-index: 1; min-height: 100svh; display: flex; flex-direction: column; }
+.wrap { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* top bar */
+.bar { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 1.4rem var(--display); letter-spacing: .02em; color: var(--accent); }
+.brand svg { width: 26px; height: 29px; }
+.back { font-size: .88rem; font-weight: 500; color: var(--muted); padding: 8px 16px; border: 1px solid var(--border); border-radius: 10px; transition: color .2s, border-color .2s, background .2s; }
+.back:hover { color: var(--text); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.05); }
+
+/* content */
+.page { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 12px; padding-bottom: 24px; }
+.page h1 { font: 600 clamp(2rem, 4.4vw, 3rem)/1.1 var(--display); letter-spacing: -.015em; }
+.updated { font-size: .82rem; color: var(--dim); margin-top: 6px; }
+.intro { color: #c3c9d4; max-width: 62ch; margin-top: 14px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 40px; margin-top: 30px; }
+.grid section { border-top: 1px solid var(--border); padding-top: 14px; }
+.grid h2 { font: 600 1.05rem/1.2 var(--display); margin-bottom: 6px; }
+.grid p { font-size: .9rem; color: var(--muted); }
+.grid a { color: var(--accent); border-bottom: 1px solid rgba(179,185,193,.35); }
+.grid a:hover { border-color: var(--accent); }
+
+/* footer */
+.foot { text-align: center; font-size: .78rem; color: var(--dim); padding-top: 16px; padding-bottom: 18px; border-top: 1px solid var(--border); }
+
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 20px 28px; } }
+@media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; margin-top: 22px; }
+    body::before { background-position: 50% 40%; background-size: auto 90vh; opacity: .05; }
+}
