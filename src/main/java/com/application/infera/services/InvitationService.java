@@ -109,7 +109,7 @@ public class InvitationService {
     @Transactional(readOnly = true)
     public Optional<Invitation> previewByToken(String rawToken) {
         return invitationRepository.findWithDetailsByTokenHash(InvitationTokens.hash(rawToken))
-                .filter(i -> i.isPending(LocalDateTime.now()));
+                .filter(i -> i.isPending(LocalDateTime.now()) && !i.getWorkspace().isDeleted());
     }
 
     @Transactional(readOnly = true)
@@ -146,6 +146,9 @@ public class InvitationService {
         }
         Invitation invitation = invitationRepository.findWithDetailsById(invitationId)
                 .orElseThrow(InvitationInvalidException::new);
+        if (invitation.getWorkspace().isDeleted()) {
+            throw new InvitationInvalidException();   // workspace is in the bin: roll back the accept
+        }
         int inserted = workspaceMemberRepository.insertIfAbsent(invitation.getWorkspace().getId(), user.getId(),
                 invitation.getRole().name(), now);
         if (inserted == 1) {
