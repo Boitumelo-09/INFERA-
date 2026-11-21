@@ -1,0 +1,26 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="binModal(mode)">
+    <div class="modal fade infera-modal" th:id="${mode + 'BinModal'}" tabindex="-1" aria-hidden="true" th:attr="data-bin-mode=${mode}">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-trash2"></i> Recycle bin</h5>
+                    <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <p class="bin-sub mt-3" th:if="${mode == 'workspace'}">Notes deleted from a workspace. Owners and editors can restore them.</p>
+                <p class="bin-sub mt-3" th:if="${mode == 'global'}">Notes and workspaces you deleted from workspaces you own.</p>
+
+                <div class="bin-toolbar" th:if="${mode == 'workspace'}">
+                    <label class="form-label-custom" for="binWorkspaceSelect">Select workspace</label>
+                    <select id="binWorkspaceSelect" data-bin-select class="form-input form-select-custom">
+                        <option th:each="ws : ${editableWorkspaces}" th:value="${ws.id}" th:text="${ws.name}">Workspace</option>
+                    </select>
+                </div>
+
+                <div class="modal-body" data-bin-body></div>
+            </div>
+        </div>
+    </div>
+</th:block>
