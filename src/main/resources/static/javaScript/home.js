@@ -120,7 +120,7 @@ const FEATURES = [
     { tab: 'Workspaces', title: 'Workspaces you can share',
         body: 'Coursework, a side project, a job search, a novel, a team\'s research. Each one gets its own workspace with its own notes, resources and activity. Invite people in, give each one a role, and work on the same material without stepping on each other.' },
     { tab: 'Editor', title: 'A note editor that stays out of your way',
-        body: 'Markdown, math and code render cleanly as you write. Tag notes as you go, and incaptur suggests tags you have already used so your system stays consistent.',
+        body: 'Markdown, drawings and code render cleanly as you write. Tag notes as you go, and incaptur suggests tags you have already used so your system stays consistent.',
         tags: ['#science', '#business', '#maths'] },
     { tab: 'Resources', title: 'A resource library with context',
         body: 'Save articles, docs and videos with real context attached: which workspace they belong to, which notes mention them, and why you saved them in the first place.' },
