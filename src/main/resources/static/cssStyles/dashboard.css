@@ -358,7 +358,6 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 }
 .nav-item.active {
     background: transparent;
-    /*color: #fb923c;*/
     color: var(--text);
     border: 1px solid var(--accent);
 }
@@ -387,7 +386,6 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 
 .nav-item.active .nav-badge
 {
-    /*background: var(--bg);*/
     color: var(--muted);
 }
 
@@ -645,74 +643,7 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
     flex-shrink: 0;
 }
 
-/* ─── STAT CARDS ────────────────────── */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-}
-.stat-card {
 
-    border-radius: var(--radius);
-    padding: 20px 20px 16px;
-    transition: border-color 0.25s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-.stat-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
-    pointer-events: none;
-}
-.stat-card:hover { border-color: var(--accent-hover); transform: translateY(-3px); }
-.sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.sc-icon {
-    width: 38px; height: 38px;
-    border-radius: 9px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
-}
-
-.sc-icon.ws {
-
-    color: var(--accent);
-}
-
-.sc-icon.notes {
-
-    color: #818cf8;
-}
-
-.sc-icon.resources {
-
-    color: #34d399;
-}
-
-.sc-icon.tags {
-
-    color: #fbbf24;
-}
-.sc-trend {
-    font-size: 0.62rem;
-    font-weight: 600;
-    display: flex; align-items: center; gap: 1px;
-    border-radius: 99px;
-    padding: 2px 8px;
-}
-
-
-
-.sc-value {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--muted);
-    line-height: 1;
-    margin-bottom: 4px;
-}
-.sc-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
 
 /* ─── DASHBOARD GRID ────────────────── */
 .dash-grid {
