@@ -1,6 +1,7 @@
 package com.application.infera.services;
 
 
+import com.application.infera.config.RecycleBinProperties;
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.enums.ActivityType;
 import com.application.infera.enums.WorkspaceRole;
@@ -31,6 +32,7 @@ public class WorkspaceService {
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceAccessService workspaceAccessService;
     private final InvitationRepository invitationRepository;
+    private final RecycleBinProperties recycleBinProperties;
 
     // Create a new workspace linked to the logged-in user
     @Transactional
@@ -128,6 +130,26 @@ public class WorkspaceService {
         }
         // null workspace on purpose: the row must stay visible in the feed while the workspace is in the bin
         activityService.log(user, ActivityType.WORKSPACE_DELETED, name, null);
+    }
+
+    // Brings a workspace back from the bin (OWNER only). Notes, members and invitations were never touched,
+    // so they all return with it. Refused at the 9-workspace limit, same rule as createWorkspace.
+    // Returns the name for the toast.
+    @Transactional
+    public String restoreWorkspace(Long id, User user) {
+        java.time.LocalDateTime cutoff = recycleBinProperties.cutoff();
+        Workspace workspace = workspaceAccessService.requireDeletedWorkspace(id, user, WorkspaceRole.OWNER, cutoff);
+        String name = workspace.getName();
+
+        if (workspaceRepository.countByUserAndDeletedAtIsNull(user) > 8) {
+            throw new WorkspaceLimitReachedException("You've reached the limit of 9 workspaces. Delete one before restoring \"" + name + "\".");
+        }
+        if (workspaceRepository.restore(id, cutoff) == 0) {
+            throw new WorkspaceNotFoundException("That workspace is no longer in the bin.");
+        }
+        // null workspace on purpose: mirrors WORKSPACE_DELETED, so members never see "restored" for something they never saw deleted
+        activityService.log(user, ActivityType.WORKSPACE_RESTORED, name, null);
+        return name;
     }
 
     // The old hard delete. NO CALLERS YET: step 5 will use it. Untested until then.
