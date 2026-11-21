@@ -23,6 +23,12 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
 
     Optional<WorkspaceMember> findByIdAndWorkspace(Long id, Workspace workspace);
 
+    // Sets the caller's own favourite flag. 0 rows = the user isn't a member of that workspace
+    @Modifying
+    @Query("UPDATE WorkspaceMember m SET m.favorite = :favorite WHERE m.workspace.id = :workspaceId AND m.user = :user")
+    int updateFavorite(@Param("workspaceId") Long workspaceId, @Param("user") User user,
+                       @Param("favorite") boolean favorite);
+
     // Atomic role change: the owner row can never match; the count tells us if anything changed
     @Modifying
     @Query("UPDATE WorkspaceMember m SET m.role = :role WHERE m.id = :memberId AND m.workspace = :workspace AND m.role <> :owner")
