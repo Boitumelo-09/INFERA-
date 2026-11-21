@@ -55,6 +55,11 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     int softDelete(@Param("id") Long id, @Param("user") User user,
                    @Param("now") java.time.LocalDateTime now);
 
-
+    // Recycle bin restore: atomic, same shape as softDelete. 0 rows = not in the bin, or expired.
+    // Children (notes, members, invitations) were never touched, so nothing else needs restoring.
+    @Modifying
+    @Query("UPDATE Workspace w SET w.deletedAt = NULL, w.deletedBy = NULL " +
+            "WHERE w.id = :id AND w.deletedAt IS NOT NULL AND w.deletedAt > :cutoff")
+    int restore(@Param("id") Long id, @Param("cutoff") java.time.LocalDateTime cutoff);
 
 }
