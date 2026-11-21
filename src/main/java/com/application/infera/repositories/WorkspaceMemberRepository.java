@@ -18,7 +18,7 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     List<WorkspaceMember> findByWorkspace(Workspace workspace);
     List<WorkspaceMember> findByUser(User user);
 
-    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace WHERE m.user = :user")
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w WHERE m.user = :user AND w.deletedAt IS NULL")
     List<WorkspaceMember> findAllByUserWithWorkspace(@Param("user") User user);
 
     Optional<WorkspaceMember> findByIdAndWorkspace(Long id, Workspace workspace);
@@ -62,20 +62,22 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
                        @Param("role") String role, @Param("createdAt") java.time.LocalDateTime createdAt);
 
     // The single lookup behind every access check: this user's membership in this workspace, if any
-    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace " +
-            "WHERE m.workspace.id = :workspaceId AND m.user = :user")
+    @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
+            "WHERE w.id = :workspaceId AND m.user = :user AND w.deletedAt IS NULL")
     Optional<WorkspaceMember> findMembership(@Param("workspaceId") Long workspaceId,
                                              @Param("user") User user);
 
     // Same lookup, starting from a note id: the user's membership in the workspace that note lives in
     @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
-            "WHERE m.user = :user AND w.id = (SELECT n.workspace.id FROM Note n WHERE n.id = :noteId)")
+            "WHERE m.user = :user AND w.deletedAt IS NULL " +
+            "AND w.id = (SELECT n.workspace.id FROM Note n WHERE n.id = :noteId AND n.deletedAt IS NULL)")
     Optional<WorkspaceMember> findMembershipForNote(@Param("noteId") Long noteId,
                                                     @Param("user") User user);
 
     // Same lookup, starting from a resource id (resource -> its note -> that note's workspace)
     @Query("SELECT m FROM WorkspaceMember m JOIN FETCH m.workspace w " +
-            "WHERE m.user = :user AND w.id = (SELECT r.note.workspace.id FROM Resource r WHERE r.id = :resourceId)")
+            "WHERE m.user = :user AND w.deletedAt IS NULL " +
+            "AND w.id = (SELECT r.note.workspace.id FROM Resource r WHERE r.id = :resourceId AND r.note.deletedAt IS NULL)")
     Optional<WorkspaceMember> findMembershipForResource(@Param("resourceId") Long resourceId,
                                                         @Param("user") User user);
 }
