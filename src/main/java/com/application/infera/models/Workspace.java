@@ -2,6 +2,7 @@ package com.application.infera.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@DynamicUpdate   // write only changed columns, so a rename can't overwrite deleted_at
 @Table(name = "workspaces")
 public class Workspace {
 
