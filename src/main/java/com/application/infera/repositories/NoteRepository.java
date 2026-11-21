@@ -66,8 +66,15 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     int softDelete(@Param("id") Long id, @Param("user") User user,
                    @Param("now") java.time.LocalDateTime now);
 
-    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)
+    // Recycle bin restore: atomic. Only a note that is in the bin AND not expired matches, so a second click,
+    // a concurrent restore, or an expiry between the gate and this UPDATE returns 0 rows.
+    // Bumps the version so a tab still holding the pre-delete version can't autosave over the restored note.
     @Modifying
+    @Query("UPDATE Note n SET n.deletedAt = NULL, n.deletedBy = NULL, n.version = n.version + 1 " +
+            "WHERE n.id = :id AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff")
+    int restore(@Param("id") Long id, @Param("cutoff") java.time.LocalDateTime cutoff);
+
+    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)    @Modifying
     @Query("UPDATE Note n SET n.updatedAt = :now WHERE n.id = :id")
     int touch(@Param("id") Long id, @Param("now") java.time.LocalDateTime now);
 }
