@@ -3,76 +3,81 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Terms &amp; Conditions - INCAPTUR</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <title>Terms &amp; conditions | incaptur</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/static/cssStyles/home.css" th:href="@{/cssStyles/home.css}" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/cssStyles/legal.css" th:href="@{/cssStyles/legal.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
     <link rel="icon" type="image/svg+xml" href="/static/favicons/favicon.svg" th:href="@{/favicons/favicon.svg}">
     <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" th:href="@{/favicons/apple-touch-icon.png}">
     <link rel="manifest" href="/static/favicons/site.webmanifest" th:href="@{/favicons/site.webmanifest}">
-    <meta name="theme-color" content="#161b22"></head>
+    <meta name="theme-color" content="#0b0e14">
+</head>
 <body>
+<div class="shell">
 
-<nav class="infera-nav scrolled">
-    <div class="nav-inner">
+    <header class="wrap bar">
         <a class="brand" th:href="@{/home}" href="home.html">
-            <span class="logo-mark">
-               <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
-    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V104" fill="none" stroke="currentColor" stroke-width="13"/>
-    <path d="M94 134V92M94 110C94 94 106 86 120 86C134 86 142 96 142 110" fill="none" stroke="currentColor" stroke-width="13"/>
-    <circle cx="94" cy="72" r="8" fill="currentColor"/>
-</svg>
-            </span>
-            <span class="brand-name">INCAPTUR</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="38.5 26.5 132.5 147" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M162.4 60.6A64 64 0 1 0 112 164C132 164 142 156 142 140V110C142 96 134 86 120 86C106 86 94 94 94 110"/>
+                    <path d="M94 127.5V98"/>
+                </g>
+                <circle cx="94" cy="72" r="8" fill="currentColor"/>
+            </svg>
+            <span>incaptur</span>
         </a>
-        <a th:href="@{/home}" href="home.html" class="btn-ghost">Back to home</a>
-    </div>
-</nav>
+        <a th:href="@{/home}" href="home.html" class="back">Back to home</a>
+    </header>
 
-<main class="container-narrow">
-    <div class="legal-page">
-        <h1>Terms &amp; Conditions</h1>
-        <p class="legal-updated">Last updated: August 2026</p>
+    <main class="wrap page">
+        <h1>Terms &amp; conditions</h1>
+        <p class="updated">Last updated: November 2026</p>
+        <p class="intro">These terms cover your use of incaptur. By creating an account, you agree to them.</p>
 
-        <p>These terms cover your use of INCAPTUR. By creating an account, you agree to them.</p>
+        <div class="grid">
+            <section>
+                <h2>Your account</h2>
+                <p>You are responsible for the information on your account and for keeping your sign-in methods secure. You must be legally able to enter into these terms.</p>
+            </section>
+            <section>
+                <h2>Your content</h2>
+                <p>What you write and save is yours. incaptur stores it and shows it back to you, and we claim no ownership over it.</p>
+            </section>
+            <section>
+                <h2>Working with others</h2>
+                <p>Content you add to a shared workspace is visible to its members. Invite people with care and give them only the access they need.</p>
+            </section>
+            <section>
+                <h2>Acceptable use</h2>
+                <p>Please do not store illegal content, try to access another person's account or data, or disrupt the service.</p>
+            </section>
+            <section>
+                <h2>Availability</h2>
+                <p>incaptur is under active development. Features may change and the service may be briefly unavailable during updates. We aim to keep that to a minimum.</p>
+            </section>
+            <section>
+                <h2>Deleting your account</h2>
+                <p>You can delete your account at any time from Settings. This permanently removes your data and cannot be reversed.</p>
+            </section>
+            <section>
+                <h2>Changes to these terms</h2>
+                <p>If these terms change in a meaningful way, we will update the date at the top of this page.</p>
+            </section>
+            <section>
+                <h2>Contact</h2>
+                <p>Questions can be sent to <a href="mailto:belmiredub4@gmail.com">belmiredub4@gmail.com</a>.</p>
+            </section>
+        </div>
+    </main>
 
-        <h2>Your account</h2>
-        <p>You're responsible for the accuracy of the information on your account and for keeping your password secure. You must be able to legally enter into these terms to use INFERA.</p>
+    <footer class="wrap foot">
+        &copy; <span id="year"></span> incaptur.co.za. All rights reserved.
+    </footer>
 
-        <h2>Your content</h2>
-        <p>Notes, resources, and workspaces you create are yours. INCAPTUR stores and displays them back to you; we don't claim ownership over anything you write or save.</p>
-
-        <h2>Acceptable use</h2>
-        <ul>
-            <li>Don't use INCAPTUR to store or distribute illegal content.</li>
-            <li>Don't attempt to access another user's account or data.</li>
-            <li>Don't attempt to disrupt or overload the service.</li>
-        </ul>
-
-        <h2>Availability</h2>
-        <p>INCAPTUR is under active development. Features may change, and the service may occasionally be unavailable during updates. We'll aim to keep disruption to a minimum.</p>
-
-        <h2>Account deletion</h2>
-        <p>You can delete your account at any time from Settings. This permanently removes your resources, notes, tags, activity history, and workspaces, and can't be reversed.</p>
-
-        <h2>Changes to these terms</h2>
-        <p>If these terms change in a meaningful way, we'll update the date at the top of this page.</p>
-
-        <h2>Contact</h2>
-        <p>Questions can be sent to <a th:href="'mailto:belmiredub4@gmail.com'" href="mailto:belmiredub4@gmail.com" style="color: var(--accent);">belmiredub4@gmail.com</a>.</p>
-    </div>
-</main>
-
-<footer class="infera-footer" style="margin-top: 0;">
-    <div class="container-narrow footer-bottom" style="border-top: none;">
-        <span class="footer-copy">&copy; <span id="year"></span> incaptur.co.za | All rights reserved.</span>
-    </div>
-</footer>
-
+</div>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
