@@ -1,0 +1,43 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="binPanel">
+
+    <div class="bin-empty" th:if="${#lists.isEmpty(items)}">
+        <i class="bi bi-recycle"></i>
+        <p>The bin is empty.</p>
+    </div>
+
+    <ul class="bin-list" th:unless="${#lists.isEmpty(items)}">
+        <li class="bin-item" th:each="i : ${items}" th:style="'--ws-color:' + ${i.workspaceColor()}">
+            <div class="bin-icon">
+                <i class="bi" th:classappend="${i.isNote()} ? 'bi-journal-text' : 'bi-folder2-open'"></i>
+            </div>
+
+            <div class="bin-main">
+                <div class="bin-title" th:text="${i.title()}">Title</div>
+                <div class="bin-meta">
+                    <span class="bin-ws" th:if="${global and i.isNote()}" th:text="${i.workspaceName()}">Workspace</span>
+                    <span class="bin-ws" th:if="${i.isNote() == false}">Workspace</span>
+                    <span>
+                        Deleted by <strong th:text="${i.deletedBy()}">you</strong>
+                        · <span th:text="${#temporals.format(i.deletedAt(), 'dd MMM, HH:mm')}">01 Jan, 09:00</span>
+                    </span>
+                    <span class="bin-left" th:classappend="${i.daysLeft() <= 1} ? 'urgent'"
+                          th:text="${i.daysLeft() <= 1 ? 'Last day' : i.daysLeft() + ' days left'}">5 days left</span>
+                </div>
+            </div>
+
+            <form method="post" class="bin-restore-form"
+                  th:action="${i.isNote()} ? @{/bin/notes/{id}/restore(id=${i.id()})} : @{/bin/workspaces/{id}/restore(id=${i.id()})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="returnTo" th:value="${returnTo}" />
+                <button type="submit" class="btn-modal-ghost bin-restore-btn">
+                    <i class="bi bi-arrow-counterclockwise"></i> Restore
+                </button>
+            </form>
+        </li>
+    </ul>
+
+    <p class="bin-note">
+        Items are permanently deleted <span th:text="${retentionDays}">5</span> days after they're moved to the bin.
+        <span th:if="${global}">Notes deleted by editors in your workspaces appear in that workspace's bin, not here.</span>
+    </p>
+</th:block>
