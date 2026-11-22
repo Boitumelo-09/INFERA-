@@ -94,7 +94,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             "WHERE n.id = :id AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff")
     int restore(@Param("id") Long id, @Param("cutoff") java.time.LocalDateTime cutoff);
 
-    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)    @Modifying
+    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)
+    @Modifying
     @Query("UPDATE Note n SET n.updatedAt = :now WHERE n.id = :id")
     int touch(@Param("id") Long id, @Param("now") java.time.LocalDateTime now);
 }
