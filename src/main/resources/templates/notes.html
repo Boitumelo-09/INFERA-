@@ -56,9 +56,6 @@
             <button class="topbar-icon-btn" id="topbarSearch" aria-label="Search">
                 <i class="bi bi-search"></i>
             </button>
-            <button type="button" class="topbar-icon-btn" data-bin-open="workspace">
-                <i class="bi bi-recycle"></i>
-            </button>
             <div class="topbar-right d-flex align-items-center gap-2 gap-sm-3">
                 <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="topbar-avatar-img"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
@@ -170,7 +167,7 @@
                                 <i class="bi bi-archive"></i> Archive
                             </button>
                             <button th:if="${note.archived == true && role.name() =='OWNER'} " class="ws-menu-item note-unarchive-trigger">
-                                <i class="bi bi-archive-fill"></i> Restore
+                                <i class="bi bi-archive-fill"></i> Unarchive
                             </button>
                             <button class="ws-menu-item note-view-trigger">
                                 <i class="bi bi-eye"></i> View
@@ -347,7 +344,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Delete Note</h5>
+                <h5 class="modal-title">Move Note to Bin</h5>
                 <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -355,7 +352,9 @@
             <div class="modal-body">
                 <div class="delete-warning">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <p>So you really wanna get rid of <strong id="deleteNoteTitle"></strong> permanently? This can't be undone.</p>
+                    <p>Move <strong id="deleteNoteTitle"></strong> to the recycle bin? You can restore it, with its drawings, resources and tags, for
+                        <span th:text="${binRetentionDays == 1 ? '1 day' : binRetentionDays + ' days'}">5 days</span>.
+                        After that it is deleted permanently.</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -363,7 +362,7 @@
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn-modal-danger">
-                        <i class="bi bi-trash"></i> Delete permanently
+                        <i class="bi bi-trash"></i> Move to bin
                     </button>
                 </form>
             </div>
@@ -467,7 +466,7 @@
             <div class="modal-body">
                 <div class="delete-warning">
                     <i class="bi bi-exclamation-triangle"></i>
-                    <p>Delete <strong id="deleteResourceTitle">this resource</strong> permanently? This cannot be undone.</p>
+                    <p>Delete <strong id="deleteResourceTitle">this resource</strong> permanently? Resources are not kept in the recycle bin, so this cannot be undone, even if the note is deleted and restored later.</p>
                 </div>
             </div>
             <div class="modal-footer">
