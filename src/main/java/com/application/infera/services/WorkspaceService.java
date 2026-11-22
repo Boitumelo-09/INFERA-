@@ -162,8 +162,9 @@ public class WorkspaceService {
         return name;
     }
 
-    // The old hard delete. NO CALLERS YET: step 5 will use it. Untested until then.
-    void purgeWorkspace(Workspace workspace) {
+    // The permanent delete. Callers (RecycleBinPurgeService) must already hold a lock on the workspace row
+    // inside a transaction, so a concurrent restore can't race with it.
+    public void purgeWorkspace(Workspace workspace) {
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
         var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
         drawingRepository.deleteAll(wsDrawings);
