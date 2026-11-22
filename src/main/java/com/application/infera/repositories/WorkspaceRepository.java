@@ -40,6 +40,9 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     // Check if a workspace name already exists for this user
     boolean existsByNameAndUser(String name, User user);
 
+    // Same, but only workspaces NOT in the bin: tells "you have it" apart from "it is in your bin"
+    boolean existsByNameAndUserAndDeletedAtIsNull(String name, User user);
+
 
     // Workspaces this user owns that also have at least one OTHER member
     @Query("SELECT w FROM Workspace w WHERE w.user = :user AND w.deletedAt IS NULL AND EXISTS " +
