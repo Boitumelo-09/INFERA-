@@ -1,5 +1,6 @@
 package com.application.infera.controllers;
 
+import com.application.infera.config.RecycleBinProperties;
 import com.application.infera.dtos.requests.WorkspaceRequest;
 import com.application.infera.exception.WorkspaceAlreadyExistExeption;
 import com.application.infera.exception.WorkspaceLimitReachedException;
@@ -27,10 +28,9 @@ public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
     private final NoteService noteService;
-    private final ResourceService resourceService;
     private final CurrentUserService currentUserService;
     private final InvitationService invitationService;
-
+    private final RecycleBinProperties recycleBinProperties;
 
     // GET /workspaces — show all workspaces for the logged-in user
     @GetMapping
@@ -44,6 +44,7 @@ public class WorkspaceController {
         model.addAttribute("workspaces", workspaces);
         model.addAttribute("user", user);
         model.addAttribute("workspaceRequest", new WorkspaceRequest());
+        model.addAttribute("binRetentionDays", recycleBinProperties.getRetentionDays());
         model.addAttribute("wsNoteCount", noteService.getNoteCountsByWorkspace(user));
         model.addAttribute("tileMembers", workspaceService.getTileMembers(workspaces, user));
         model.addAttribute("pendingInvitations", invitationService.pendingForUser(user));
