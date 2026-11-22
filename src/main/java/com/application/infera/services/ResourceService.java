@@ -13,6 +13,7 @@ import com.application.infera.models.User;
 import com.application.infera.repositories.ResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class ResourceService {
 
     // Create — note ownership is verified BEFORE the resource is built,
     // same principle as NoteService checking workspace ownership first
+    @Transactional
     public void createResource(ResourceRequest request, User user) {
         Note note = noteService.getNoteForUser(request.getNoteId(), user, WorkspaceRole.EDITOR);
         if(note.isArchived()){
@@ -61,7 +63,7 @@ public class ResourceService {
     public Resource getResourceForUser(Long id, User user, WorkspaceRole minimum) {
         return workspaceAccessService.requireResource(id, user, minimum);
     }
-
+@Transactional
     public void updateResource(Long id, ResourceRequest request, User user) {
         Resource resource = getResourceForUser(id, user, WorkspaceRole.EDITOR);
         if(resource.getNote().isArchived()){
@@ -76,7 +78,7 @@ public class ResourceService {
         noteService.touchNote(resource.getNote());
         activityService.log(user, ActivityType.RESOURCE_UPDATED, resource.getTitle(), resource.getNote().getWorkspace());
     }
-
+@Transactional
     public void deleteResource(Long id, User user) {
         Resource resource = getResourceForUser(id, user, WorkspaceRole.EDITOR);
         Note note = resource.getNote();
