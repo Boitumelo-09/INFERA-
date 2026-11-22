@@ -1,5 +1,6 @@
 package com.application.infera.controllers;
 
+import com.application.infera.config.RecycleBinProperties;
 import com.application.infera.dtos.requests.NoteRequest;
 import com.application.infera.enums.WorkspaceRole;
 import com.application.infera.exception.NoteArchiveException;
@@ -31,7 +32,7 @@ public class NoteController {
     private final WorkspaceService workspaceService;
     private final ResourceService resourceService;
     private final CurrentUserService currentUserService;
-
+    private final RecycleBinProperties recycleBinProperties;
     // GET /notes — show all notes across all the user's workspaces
     @GetMapping
     public String listNotes(@AuthenticationPrincipal Object principal, Model model) {
@@ -45,6 +46,7 @@ public class NoteController {
         model.addAttribute("user", user);
         model.addAttribute("notes", notes);
         model.addAttribute("noteCount", notes.size());
+        model.addAttribute("binRetentionDays", recycleBinProperties.getRetentionDays());
 
         model.addAttribute("editableWorkspaceIds", editableIds);
         model.addAttribute("workspaceRoles", workspaceRoles);
@@ -143,7 +145,7 @@ public class NoteController {
         if (user == null) return "redirect:/auth";
         try {
               noteService.setUnarchived(id,user);
-              redirectAttributes.addFlashAttribute("successMessage", "Note restored.");
+            redirectAttributes.addFlashAttribute("successMessage", "Note unarchived.");
           } catch (NoteArchiveException e) {
               redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
           }

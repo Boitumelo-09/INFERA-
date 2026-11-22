@@ -38,7 +38,7 @@ public class WorkspaceService {
     @Transactional
     public void createWorkspace(WorkspaceRequest request, User user) {
         if (workspaceRepository.existsByNameAndUser(request.getName(), user)) {
-            throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
+            throw new WorkspaceAlreadyExistExeption(nameTakenMessage(request.getName(), user));
         }
         if (workspaceRepository.countByUserAndDeletedAtIsNull(user) > 8) {
             // the limit applies to workspaces you OWN, not ones shared with you
@@ -62,6 +62,14 @@ public class WorkspaceService {
 
         activityService.log(user, ActivityType.WORKSPACE_CREATED, workspace.getName(), workspace);
 
+    }
+
+    // The name is already taken (existsByNameAndUser sees the bin). Say WHY: a live workspace, or one in the bin.
+    private String nameTakenMessage(String name, User user) {
+        if (workspaceRepository.existsByNameAndUserAndDeletedAtIsNull(name, user)) {
+            return "You already have a workspace named \"" + name + "\"";
+        }
+        return "A workspace named \"" + name + "\" is in your recycle bin. Restore it, or pick a different name.";
     }
 
     // Get all workspaces for a user
@@ -110,7 +118,7 @@ public class WorkspaceService {
         // If renaming, make sure the new name isn't already taken by another workspace
         boolean nameChanged = !workspace.getName().equalsIgnoreCase(request.getName());
         if (nameChanged && workspaceRepository.existsByNameAndUser(request.getName(), user)) {
-            throw new WorkspaceAlreadyExistExeption("You already have a workspace named \"" + request.getName() + "\"");
+            throw new WorkspaceAlreadyExistExeption(nameTakenMessage(request.getName(), user));
         }
 
         workspace.setName(request.getName());
@@ -154,8 +162,9 @@ public class WorkspaceService {
         return name;
     }
 
-    // The old hard delete. NO CALLERS YET: step 5 will use it. Untested until then.
-    void purgeWorkspace(Workspace workspace) {
+    // The permanent delete. Callers (RecycleBinPurgeService) must already hold a lock on the workspace row
+    // inside a transaction, so a concurrent restore can't race with it.
+    public void purgeWorkspace(Workspace workspace) {
         var wsNotes = noteRepository.findByWorkspaceOrderByUpdatedAtDesc(workspace);
         var wsDrawings = drawingRepository.findDrawingByNote_Workspace(workspace);
         drawingRepository.deleteAll(wsDrawings);

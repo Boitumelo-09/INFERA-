@@ -59,6 +59,18 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             Collection<Workspace> workspaces2, String contentQuery);
 
     long countByWorkspace_User(User user);
+
+    // PURGE: ids only (no TEXT columns), oldest first, capped by the Pageable
+    @Query("SELECT n.id FROM Note n WHERE n.deletedAt IS NOT NULL AND n.deletedAt <= :before ORDER BY n.deletedAt ASC")
+    List<Long> findDeletedBeforeIds(@Param("before") java.time.LocalDateTime before,
+                                    org.springframework.data.domain.Pageable pageable);
+
+    // PURGE: locks the row AND re-checks it is still in the bin. A restore that committed first makes
+    // this return empty, so the note survives. Must run inside a transaction.
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT n FROM Note n WHERE n.id = :id AND n.deletedAt IS NOT NULL AND n.deletedAt <= :before")
+    Optional<Note> lockDeletedBefore(@Param("id") Long id,
+                                     @Param("before") java.time.LocalDateTime before);
     // Recycle bin: atomic. Bumps the version on purpose so an in-flight autosave of the same note
     // fails with a conflict instead of writing deleted_at back to NULL. 0 rows = already in the bin.
     @Modifying
@@ -94,7 +106,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
             "WHERE n.id = :id AND n.deletedAt IS NOT NULL AND n.deletedAt > :cutoff")
     int restore(@Param("id") Long id, @Param("cutoff") java.time.LocalDateTime cutoff);
 
-    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)    @Modifying
+    // Bulk UPDATE: changes only updated_at and leaves the version alone (see NoteService.touchNote)
+    @Modifying
     @Query("UPDATE Note n SET n.updatedAt = :now WHERE n.id = :id")
     int touch(@Param("id") Long id, @Param("now") java.time.LocalDateTime now);
 }

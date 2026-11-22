@@ -40,6 +40,20 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     // Check if a workspace name already exists for this user
     boolean existsByNameAndUser(String name, User user);
 
+    // PURGE: ids only, oldest first, capped by the Pageable
+    @Query("SELECT w.id FROM Workspace w WHERE w.deletedAt IS NOT NULL AND w.deletedAt <= :before ORDER BY w.deletedAt ASC")
+    List<Long> findDeletedBeforeIds(@Param("before") java.time.LocalDateTime before,
+                                    org.springframework.data.domain.Pageable pageable);
+
+    // PURGE: locks the row AND re-checks it is still in the bin (see NoteRepository.lockDeletedBefore)
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT w FROM Workspace w WHERE w.id = :id AND w.deletedAt IS NOT NULL AND w.deletedAt <= :before")
+    Optional<Workspace> lockDeletedBefore(@Param("id") Long id,
+                                          @Param("before") java.time.LocalDateTime before);
+
+    // Same, but only workspaces NOT in the bin: tells "you have it" apart from "it is in your bin"
+    boolean existsByNameAndUserAndDeletedAtIsNull(String name, User user);
+
 
     // Workspaces this user owns that also have at least one OTHER member
     @Query("SELECT w FROM Workspace w WHERE w.user = :user AND w.deletedAt IS NULL AND EXISTS " +
