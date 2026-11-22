@@ -131,8 +131,9 @@ public class NoteService {
         return title;
     }
 
-    // The old hard delete. NO CALLERS YET: step 5 (purge job / empty bin) will use it. Untested until then.
-    void purgeNote(Note note) {
+    // The permanent delete. Callers (RecycleBinPurgeService) must already hold a lock on the note row
+    // inside a transaction, so a concurrent restore can't race with it.
+ public void purgeNote(Note note) {
         resourceRepository.deleteAll(resourceRepository.findByNoteOrderByCreatedAtDesc(note));
         drawingRepository.deleteAll(drawingRepository.findByNote(note));
         note.getTags().clear();
