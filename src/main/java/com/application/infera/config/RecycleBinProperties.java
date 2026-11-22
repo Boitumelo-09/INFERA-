@@ -17,6 +17,9 @@ public class RecycleBinProperties {
 
     private int retentionDays = 5;
 
+    // Max items purged per type per run; anything beyond that waits for the next run
+    private int purgeBatchSize = 200;
+
     // Anything deleted at or before this moment is expired: hidden from the bin, not restorable, due for purge
     public LocalDateTime cutoff() {
         return LocalDateTime.now().minusDays(retentionDays);
