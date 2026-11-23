@@ -614,7 +614,7 @@
     overflow-y: auto;
     border-left: 1px solid transparent;
     border-top: none;
-    background: var(--card);
+    background: var(--bg);
     padding: 64px 0 24px;
     margin: 0;
     opacity: 0;
@@ -1181,18 +1181,18 @@
     align-items: center;
     gap: 6px;
     color: var(--ws-color, var(--accent));
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
+    background: transparent;
     border: 1px solid color-mix(in srgb, var(--ws-color, var(--accent)) 14%, transparent);
     border-radius: 8px;
     padding: 6px 14px;
     font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: color 0.2s;
 }
 
 .btn-add-resource:hover {
-    background: color-mix(in srgb, var(--ws-color, var(--accent)) 20%, transparent);
+    color: color-mix(in srgb, var(--ws-color, var(--accent)) 54%, transparent)
 }
 
 .vnr-empty {
@@ -1535,6 +1535,6 @@
             color-mix(in srgb, var(--muted) 28%, transparent) 32px);
 }
 .view-drawing[data-mode="HANDWRITING"] img { height: auto; }
-.deleteButtonCancel{
+.deleteButtonCancel,#deleteButtonCancel{
     margin-top: 20px;
 }
