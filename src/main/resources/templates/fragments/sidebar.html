@@ -46,7 +46,7 @@
                     <i class="bi bi-trash2"></i><span>Bin</span></button></li>
             </ul>
             <th:block th:if="${active == 'dashboard' and favoriteWorkspaces != null}">
-                <div class="nav-section-label mt-3">Pinned workspaces</div>
+                <div class="nav-section-label mt-3">Favorite workspaces</div>
                 <ul class="nav-list" id="workspaceList">
                     <li th:each="ws : ${favoriteWorkspaces}">
                         <a th:href="@{/workspaces}" class="nav-item ws-item">
