@@ -69,23 +69,28 @@
 .bin-count { font-size: 0.78rem; color: var(--muted); }
 
 .bin-empty-trigger {
-    display: inline-flex; align-items: center; gap: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: none;
-    border: 1px solid rgba(239, 68, 68, 0.35);
-    color: #f87171;
+    border: none;
+    color: red;
     border-radius: 8px;
-    padding: 5px 12px;
+    padding: 2px 5px;
     font-size: 0.78rem;
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
 }
 .bin-empty-trigger:hover,
-.bin-empty-trigger[aria-expanded="true"] { border-color: #dc2626; color: #fca5a5; }
+.bin-empty-trigger[aria-expanded="true"] { border-color: #dc2626; color: darkred; }
 
 .bin-empty-confirm {
-    display: flex; flex-direction: column; gap: 12px;
-    margin: 12px 0 0; padding: 12px;
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    display: flex;
+    flex-direction: column;
+    /* gap: 12px; */
+    margin: 12px 0 0;
+    /* padding: 12px; */
+    /* border: 1px solid rgba(239, 68, 68, 0.35); */
     border-radius: 10px;
 }
 .bin-empty-confirm[hidden] { display: none; }          /* a class with display:flex would otherwise beat the hidden attribute */
@@ -96,6 +101,11 @@
 
 .bin-empty-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .bin-empty-actions button:disabled { opacity: 0.5; cursor: default; }
+
+.emptyButtonCancel{
+    margin-top:20px;
+}
+
 
 @media (max-width: 576px) {
     .bin-empty-actions > * { flex: 1; justify-content: center; }

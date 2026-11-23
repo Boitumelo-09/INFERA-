@@ -340,7 +340,7 @@
                 <!-- action is rewritten by JS to /workspaces/{id}/delete before submit -->
                 <form method="post" id="deleteWorkspaceForm" style="margin:0;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modal-ghost deleteButtonCancel" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn-modal-danger">
                         <i class="bi bi-trash"></i> Move to bin
                     </button>

@@ -2734,3 +2734,9 @@ white-space: nowrap;
     font-size: 0;          /* hides the number, keeps the dot */
     border-radius: 50%;
 }
+.modal-footer form{
+    display: flex;
+    margin-top: 0;
+    gap:6px;
+    justify-content: space-between;
+}
