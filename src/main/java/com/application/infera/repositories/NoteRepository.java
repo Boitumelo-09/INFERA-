@@ -5,6 +5,7 @@ import com.application.infera.models.Note;
 import com.application.infera.models.User;
 import com.application.infera.models.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,9 +66,21 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Long> findDeletedBeforeIds(@Param("before") java.time.LocalDateTime before,
                                     org.springframework.data.domain.Pageable pageable);
 
+    // EMPTY BIN, workspace: every note of one workspace in the bin, deleted at or before the moment the panel was rendered
+    @Query("SELECT n.id FROM Note n WHERE n.workspace.id = :workspaceId AND n.deletedAt IS NOT NULL " +
+            "AND n.deletedAt <= :asOf ORDER BY n.deletedAt ASC")
+    List<Long> findBinnedIdsByWorkspaceBefore(@Param("workspaceId") Long workspaceId,
+                                              @Param("asOf") java.time.LocalDateTime asOf);
+
+    // EMPTY BIN, personal: same scope as the personal bin panel (notes I deleted, in LIVE workspaces I own)
+    @Query("SELECT n.id FROM Note n JOIN n.workspace w WHERE n.deletedBy = :user AND w.user = :user AND w.deletedAt IS NULL " +
+            "AND n.deletedAt IS NOT NULL AND n.deletedAt <= :asOf ORDER BY n.deletedAt ASC")
+    List<Long> findBinnedIdsDeletedByOwnerBefore(@Param("user") User user,
+                                                 @Param("asOf") java.time.LocalDateTime asOf);
+
     // PURGE: locks the row AND re-checks it is still in the bin. A restore that committed first makes
     // this return empty, so the note survives. Must run inside a transaction.
-    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT n FROM Note n WHERE n.id = :id AND n.deletedAt IS NOT NULL AND n.deletedAt <= :before")
     Optional<Note> lockDeletedBefore(@Param("id") Long id,
                                      @Param("before") java.time.LocalDateTime before);
