@@ -312,7 +312,6 @@ const deleteNoteForm    = $('#deleteNoteForm');
 function openDeleteNoteModal(row) {
     const id    = row.dataset.id;
     const title = row.dataset.title;
-
     deleteNoteForm.action = `/notes/${id}/delete`;
     $('#deleteNoteTitle').textContent = title;
 
