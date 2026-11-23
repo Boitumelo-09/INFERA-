@@ -45,6 +45,12 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long> {
     List<Long> findDeletedBeforeIds(@Param("before") java.time.LocalDateTime before,
                                     org.springframework.data.domain.Pageable pageable);
 
+    // EMPTY BIN, personal: workspaces I own and deleted, at or before the moment the panel was rendered
+    @Query("SELECT w.id FROM Workspace w WHERE w.user = :user AND w.deletedBy = :user AND w.deletedAt IS NOT NULL " +
+            "AND w.deletedAt <= :asOf ORDER BY w.deletedAt ASC")
+    List<Long> findBinnedIdsDeletedByOwnerBefore(@Param("user") User user,
+                                                 @Param("asOf") java.time.LocalDateTime asOf);
+
     // PURGE: locks the row AND re-checks it is still in the bin (see NoteRepository.lockDeletedBefore)
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT w FROM Workspace w WHERE w.id = :id AND w.deletedAt IS NOT NULL AND w.deletedAt <= :before")

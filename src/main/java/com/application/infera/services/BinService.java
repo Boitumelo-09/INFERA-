@@ -28,6 +28,9 @@ public class BinService {
 
     public enum Kind { NOTE, WORKSPACE }
 
+    // What a bin panel renders. asOf is taken BEFORE the list query, so "Empty bin" can never reach
+    // anything deleted after the panel was built. canEmpty: owner of the workspace (or my personal bin) and not empty.
+    public record BinPanel(List<BinItem> items, LocalDateTime asOf, boolean canEmpty) { }
     // What one bin row needs on screen. daysLeft is always >= 1 (expired items never reach here).
     public record BinItem(Kind kind, Long id, String title, String workspaceName, String workspaceColor,
                           String deletedBy, LocalDateTime deletedAt, LocalDateTime purgeAt, int daysLeft) {
@@ -43,6 +46,23 @@ public class BinService {
         return noteRepository.findBinRowsByWorkspace(workspaceId, recycleBinProperties.cutoff()).stream()
                 .map(r -> toItem(Kind.NOTE, r, user, now))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public BinPanel workspacePanel(Long workspaceId, User user) {
+        LocalDateTime asOf = LocalDateTime.now();   // BEFORE the query
+        List<BinItem> items = workspaceBin(workspaceId, user);   // also does the EDITOR+ gate
+        boolean owner = workspaceAccessService.requireRole(workspaceId, user)
+                .map(m -> m.getRole() == WorkspaceRole.OWNER)
+                .orElse(false);
+        return new BinPanel(items, asOf, owner && !items.isEmpty());
+    }
+
+    @Transactional(readOnly = true)
+    public BinPanel globalPanel(User user) {
+        LocalDateTime asOf = LocalDateTime.now();   // BEFORE the query
+        List<BinItem> items = globalBin(user);
+        return new BinPanel(items, asOf, !items.isEmpty());
     }
 
     // Global bin: what I deleted in workspaces I own (notes + whole workspaces), newest first.

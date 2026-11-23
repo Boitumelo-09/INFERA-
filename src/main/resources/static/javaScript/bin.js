@@ -89,6 +89,22 @@
             } catch (err) { /* storage blocked: restore still works, the bin just won't reopen */ }
         });
 
+        // "Empty bin": the first click only reveals the confirm row; nothing is sent until "Delete forever".
+        // Delegated, because the panel HTML is injected after page load.
+        bodyEl.addEventListener('click', e => {
+            const toggle = e.target.closest('[data-bin-empty-toggle]');
+            if (!toggle) return;
+            const box        = toggle.closest('[data-bin-empty]');
+            const confirmRow = box?.querySelector('.bin-empty-confirm');
+            const trigger    = box?.querySelector('.bin-empty-trigger');
+            if (!confirmRow || !trigger) return;
+
+            const show = confirmRow.hidden;                       // hidden now -> reveal it
+            confirmRow.hidden = !show;
+            trigger.setAttribute('aria-expanded', String(show));
+            if (show) confirmRow.querySelector('[data-bin-empty-toggle]')?.focus();   // safe default: Cancel, not the destructive button
+        });
+
         modalEl.addEventListener('hidden.bs.modal', () => { requestId++; bodyEl.replaceChildren(); });
 
         return { open };

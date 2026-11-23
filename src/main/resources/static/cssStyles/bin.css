@@ -63,7 +63,43 @@
 .bin-restore-btn:disabled { opacity: 0.5; cursor: default; }
 
 .bin-note { font-size: 0.72rem; color: var(--muted); margin: 14px 0 0; line-height: 1.5; }
+/* ─── EMPTY BIN (bar + inline confirm row) ─── */
+.bin-empty-box { margin-bottom: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.bin-empty-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.bin-count { font-size: 0.78rem; color: var(--muted); }
 
+.bin-empty-trigger {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #f87171;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+.bin-empty-trigger:hover,
+.bin-empty-trigger[aria-expanded="true"] { border-color: #dc2626; color: #fca5a5; }
+
+.bin-empty-confirm {
+    display: flex; flex-direction: column; gap: 12px;
+    margin: 12px 0 0; padding: 12px;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 10px;
+}
+.bin-empty-confirm[hidden] { display: none; }          /* a class with display:flex would otherwise beat the hidden attribute */
+
+.bin-empty-warning { display: flex; gap: 10px; margin: 0; font-size: 0.84rem; color: var(--muted); line-height: 1.55; }
+.bin-empty-warning i { color: #f87171; flex-shrink: 0; margin-top: 2px; }
+.bin-empty-warning strong { color: var(--text); font-weight: 500; }
+
+.bin-empty-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.bin-empty-actions button:disabled { opacity: 0.5; cursor: default; }
+
+@media (max-width: 576px) {
+    .bin-empty-actions > * { flex: 1; justify-content: center; }
+}
 @media (max-width: 576px) {
     .bin-item { flex-wrap: wrap; }
     .bin-restore-form, .bin-restore-btn { width: 100%; justify-content: center; }
