@@ -303,8 +303,6 @@ window.addEventListener('resize', () => {
 ─────────────────────────────────────────────────────────────────── */
 function init() {
     initGreeting();
-    animateCounters();
-    buildActivityBars();
     applyRelativeDates();
 }
 
