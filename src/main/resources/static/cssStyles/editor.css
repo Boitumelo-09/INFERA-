@@ -279,7 +279,7 @@
 [data-theme="light"] .tiptap-toolbar { background: var(--secondary); }
 
 .tiptap-toolbar-btn {
-    width: 32px; height: 32px;
+    width: 30px; height: 32px;
     background: none;
     border: 1px solid transparent;
     border-radius: 6px;
@@ -322,7 +322,10 @@
     color: var(--text);
     border-bottom: 1px solid var(--border);
 }
-
+.editor-content-placeholder{
+    color: var(--muted);
+    font-style: italic;
+}
 .ProseMirror {
     outline: none;
     line-height: 1.85;
@@ -378,8 +381,8 @@
 .ProseMirror pre {
     background: #0a0e13;
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 4px;
+    padding: 5px;
     margin: 16px 0;
     overflow-x: auto;
 }
@@ -448,14 +451,27 @@
 
 .table-context-btn.danger:hover { background: rgba(239,68,68,0.12); color: #f87171; }
 
-.tiptap-table-picker { position: relative; display: inline-flex; }.tiptap-table-popover {
-                                                                      position: absolute; top: 40px; left: 0;
-                                                                      background: var(--secondary); border: 1px solid var(--border); border-radius: 10px;
-                                                                      padding: 12px; min-width: 190px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-                                                                      opacity: 0; visibility: hidden; transform: translateY(-6px);
-                                                                      transition: opacity 0.18s, transform 0.18s, visibility 0.18s; z-index: 20;
-                                                                      display: flex; flex-direction: column; gap: 10px;
-                                                                  }
+.tiptap-table-picker { position: relative; display: inline-flex; }
+
+.tiptap-table-popover {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    min-width: 190px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 .tiptap-table-picker.open .tiptap-table-popover { opacity: 1; visibility: visible; transform: none; }
 .tiptap-table-popover label { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--muted); gap: 10px; }
 .tiptap-table-popover input[type="number"] { width: 60px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; color: var(--text); font-size: 0.82rem; }
@@ -953,3 +969,94 @@ body.drawing-expanded { overflow: hidden; }
     border-radius: 8px; background: transparent; color: var(--text);
     font-size: 0.8rem; font-weight: 600; cursor: pointer;
 }
+/* ── Formulas ── */
+.math-btn-glyph { font-size: 1.05rem; font-weight: 600; line-height: 1; font-family: Georgia, 'Times New Roman', serif; }
+
+.math-node { cursor: pointer; border-radius: 6px; }
+.math-inline { display: inline-block; padding: 0 .2em; }
+.math-block { display: block; margin: .6em 0; padding: .3em .5em; overflow-x: auto; overflow-y: hidden; text-align: center; }
+.math-block .katex-display { margin: 0; }
+.math-node:hover { background: rgba(179, 185, 193, .12); }
+.math-node.ProseMirror-selectednode { outline: 2px solid #b3b9c1; outline-offset: 1px; }
+.ProseMirror[contenteditable="false"] .math-node { cursor: default; }
+.ProseMirror[contenteditable="false"] .math-node:hover { background: none; }
+
+.math-dialog-overlay {
+    position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center;
+    padding: 12px; background: rgba(0, 0, 0, .55);
+}
+
+.math-dialog {
+    --math-surface: #181a1f;
+    --math-text: #e8eaed;
+    --math-muted: #9aa0a8;
+    --math-border: rgba(255, 255, 255, .12);
+    --math-accent: #b3b9c1;
+    --math-danger: #e5484d;
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: transparent;
+    backdrop-filter: blur(15px);
+    color: var(--accent);
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.math-dialog-head { display: flex; align-items: center; justify-content: space-between; }
+.math-dialog-head h3 { margin: 0; font-size: 1.05rem; }
+.math-dialog-x { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 1rem; }
+.math-dialog-type { display: flex; gap: 8px; }
+.math-dialog-type button {
+    flex: 1; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left;
+    background: transparent; color: var(--math-text); border: 1px solid var(--math-border);
+}
+.math-dialog-type button small { display: block; color: var(--math-muted); font-size: .72rem; }
+.math-dialog-type button.active { border-color: var(--math-accent); background: rgba(179, 185, 193, .12); }
+.math-dialog-preview {
+    min-height: 62px;
+    padding: 3px;
+    border-radius: 10px;
+    border: 1px dashed var(--math-border);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    font-size: 1.15rem;
+}
+.math-dialog-preview.is-block { justify-content: center; }
+.math-dialog-preview .katex-display { margin: 0; }
+.math-preview-empty { color: var(--math-muted); font-size: .85rem; }
+.math-dialog-error { color: var(--math-danger); font-size: .8rem; }
+.math-dialog-label { font-size: .75rem; color: var(--math-muted); }
+.math-dialog-input {
+    width: 100%; resize: vertical; padding: 10px; border-radius: 10px; box-sizing: border-box;
+    background: transparent; color: var(--math-text); border: 1px solid var(--math-border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 16px;
+}
+.math-dialog-input:focus { outline: none; border-color: var(--math-accent); }
+.math-dialog-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.math-dialog-tabs button {
+    flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; cursor: pointer; font-size: .8rem;
+    background: transparent; color: var(--math-muted); border: 1px solid var(--math-border);
+}
+.math-dialog-tabs button.active { color: var(--math-text); border-color: var(--math-accent); background: rgba(179, 185, 193, .12); }
+.math-dialog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; }
+.math-sym {
+    min-height: 30px; padding: 4px; border-radius: 8px; cursor: pointer; overflow: hidden;
+    background: transparent; color: var(--math-text); border: 1px solid var(--math-border);
+}
+.math-sym:hover { border-color: var(--math-accent); background: rgba(179, 185, 193, .1); }
+.math-sym .katex { font-size: .95em; }
+.math-dialog-foot { display: flex; align-items: center; gap: 8px; }
+.math-dialog-spacer { flex: 1; }
+.math-btn {
+    padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: .85rem;
+    background: transparent; color: var(--math-text); border: 1px solid var(--math-border);
+}
+.math-btn-primary { background: var(--math-accent); color: #111; border-color: var(--math-accent); font-weight: 600; }
+.math-btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.math-btn-danger { color: var(--math-danger); border-color: rgba(229, 72, 77, .4); }
