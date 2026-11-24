@@ -265,7 +265,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 1px;
     margin-bottom: 18px;
     position: sticky;
     top: calc(var(--topbar-h) + -2px);
