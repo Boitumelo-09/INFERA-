@@ -146,7 +146,7 @@ function lockEditorAfterAccessChange(status) {
         if (text) text.textContent = 'This note is archived, so it is view-only. Your latest text is still here: copy it if you need it.';
     }
     if (status === 409) {
-        if (text) text.textContent = 'Someone else changed this note, so your last edits were not saved. Your text is still here: copy it, then reload to get the latest version.';
+        if (text) text.textContent = 'The version of this note is changed due to autosave. Your text is still here: copy it, then reload to get the latest version.';
         if (banner && !banner.querySelector('.conflict-reload')) {
             const btn = document.createElement('button');
             btn.type = 'button';
