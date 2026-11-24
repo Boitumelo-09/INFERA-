@@ -12,6 +12,7 @@
 import { generateHTML } from 'https://esm.sh/@tiptap/core@2.11.5';
 import { getSharedExtensions, parseDocumentJson } from './extensions.js';
 import { renderMath } from './maths/math-katex.js';
+import { printNote } from './note-print.js';
 
 /* generateHTML() emits formulas as plain <span>/<div data-latex="…"> placeholders (node views don't run
    there), so each one is rendered with KaTeX here before the HTML goes to the View modal. */
@@ -29,6 +30,7 @@ function renderFormulas(html) {
 const extensions = getSharedExtensions();
 
 window.__inferaViewRenderer = {
+    print: printNote, // note-print.js: lets the classic notes.js script export a PDF
     render(raw) {
         const json = parseDocumentJson(raw);
         try {
