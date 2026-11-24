@@ -10,6 +10,10 @@ import { buildTableInsertControl, buildTableContextBar } from './slash-menu.js';
 import { createDrawing, drawingStore, revealDrawing } from './drawing-node.js';
 import { drawingSession } from './drawing-canvas.js';
 import { confirmDialog } from './confirm-dialog.js';
+import { openMathDialog } from './maths/math-dialog.js';
+import { printNote } from './note-print.js';
+import './view-renderer.js'; // side effect: defines window.__inferaViewRenderer on the edit page
+
 const GROUPS = [
     [
         { action: 'bold',      icon: 'bi-type-bold',          title: 'Bold (Ctrl+B)' },
@@ -46,6 +50,7 @@ const GROUPS = [
     ],
     [
         { action: 'clearNote', icon: 'bi-eraser', title: 'Clear note' },
+        { action: 'exportPdf', icon: 'bi-file-earmark-pdf', title: 'Save note as PDF' },
     ],
 ];
 const COLORS = [
@@ -187,6 +192,59 @@ function buildDrawingInsertControl(editor) {
     return { el: wrap };
 }
 
+// ← CHANGE to the selector of your edit page's note title input (see the note in chat)
+const NOTE_TITLE_SELECTOR = '#noteTitle';
+
+/* Exports what's on screen right now (including unsaved edits), not the last saved copy. */
+async function exportPdf(editor) {
+    if (editor.isEmpty) { window.showToast?.('Nothing to export: the note is empty.'); return; }
+    if (drawingSession.isActive()) {
+        window.showToast?.('Close the open drawing first so its latest changes are included.');
+        return;
+    }
+    const title = document.querySelector(NOTE_TITLE_SELECTOR)?.value?.trim() || 'Untitled note';
+    const printed = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    await printNote({
+        title,
+        meta: `Printed ${printed}`,
+        noteId: window.__NOTE_ID__,
+        html: window.__inferaViewRenderer.render(JSON.stringify(editor.getJSON())),
+    });
+}
+
+function buildMathInsertControl(editor) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tiptap-toolbar-btn tiptap-math-btn';
+    btn.title = 'Insert formula';
+    btn.setAttribute('aria-label', 'Insert formula');
+    btn.innerHTML = `<span class="math-btn-glyph">Σ</span>`;
+
+    btn.addEventListener('click', () => {
+        openMathDialog({
+            latex: '',
+            display: false,
+            canChooseType: true,
+            onApply: ({ latex, display }) => {
+                // If a node (e.g. a drawing card) is selected, insert after it instead of replacing it.
+                const { selection } = editor.state;
+                if (selection.node) {
+                    const after = selection.to;
+                    editor.chain().insertContentAt(after, { type: 'paragraph' }).setTextSelection(after + 1).run();
+                }
+                const chain = editor.chain().focus();
+                (display ? chain.insertBlockMath(latex) : chain.insertInlineMath(latex)).run();
+            },
+            onClose: () => editor.view.focus(),
+        });
+    });
+
+    return {
+        el: btn,
+        sync() { btn.classList.toggle('is-active', editor.isActive('inlineMath') || editor.isActive('blockMath')); },
+    };
+}
+
 /* Replaces the whole document with one empty paragraph. A normal transaction, so one Ctrl+Z
    restores everything, drawings included: their data is kept in the database, only the blocks go. */
 async function clearNote(editor) {
@@ -207,6 +265,7 @@ async function clearNote(editor) {
 
 const COMMANDS = {
     clearNote: e => clearNote(e),
+    exportPdf: e => exportPdf(e),
     bold:        e => e.chain().focus().toggleBold().run(),
     italic:      e => e.chain().focus().toggleItalic().run(),
     underline:   e => e.chain().focus().toggleUnderline().run(),
@@ -271,8 +330,8 @@ export function renderToolbar(editor, mountEl) {
     const colorPicker = buildColorPicker(editor);
     const tablePicker = buildTableInsertControl(editor);
     const drawingPicker = buildDrawingInsertControl(editor);
+    const mathButton = buildMathInsertControl(editor);
     const tableBar = buildTableContextBar(editor);
-    // mountEl.insertAdjacentElement('afterend', tableBar.el);
 
     GROUPS.forEach((group, gi) => {
         if (gi > 0) {
@@ -307,6 +366,7 @@ export function renderToolbar(editor, mountEl) {
             mountEl.appendChild(divider);
             mountEl.appendChild(tablePicker.el);
             mountEl.appendChild(drawingPicker.el);
+            mountEl.appendChild(mathButton.el);
         }
     });
 
@@ -327,6 +387,7 @@ export function renderToolbar(editor, mountEl) {
         colorPicker.sync();
         tablePicker.sync();
         tableBar.sync();
+        mathButton.sync();
     }
     
 

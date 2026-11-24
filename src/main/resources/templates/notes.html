@@ -95,7 +95,7 @@
         </div>
 
         <!-- Workspace filter pills -->
-        <div class="ws-filter-row" th:if="${!#lists.isEmpty(workspaces) and workspaces.size() > 1}">
+        <div class="ws-filter-row" th:if="${!#lists.isEmpty(workspaces)}">
             <div class="ws-main-filter-pills-wrap">
                 <button class="ws-filter-pill outsiderFilter active" data-filter="all">
                 <span>All notes</span>
@@ -176,7 +176,7 @@
                                 <i class="bi bi-pencil"></i> Edit
                             </button>
 
-                            <button class="ws-menu-item danger note-delete-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id)}">
+                            <button class="ws-menu-item danger note-delete-trigger" th:if="${editableWorkspaceIds.contains(note.workspace.id) && note.archived == false }">
                                 <i class="bi bi-trash"></i> Delete
                             </button>
                         </div>
@@ -213,6 +213,9 @@
                     <div class="theater-menu-label" id="theaterMenuTitle"></div>
                     <button type="button" class="theater-menu-item" id="theaterEditBtn">
                         <i class="bi bi-pencil"></i> Edit this note
+                    </button>
+                    <button type="button" class="theater-menu-item" id="theaterPdfBtn">
+                        <i class="bi-file-earmark-pdf"></i> Save as PDF
                     </button>
                     <button type="button" class="theater-menu-item" id="theaterResourcesBtn">
                         <i class="bi bi-link-45deg"></i> Resources
@@ -282,6 +285,9 @@
                 <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn-modal-accent" id="viewNoteEditBtn">
                     <i class="bi bi-pencil"></i> Edit this note
+                </button>
+                <button type="button" class="btn-modal-accent" id="viewNotePdfBtn">
+                    <i class="bi-file-earmark-pdf"></i> Save as PDF
                 </button>
             </div>
         </div>
@@ -360,7 +366,7 @@
             <div class="modal-footer">
                 <form method="post" id="deleteNoteForm" style="margin:0;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="button" class="btn-modal-ghost deleteButtonCancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-modal-ghost" id="deleteButtonCancel" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn-modal-danger">
                         <i class="bi bi-trash"></i> Move to bin
                     </button>

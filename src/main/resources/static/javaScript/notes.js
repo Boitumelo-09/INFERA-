@@ -247,6 +247,29 @@ document.addEventListener('keydown', e => {
     }
 });
 
+/* ─── SAVE AS PDF (View modal) ─────────────────────────────────── */
+async function exportCurrentNoteToPdf() {
+    const row = currentlyViewedRow;
+    if (!row) return;
+    const raw = row.dataset.content;
+    if (!raw || raw === 'null' || !raw.trim()) { window.showToast?.('Nothing to export: this note is empty.'); return; }
+
+    const renderer = await waitForViewRenderer();
+    const wsName   = row.dataset.workspaceName || '';
+    const dateText = row.querySelector('.nri-date span')?.textContent || '';
+    renderer.print({
+        title: row.dataset.title || 'Note',
+        meta: [wsName, dateText && `Updated ${dateText}`].filter(Boolean).join('  ·  '),
+        noteId: row.dataset.id,
+        html: renderer.render(raw),
+    });
+}
+$('#viewNotePdfBtn')?.addEventListener('click', exportCurrentNoteToPdf);
+$('#theaterPdfBtn')?.addEventListener('click', () => {
+    closeTheaterMenu();
+    exportCurrentNoteToPdf();
+});
+
 /* ─── DISTRACTION-FREE MENU (theater mode) ─────────────────────── */
 $('#theaterMenuBtn')?.addEventListener('click', e => {
     e.stopPropagation();
@@ -312,7 +335,6 @@ const deleteNoteForm    = $('#deleteNoteForm');
 function openDeleteNoteModal(row) {
     const id    = row.dataset.id;
     const title = row.dataset.title;
-
     deleteNoteForm.action = `/notes/${id}/delete`;
     $('#deleteNoteTitle').textContent = title;
 

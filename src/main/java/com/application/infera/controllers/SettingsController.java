@@ -20,14 +20,11 @@ import java.util.Map;
 @RequestMapping("/settings")
 @RequiredArgsConstructor
 public class SettingsController {
-
     private final WorkspaceService workspaceService;
     private final NoteService noteService;
     private final ResourceService resourceService;
     private final SettingsService settingsService;
     private final CurrentUserService currentUserService;
-
-    
     @GetMapping
     public String settingsPage(@AuthenticationPrincipal Object principal, Model model) {
         User user = currentUserService.resolve(principal);
@@ -45,20 +42,16 @@ public class SettingsController {
         model.addAttribute("ownedResourcesCount", settingsService.countOwnedResources(user));
         return "settings";
     }
-
     @PostMapping("/theme")
     @ResponseBody
     public Map<String, Object> updateTheme(@AuthenticationPrincipal Object principal,
                                            @RequestParam("theme") String theme) {
-
         User user = currentUserService.resolve(principal);
         if (user == null) return Map.of("success", false);
 
         boolean updated = settingsService.updateTheme(user, theme);
         return updated ? Map.of("success", true) : Map.of("success", false, "message", "Invalid theme");
     }
-
-
 
     @PostMapping("/delete-account")
     public String deleteAccount(@AuthenticationPrincipal Object principal,
@@ -79,6 +72,4 @@ public class SettingsController {
         request.logout();
         return "redirect:/signin?deleted=true";
     }
-
-
 }

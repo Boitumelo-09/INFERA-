@@ -11,14 +11,30 @@
 
 import { generateHTML } from 'https://esm.sh/@tiptap/core@2.11.5';
 import { getSharedExtensions, parseDocumentJson } from './extensions.js';
+import { renderMath } from './maths/math-katex.js';
+import { printNote } from './note-print.js';
+
+/* generateHTML() emits formulas as plain <span>/<div data-latex="…"> placeholders (node views don't run
+   there), so each one is rendered with KaTeX here before the HTML goes to the View modal. */
+function renderFormulas(html) {
+    const box = document.createElement('div');
+    box.innerHTML = html;
+    box.querySelectorAll('[data-type="inline-math"], [data-type="block-math"]').forEach(el => {
+        const display = el.dataset.type === 'block-math';
+        el.className = display ? 'math-block' : 'math-inline';
+        renderMath(el, el.getAttribute('data-latex') || '', display);
+    });
+    return box.innerHTML;
+}
 
 const extensions = getSharedExtensions();
 
 window.__inferaViewRenderer = {
+    print: printNote, // note-print.js: lets the classic notes.js script export a PDF
     render(raw) {
         const json = parseDocumentJson(raw);
         try {
-            return generateHTML(json, extensions);
+            return renderFormulas(generateHTML(json, extensions));
         } catch (e) {
             console.error('[INCAPTUR] failed to render note content', e);
             return '<p><em>This note could not be displayed.</em></p>';

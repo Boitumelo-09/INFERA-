@@ -108,7 +108,9 @@ public class NoteService {
         Note note = getNoteForUser(id, user, WorkspaceRole.EDITOR);
         String title = note.getTitle();
         Workspace ws = note.getWorkspace();
-
+           if (note.isArchived()){
+               throw new NoteArchiveException("An archived note cannot be deleted.");
+           }
         if (noteRepository.softDelete(id, user, LocalDateTime.now()) == 0) {
             throw new NoteNotFoundException("Note not found");   // someone else deleted it a moment ago
         }
