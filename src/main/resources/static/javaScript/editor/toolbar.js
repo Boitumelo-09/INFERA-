@@ -10,6 +10,7 @@ import { buildTableInsertControl, buildTableContextBar } from './slash-menu.js';
 import { createDrawing, drawingStore, revealDrawing } from './drawing-node.js';
 import { drawingSession } from './drawing-canvas.js';
 import { confirmDialog } from './confirm-dialog.js';
+import { openMathDialog } from './maths/math-dialog.js';
 const GROUPS = [
     [
         { action: 'bold',      icon: 'bi-type-bold',          title: 'Bold (Ctrl+B)' },
@@ -187,6 +188,39 @@ function buildDrawingInsertControl(editor) {
     return { el: wrap };
 }
 
+function buildMathInsertControl(editor) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tiptap-toolbar-btn tiptap-math-btn';
+    btn.title = 'Insert formula';
+    btn.setAttribute('aria-label', 'Insert formula');
+    btn.innerHTML = `<span class="math-btn-glyph">Σ</span>`;
+
+    btn.addEventListener('click', () => {
+        openMathDialog({
+            latex: '',
+            display: false,
+            canChooseType: true,
+            onApply: ({ latex, display }) => {
+                // If a node (e.g. a drawing card) is selected, insert after it instead of replacing it.
+                const { selection } = editor.state;
+                if (selection.node) {
+                    const after = selection.to;
+                    editor.chain().insertContentAt(after, { type: 'paragraph' }).setTextSelection(after + 1).run();
+                }
+                const chain = editor.chain().focus();
+                (display ? chain.insertBlockMath(latex) : chain.insertInlineMath(latex)).run();
+            },
+            onClose: () => editor.view.focus(),
+        });
+    });
+
+    return {
+        el: btn,
+        sync() { btn.classList.toggle('is-active', editor.isActive('inlineMath') || editor.isActive('blockMath')); },
+    };
+}
+
 /* Replaces the whole document with one empty paragraph. A normal transaction, so one Ctrl+Z
    restores everything, drawings included: their data is kept in the database, only the blocks go. */
 async function clearNote(editor) {
@@ -271,8 +305,8 @@ export function renderToolbar(editor, mountEl) {
     const colorPicker = buildColorPicker(editor);
     const tablePicker = buildTableInsertControl(editor);
     const drawingPicker = buildDrawingInsertControl(editor);
+    const mathButton = buildMathInsertControl(editor);
     const tableBar = buildTableContextBar(editor);
-    // mountEl.insertAdjacentElement('afterend', tableBar.el);
 
     GROUPS.forEach((group, gi) => {
         if (gi > 0) {
@@ -307,6 +341,7 @@ export function renderToolbar(editor, mountEl) {
             mountEl.appendChild(divider);
             mountEl.appendChild(tablePicker.el);
             mountEl.appendChild(drawingPicker.el);
+            mountEl.appendChild(mathButton.el);
         }
     });
 
@@ -327,6 +362,7 @@ export function renderToolbar(editor, mountEl) {
         colorPicker.sync();
         tablePicker.sync();
         tableBar.sync();
+        mathButton.sync();
     }
     
 
