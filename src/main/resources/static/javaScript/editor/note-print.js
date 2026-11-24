@@ -49,7 +49,8 @@ mark { background: #fff3a3; color: inherit; padding: 0 .1em; }
 table { width: 100%; border-collapse: collapse; margin: .6em 0; }
 th, td { border: 1px solid #bbb; padding: 4pt 6pt; vertical-align: top; text-align: left; word-break: break-word; }
 th { background: #f0f0f0; font-weight: 600; }
-tr { break-inside: avoid; }
+tr, td, th { break-inside: avoid; page-break-inside: avoid; }
+table { break-inside: auto; page-break-inside: auto; }
 thead { display: table-header-group; }
 
 .math-inline { display: inline; }
@@ -112,6 +113,12 @@ async function inlineDrawings(root, noteId, blobUrls) {
     });
 }
 
+/* A note saved as "one empty paragraph" is not an empty string, so look at what actually renders. */
+function hasPrintableContent(root) {
+    return root.textContent.trim() !== '' ||
+        !!root.querySelector('img, table, hr, [data-type="inline-math"], [data-type="block-math"]');
+}
+
 function buildDocument(title, meta, bodyHtml) {
     return `<!DOCTYPE html>
 <html lang="en"><head>
@@ -152,6 +159,11 @@ export async function printNote({ title = 'Note', meta = '', noteId = null, html
         body.innerHTML = DOMPurify.sanitize(html);
         darkenLightColours(body);
         await inlineDrawings(body, noteId, blobUrls);
+        if (!hasPrintableContent(body)) {
+            window.showToast?.('Nothing to export: the note is empty.');
+            cleanup();
+            return;
+        }
 
         // Browsers name the PDF after the page title, so use the note's title (minus characters files can't have)
         const fileTitle = (String(title).replace(/[\\/:*?"<>|]+/g, ' ').trim() || 'Note').slice(0, 100);
