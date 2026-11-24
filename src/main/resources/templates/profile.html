@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}"  />
+    <link rel="stylesheet" th:href="@{/cssStyles/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/profile.css}" />
     <link rel="stylesheet" th:href="@{/cssStyles/app.css}" />
     <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48" th:href="@{/favicons/favicon.ico}">
@@ -36,162 +36,75 @@
                 </ol>
             </nav>
         </div>
-
     </header>
 
     <main class="page-content">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-        <div class="prof-hero">
-            <div class="prof-hero-banner">
-                <div class="particles">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <div class="prof-hero-banner-pattern"></div>
-            </div>
-            <div class="prof-hero-row">
-                <div class="prof-avatar-wrap" id="avatarDropzone" title="Drag & drop or click to change" th:data-initials="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">                    <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="prof-avatar-img" id="avatarImg" />
-                    <div th:unless="${user.avatarUrl}" class="prof-avatar-fallback" id="avatarFallback"
-                         th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
-                    <div class="prof-avatar-overlay" id="avatarOverlay"><i class="bi bi-camera"></i></div>
+        <section class="me">
+
+            <div class="me-head">
+                <div class="me-avatar-wrap">
+                    <div class="me-avatar" id="avatarDropzone" role="button" tabindex="0" title="Change picture"
+                         th:data-initials="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">
+                        <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar" class="prof-avatar-img" id="avatarImg" />
+                        <div th:unless="${user.avatarUrl}" class="prof-avatar-fallback" id="avatarFallback"
+                             th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">SN</div>
+                        <div class="prof-avatar-overlay"><i class="bi bi-camera"></i></div>
+                    </div>
                     <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/webp" hidden />
-                </div>
-                <button type="button" class="prof-avatar-toggle" id="avatarToggle"><i class="bi bi-pencil"></i></button>
-                <div class="prof-avatar-menu" id="avatarMenu">
-                    <button type="button" id="avatarMenuUpdate"><i class="bi bi-upload"></i> Update picture</button>
-                    <button type="button" id="avatarMenuDelete" class="danger"><i class="bi bi-trash3"></i> Delete picture</button>
-                </div>
-                <div class="prof-hero-info">
-
-                    <span class="prof-badge"><i class="bi bi-patch-check-fill"></i> User</span>
-                    <p class="prof-role" th:text="${user.lifeRole ?: 'Add your role'}">Role</p>
-                    <p class="prof-name" th:text="${user.firstName +' '+ user.lastName}+'.'"></p>
-                    <p class="prof-meta">
-                        <span th:if="${user.location}"><i class="bi bi-geo-alt"></i> <span th:text="${user.location}">Location</span></span>
-                        <span><i class="bi bi-calendar3"></i> Joined <span th:text="${#temporals.format(user.createdAt, 'MMM yyyy')}">date</span></span>
-                        <span><i class="bi bi-envelope"></i> <span th:text="${user.email}">email</span></span>
-                    </p>
-                </div>
-                <div class="prof-hero-stats">
-                    <div class="prof-stat-chip">
-                        <span class="prof-stat-num" th:text="${workspaceCount}">0</span>
-                        <span class="prof-stat-label">Workspaces</span>
-                    </div>
-                    <div class="prof-stat-chip">
-                        <span class="prof-stat-num" th:text="${noteCount}">0</span>
-                        <span class="prof-stat-label">Notes</span>
-                    </div>
-                    <div class="prof-stat-chip">
-                        <span class="prof-stat-num" th:text="${resourceCount}">0</span>
-                        <span class="prof-stat-label">Resources</span>
+                    <div class="prof-avatar-menu" id="avatarMenu">
+                        <button type="button" id="avatarMenuUpdate"><i class="bi bi-upload"></i> Update picture</button>
+                        <button type="button" id="avatarMenuDelete" class="danger"><i class="bi bi-trash3"></i> Delete picture</button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="prof-grid">
-            <div class="prof-grid">
-                <div class="dash-panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title"><i class="bi bi-person-lines-fill"></i> About</h2>
-                        <button type="button" class="panel-action" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                            <i class="bi bi-pencil"></i> Edit
-                        </button>
-                    </div>
-                    <div class="panel-body prof-about-body">
-                        <p class="prof-bio" th:if="${user.bio}" th:text="${user.bio}">Bio</p>
-                        <p class="prof-bio prof-bio-empty" th:unless="${user.bio}">No bio added yet.</p>
-
-                        <div class="prof-about-grid">
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-person"></i> Full name</span>
-                                <span class="prof-about-value" th:text="${user.firstName + ' ' + user.lastName}">Name</span>
-                            </div>
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-briefcase"></i> Role</span>
-                                <span class="prof-about-value" th:text="${user.lifeRole ?: '—'}">Role</span>
-                            </div>
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-geo-alt"></i> Location</span>
-                                <span class="prof-about-value" th:text="${user.location ?: '—'}">Location</span>
-                            </div>
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-envelope"></i> Email</span>
-                                <span class="prof-about-value" th:text="${user.email}">Email</span>
-                            </div>
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-calendar3"></i> Member since</span>
-                                <span class="prof-about-value" th:text="${#temporals.format(user.createdAt, 'dd MMMM yyyy')}">Date</span>
-                            </div>
-                            <div class="prof-about-item">
-                                <span class="prof-about-label"><i class="bi bi-shield-check"></i> Account type</span>
-                                <span class="prof-about-value" th:text="${user.role}">Role</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="me-head-text">
+                    <p class="me-eyebrow">Your profile</p>
+                    <p class="me-hint">Click anything to edit. It saves as you go.</p>
                 </div>
             </div>
 
-            <div class="modal fade infera-modal" id="editProfileModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Profile</h5>
-                            <button type="button" class="modal-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
-                        </div>
-                        <form th:action="@{/profile/update}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <div class="modal-body">
-                                <div class="row g-3">
-                                    <div class="col-sm-6">
-                                        <label class="form-label-custom">First name</label>
-                                        <div class="input-wrap">
-                                            <i class="bi bi-person input-icon"></i>
-                                            <input type="text" name="firstName" class="form-input" th:value="${user.firstName}" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label class="form-label-custom">Last name</label>
-                                        <div class="input-wrap">
-                                            <i class="bi bi-person input-icon"></i>
-                                            <input type="text" name="lastName" class="form-input" th:value="${user.lastName}" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label class="form-label-custom">Life role <span class="optional-label">optional</span></label>
-                                        <div class="input-wrap">
-                                            <i class="bi bi-briefcase input-icon"></i>
-                                            <input type="text" name="lifeRole" class="form-input" th:value="${user.lifeRole}" placeholder="Software Engineer, Student..." maxlength="100" />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label class="form-label-custom">Location <span class="optional-label">optional</span></label>
-                                        <div class="input-wrap">
-                                            <i class="bi bi-geo-alt input-icon"></i>
-                                            <input type="text" name="location" class="form-input" th:value="${user.location}" placeholder="City, Country" maxlength="100" />
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label-custom">Bio <span class="optional-label">optional</span></label>
-                                        <textarea name="bio" class="form-input form-textarea" maxlength="280" id="bioInput" placeholder="A short line about you..." th:text="${user.bio}"></textarea>
-                                        <div class="prof-char-count"><span id="bioCount">0</span>/280</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn-modal-ghost" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn-modal-accent"><i class="bi bi-check2"></i> Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
+            <div class="me-name">
+                <input type="text" id="firstNameInput" class="me-input me-name-input" data-field="firstName"
+                       th:value="${user.firstName}" placeholder="First name" maxlength="100" autocomplete="off" />
+                <input type="text" id="lastNameInput" class="me-input me-name-input" data-field="lastName"
+                       th:value="${user.lastName}" placeholder="Last name" maxlength="100" autocomplete="off" />
+            </div>
+
+            <div class="me-field">
+                <i class="bi bi-briefcase"></i>
+                <input type="text" id="lifeRoleInput" class="me-input" data-field="lifeRole"
+                       th:value="${user.lifeRole}" placeholder="What do you do?" maxlength="100" autocomplete="off" />
+            </div>
+
+            <div class="me-field">
+                <i class="bi bi-geo-alt"></i>
+                <input type="text" id="locationInput" class="me-input" data-field="location"
+                       th:value="${user.location}" placeholder="Where are you based?" maxlength="100" autocomplete="off" />
+            </div>
+
+            <div class="me-field me-field-top">
+                <i class="bi bi-quote"></i>
+                <div class="me-bio-wrap">
+                    <textarea id="bioInput" class="me-input me-bio" data-field="bio" rows="1" maxlength="280"
+                              placeholder="A line or two about you…" th:text="${user.bio}"></textarea>
+                    <span class="me-count" id="bioCount">0/280</span>
                 </div>
             </div>
-        </div>
+
+            <div class="me-divider"></div>
+
+            <div class="me-field me-static">
+                <i class="bi bi-envelope"></i>
+                <span th:text="${user.email}">email</span>
+            </div>
+            <div class="me-field me-static">
+                <i class="bi bi-calendar3"></i>
+                <span>Member since <span th:text="${#temporals.format(user.createdAt, 'MMMM yyyy')}">date</span></span>
+            </div>
+
+        </section>
+
         <div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="Search" hidden>
             <div class="search-backdrop" id="searchBackdrop"></div>
             <div class="search-box">
@@ -219,10 +132,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-
-<script th:if="${toast}" th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', () => showToast([[${toast}]]));
-</script>
 <script th:src="@{/javaScript/profile_settings.js}"></script>
 <script th:src="@{/javaScript/profile.js}"></script>
 

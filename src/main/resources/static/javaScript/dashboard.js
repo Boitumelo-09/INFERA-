@@ -216,11 +216,13 @@ $$('.ws-card[data-workspace]').forEach(card => {
    TOPBAR AVATAR  — stub for future dropdown
 ─────────────────────────────────────────────────────────────────── */
 
-$('#notifBtn')?.addEventListener('click', () => {
+$('#messageBtn')?.addEventListener('click', () => {
     showToast('Belmire - INCAPTUR v2.0.0 Coming Soon...');
     /* Remove dot after first click */
     $('.notif-dot')?.remove();
 });
+
+
 // Select the element (e.g., your navigation bar)
 const header = document.getElementById('topbar')
 // Define the scroll threshold in pixels

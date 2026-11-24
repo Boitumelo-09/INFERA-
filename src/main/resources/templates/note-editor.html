@@ -72,14 +72,7 @@
             <span id="editorReadonlyText">View only: you can read this note but not edit it.</span>
         </div>
 
-        <input type="text"
-               id="editorTitleInput"
-               class="editor-title-input"
-               th:value="${note.title}"
-               placeholder="Untitled"
-               th:readonly="${!canEdit}"
-               maxlength="150"
-               autocomplete="off" />
+        <input type="text" id="editorTitleInput" class="editor-title-input" th:value="${note.title}" placeholder="Untitled" th:readonly="${!canEdit}" maxlength="150" autocomplete="off" />
 
     <div class="editor-properties-bar">
         <div class="editor-property-ws-select" id="editorWsSelect">
@@ -149,7 +142,7 @@
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<!--<script th:src="@{/javaScript/dashboard.js}"></script>-->
+<script th:src="@{/javaScript/dashboard.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/tiptap-editor.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/editor-api.js}"></script>
 <script type="module" th:src="@{/javaScript/editor/properties-bar.js}"></script>
