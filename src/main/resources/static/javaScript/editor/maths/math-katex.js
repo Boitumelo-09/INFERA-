@@ -1,7 +1,7 @@
 /* KaTeX loader + render helpers shared by the formula nodes and the dialog. */
 import katex from 'https://esm.sh/katex@0.16.11';
 
-const KATEX_CSS = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+export const KATEX_CSS = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
 
 export function ensureKatexCss() {
     if (document.querySelector('link[data-katex-css]')) return;
