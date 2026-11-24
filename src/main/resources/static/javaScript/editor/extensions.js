@@ -21,6 +21,7 @@ import TableRow                       from 'https://esm.sh/@tiptap/extension-tab
 import TableHeader                      from 'https://esm.sh/@tiptap/extension-table-header@2.11.5';
 import TableCell                          from 'https://esm.sh/@tiptap/extension-table-cell@2.11.5';
 import Drawing                             from './drawing-node.js';
+import { InlineMath, BlockMath }            from './maths/math-node.js';
 export function getSharedExtensions() {
     return [
         StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
@@ -37,6 +38,8 @@ export function getSharedExtensions() {
         TableHeader,
         TableCell,
         Drawing,
+        InlineMath,
+        BlockMath,
     ];
 }
 
