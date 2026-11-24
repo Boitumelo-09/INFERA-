@@ -192,8 +192,7 @@ function buildDrawingInsertControl(editor) {
     return { el: wrap };
 }
 
-// ← CHANGE to the selector of your edit page's note title input (see the note in chat)
-const NOTE_TITLE_SELECTOR = '#noteTitle';
+const NOTE_TITLE_SELECTOR = '#editorTitleInput';
 
 /* Exports what's on screen right now (including unsaved edits), not the last saved copy. */
 async function exportPdf(editor) {
@@ -384,6 +383,7 @@ export function renderToolbar(editor, mountEl) {
         if (buttons.undo) buttons.undo.disabled = !drawing && !editor.can().undo();
         if (buttons.redo) buttons.redo.disabled = !drawing && !editor.can().redo();
         if (buttons.clearNote) buttons.clearNote.disabled = editor.isEmpty;
+        if (buttons.exportPdf) buttons.exportPdf.disabled = editor.isEmpty;
         colorPicker.sync();
         tablePicker.sync();
         tableBar.sync();
