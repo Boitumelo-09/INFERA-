@@ -67,21 +67,13 @@
             </div>
         </div>
 
-        <div class="dash-panel settings-section">
-            <div class="panel-header"><h2 class="panel-title"><i class="bi bi-shield-lock-fill" style="color:#34d399;"></i> Security</h2></div>
-            <div th:if="${isOAuthUser}" class="settings-oauth-note"><i class="bi bi-info-circle"></i> Password is managed by your OAuth provider.</div>
-            <div th:unless="${isOAuthUser}" class="settings-row">
-                <div><div class="settings-row-label">Password</div><div class="settings-row-sub">Password Management Isn't Supported In INCAPTUR.</div></div>
-            </div>
-        </div>
-
         <div class="dash-panel danger-panel settings-section">
             <div class="panel-header"><h2 class="panel-title"><i class="bi bi-exclamation-triangle-fill"></i> Danger Zone</h2></div>
             <div class="settings-row">
-                <div><div class="settings-row-label">Delete account</div><div class="settings-row-sub">Permanently deletes all your data — cannot be undone.</div></div>
+                <div><div class="settings-row-label">Delete account</div><div class="settings-row-sub">Permanently deletes all your data,cannot be undone.</div></div>
                 <button class="btn-danger-outline" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
 
-                <div><div class="settings-row-label">Log Out</div><div class="settings-row-sub">Sign Out — will require you to sign in when you visit again.</div></div>
+                <div><div class="settings-row-label">Log Out</div><div class="settings-row-sub">will require you to sign in when you visit again.</div></div>
                 <form th:action="@{/logout}" method="post" id="logoutForm" style="margin:0;">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <button type="button" class="btn-danger-outline" id="leaveButton">Leave</button>
