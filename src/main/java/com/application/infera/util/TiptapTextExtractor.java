@@ -2,6 +2,7 @@ package com.application.infera.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 
 /* Walks a Tiptap document JSON tree and concatenates every "text" node
    into a single searchable string. Static/stateless on purpose — no
@@ -10,6 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TiptapTextExtractor {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    // Plain-English words indexed alongside a formula's LaTeX, so searching "integral" finds \int.
+    private static final Map<String, String> MATH_WORDS = Map.of(
+            "\\int", "integral", "\\oint", "integral", "\\sum", "summation", "\\prod", "product",
+            "\\sqrt", "square root", "\\frac", "fraction", "\\partial", "partial derivative",
+            "\\nabla", "nabla gradient", "\\infty", "infinity", "\\lim", "limit");
 
     public static String extract(String documentJson) {
         if (documentJson == null || documentJson.isBlank()) return "";
@@ -36,6 +43,18 @@ public class TiptapTextExtractor {
             return;
         }
         if (!node.isObject()) return;
+
+        String type = node.path("type").asText("");
+        if (type.equals("inlineMath") || type.equals("blockMath")) {
+            String latex = node.path("attrs").path("latex").asText("");
+            if (!latex.isBlank()) {
+                sb.append(latex).append(' ');
+                MATH_WORDS.forEach((cmd, word) -> {
+                    if (latex.contains(cmd)) sb.append(word).append(' ');
+                });
+            }
+            return;
+        }
 
         JsonNode textNode = node.get("text");
         if (textNode != null && textNode.isTextual()) {
