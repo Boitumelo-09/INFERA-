@@ -213,7 +213,7 @@ $$('.ws-card[data-workspace]').forEach(card => {
 });
 
 /* ───────────────────────────────────────────────────────────────────
-   TOPBAR AVATAR  — stub for future dropdown
+   TOPBAR AVATAR  — stub for future dropdow
 ─────────────────────────────────────────────────────────────────── */
 
 $('#messageBtn')?.addEventListener('click', () => {
