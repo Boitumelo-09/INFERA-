@@ -1,0 +1,1 @@
+ALTER TABLE feedback_messages DROP COLUMN email_sent;

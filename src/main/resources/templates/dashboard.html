@@ -67,7 +67,6 @@
             <!-- Messages -->
             <button class="topbar-icon-btn position-relative" id="messageBtn" aria-label="Messages">
                 <i class="bi bi-chat-left-dots"></i>
-                <span class="notif-dot"></span>
             </button>
 
             <!-- Avatar -->
@@ -431,7 +430,62 @@
         </div>
     </div>
 </div>
+<!-- ═══════════════ FEEDBACK MODAL (review / issue / suggestion) ═══════════════ -->
+<div class="modal fade infera-modal" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feedbackLabel">Message the developer</h5>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
 
+            <input type="hidden" id="fbCsrf" th:attr="data-header=${_csrf.headerName}" th:value="${_csrf.token}" />
+
+            <!-- Step 1: choose a type -->
+            <div id="fbStepChoose">
+                <div class="modal-body">
+                    <p class="fb-lead">What would you like to send?</p>
+                    <div class="fb-choices">
+                        <button type="button" class="fb-choice" data-type="REVIEW">
+                            <i class="bi bi-star"></i>
+                            <div><strong>Leave a review</strong><span>Tell me what's working and what isn't.</span></div>
+                        </button>
+                        <button type="button" class="fb-choice" data-type="ISSUE">
+                            <i class="bi bi-bug"></i>
+                            <div><strong>Report an issue</strong><span>Something broke or behaves oddly.</span></div>
+                        </button>
+                        <button type="button" class="fb-choice" data-type="SUGGESTION">
+                            <i class="bi bi-lightbulb"></i>
+                            <div><strong>Suggest a feature</strong><span>An idea that would make INCAPTUR better.</span></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: write the message -->
+            <div id="fbStepWrite" class="d-none">
+                <div class="modal-body">
+                    <label class="form-label-custom" for="fbMessage" id="fbPrompt">Your message</label>
+                    <textarea id="fbMessage" class="form-input form-textarea" rows="6" maxlength="2000"></textarea>
+                    <div class="fb-meta">
+                        <span>Sent from <strong th:text="${user.email}"></strong> so I can reply.</span>
+                        <span id="fbCount">0 / 2000</span>
+                    </div>
+                    <div class="fb-error d-none" id="fbError" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-ghost" id="fbBack">Back</button>
+                    <button type="button" class="btn-modal-accent" id="fbSend" disabled>
+                        <span class="btn-text">Send</span>
+                        <span class="btn-spin d-none"><i class="bi bi-arrow-clockwise spin"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ═══════════════════════════════════════════════════════════════
      QUICK NOTE MODAL
 ════════════════════════════════════════════════════════════════ -->
