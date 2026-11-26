@@ -1091,6 +1091,39 @@ html.sb-collapsed .nav-item.active::before, .sidebar.collapsed .nav-item.active:
 .note-title-input { padding-left: 14px; font-size: 1rem; font-weight: 700; font-family: var(--font-display); }
 .note-content-input { padding-left: 14px; min-height: 140px; font-size: 0.88rem; line-height: 1.7; }
 
+/* ═══════════════════════════════════════
+   FEEDBACK MODAL
+═══════════════════════════════════════ */
+.fb-lead { color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+.fb-choices { display: flex; flex-direction: column; gap: 10px; }
+.fb-choice {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 16px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.22s, background 0.22s;
+}
+.fb-choice:hover,
+.fb-choice:focus-visible { border-color: var(--accent); background: var(--secondary); outline: none; }
+.fb-choice > i { font-size: 1.15rem; color: var(--accent); }
+.fb-choice strong { display: block; font-family: var(--font-display); font-size: 0.92rem; }
+.fb-choice span { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.fb-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 0.75rem; color: var(--muted); }
+.fb-error { margin-top: 10px; font-size: 0.8rem; color: #e11d48; }
+#messageBtn{
+    border: 1px solid var(--muted);
+    transition: border-color 0.22s;
+}
+#messageBtn:hover{
+    border-color: var(--accent);
+}
 /* Color picker */
 .color-picker { display: flex; gap: 8px; flex-wrap: wrap; }
 .cp-swatch {
