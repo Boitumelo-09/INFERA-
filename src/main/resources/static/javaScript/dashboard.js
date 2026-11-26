@@ -213,14 +213,121 @@ $$('.ws-card[data-workspace]').forEach(card => {
 });
 
 /* ───────────────────────────────────────────────────────────────────
-   TOPBAR AVATAR  — stub for future dropdow
+   TOPBAR AVATAR  — stub for future dropdown
 ─────────────────────────────────────────────────────────────────── */
 
-$('#messageBtn')?.addEventListener('click', () => {
-    showToast('Belmire - INCAPTUR v2.0.0 Coming Soon...');
-    /* Remove dot after first click */
-    $('.notif-dot')?.remove();
-});
+/* ── Feedback modal: review / issue / suggestion, emailed to the developer ── */
+(() => {
+    const modalEl = document.getElementById('feedbackModal');
+    const openBtn = $('#messageBtn');
+    if (!modalEl || !openBtn) return;
+
+    const modal      = bootstrap.Modal.getOrCreateInstance(modalEl);
+    const stepChoose = document.getElementById('fbStepChoose');
+    const stepWrite  = document.getElementById('fbStepWrite');
+    const titleEl    = document.getElementById('feedbackLabel');
+    const promptEl   = document.getElementById('fbPrompt');
+    const textarea   = document.getElementById('fbMessage');
+    const countEl    = document.getElementById('fbCount');
+    const errorEl    = document.getElementById('fbError');
+    const sendBtn    = document.getElementById('fbSend');
+    const backBtn    = document.getElementById('fbBack');
+    const csrfEl     = document.getElementById('fbCsrf');
+
+    const COPY = {
+        REVIEW:     { title: 'Leave a review',    prompt: 'How has INCAPTUR been for you?',
+            placeholder: 'What do you like? What could be better?' },
+        ISSUE:      { title: 'Report an issue',   prompt: 'What went wrong?',
+            placeholder: 'What did you do, what did you expect, and what happened instead?' },
+        SUGGESTION: { title: 'Suggest a feature', prompt: 'What should INCAPTUR do?',
+            placeholder: 'Describe the idea and the problem it would solve.' }
+    };
+
+    let currentType = null;
+    let sending = false;
+
+    const showError  = (msg) => { errorEl.textContent = msg; errorEl.classList.remove('d-none'); };
+    const clearError = () => errorEl.classList.add('d-none');
+
+    const refresh = () => {
+        countEl.textContent = `${textarea.value.length} / ${textarea.maxLength}`;
+        sendBtn.disabled = sending || !textarea.value.trim();
+    };
+
+    const setSending = (on) => {
+        sending = on;
+        sendBtn.querySelector('.btn-text').classList.toggle('d-none', on);
+        sendBtn.querySelector('.btn-spin').classList.toggle('d-none', !on);
+        textarea.disabled = on;
+        backBtn.disabled = on;
+        refresh();
+    };
+
+    const showChoose = () => {
+        titleEl.textContent = 'Message the developer';
+        stepWrite.classList.add('d-none');
+        stepChoose.classList.remove('d-none');
+        clearError();
+    };
+
+    const showWrite = (type) => {
+        currentType = type;
+        titleEl.textContent = COPY[type].title;
+        promptEl.textContent = COPY[type].prompt;
+        textarea.placeholder = COPY[type].placeholder;
+        stepChoose.classList.add('d-none');
+        stepWrite.classList.remove('d-none');
+        clearError();
+        refresh();
+        textarea.focus();
+    };
+
+    openBtn.addEventListener('click', () => {
+        /* Remove dot after first click */
+        $('.notif-dot')?.remove();
+        showChoose();
+        modal.show();
+    });
+
+    stepChoose.querySelectorAll('.fb-choice').forEach(btn =>
+        btn.addEventListener('click', () => showWrite(btn.dataset.type)));
+
+    backBtn.addEventListener('click', showChoose);
+    textarea.addEventListener('input', () => { clearError(); refresh(); });
+
+    sendBtn.addEventListener('click', async () => {
+        const message = textarea.value.trim();
+        if (sending || !currentType || !message) return;
+
+        clearError();
+        setSending(true);
+        try {
+            const res = await fetch('/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfEl.dataset.header]: csrfEl.value
+                },
+                body: JSON.stringify({ type: currentType, message })
+            });
+
+            if (res.ok) {
+                textarea.value = '';           // clear the draft only after success
+                modal.hide();
+                showToast('Thank you, your message has been received.');
+                return;
+            }
+
+            let msg = 'Something went wrong. Please try again.';
+            try { const data = await res.json(); if (data.error) msg = data.error; } catch (_) {}
+            showError(msg);                    // draft stays in the box
+        } catch (_) {
+            showError('Could not reach the server. Check your connection and try again.');
+        } finally {
+            setSending(false);
+        }
+    });
+})();
 
 
 // Select the element (e.g., your navigation bar)
