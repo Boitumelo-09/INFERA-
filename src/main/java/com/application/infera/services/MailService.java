@@ -11,11 +11,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
+import com.application.infera.enums.MessageType;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -32,9 +33,46 @@ public class MailService {
     private String fromName;
     @Value("${app.base-url}")
     private String baseUrl;
+    @Value("${app.feedback.recipient}")
+    private String feedbackRecipient;
 
+    public void sendFeedbackEmail(String senderName, String senderEmail, MessageType type, String body) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    MimeMessageHelper.MULTIPART_MODE_RELATED,
+                    StandardCharsets.UTF_8.name()
+            );
 
-public void sendOtpEmail(String toEmail, String code) {
+            String typeLabel = switch (type) {
+                case REVIEW -> "Review";
+                case ISSUE -> "Issue report";
+                case SUGGESTION -> "Feature suggestion";
+            };
+
+            helper.setFrom(buildFromHeader());
+            helper.setTo(feedbackRecipient);
+            helper.setReplyTo(senderEmail);   // hitting Reply in your inbox goes to the user
+            String stamp = java.time.LocalDateTime.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("d MMM HH:mm"));
+            helper.setSubject("INCAPTUR " + typeLabel + " from " + senderEmail + " (" + stamp + ")");
+
+            Context context = new Context();
+            context.setVariable("typeLabel", typeLabel);
+            context.setVariable("senderName", senderName);
+            context.setVariable("senderEmail", senderEmail);
+            context.setVariable("body", body);
+            context.setVariable("currentYear", String.valueOf(Year.now().getValue()));
+
+            helper.setText(templateEngine.process("mails/feedback-email", context), true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new emailSendingException("Failed to send feedback email");
+        }
+    }
+
+    public void sendOtpEmail(String toEmail, String code) {
 
     try {
         MimeMessage message = mailSender.createMimeMessage();
